@@ -153,6 +153,7 @@
 .section-link {
   color: #111;
   font-weight: 700;
+  font-size: 0.92rem;
 }
 
 .main-nav a.active {
@@ -1330,6 +1331,9 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
+
 
 
 
