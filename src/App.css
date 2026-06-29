@@ -1,17 +1,17 @@
 .site-shell {
   min-height: 100vh;
-  padding: 0 24px 20px;
+  padding: 0 18px 20px;
 }
 
 .top-strip {
   height: 46px;
-  margin: 0 -24px;
+  margin: 0 -18px;
   background: var(--brand);
 }
 
 .site-header {
-  width: calc(100% + 48px);
-  margin: 0 -24px;
+  width: calc(100% + 36px);
+  margin: 0 -18px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(251, 251, 251, 0.96);
   backdrop-filter: blur(6px);
@@ -613,9 +613,8 @@
 .hero-section {
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
   gap: clamp(14px, 3vw, 28px);
-  align-items: start;
-  min-height: calc(100vh - 170px);
-  padding: clamp(14px, 2.5vw, 22px);
+  align-items: center;
+  padding: clamp(16px, 3vw, 28px);
 }
 
 .hero-greeting {
@@ -627,7 +626,7 @@
 
 .hero-copy h1 {
   max-width: 11ch;
-  font-size: clamp(1.85rem, 3.9vw, 3.7rem);
+  font-size: clamp(2rem, 4.2vw, 4.1rem);
   line-height: 0.9;
   letter-spacing: -0.04em;
   text-transform: uppercase;
@@ -639,13 +638,13 @@
 }
 
 .supporting-text {
-  max-width: 48ch;
-  font-size: 0.96rem;
+  max-width: 52ch;
+  font-size: 1rem;
 }
 
 .hero-visual {
   position: relative;
-  min-height: 360px;
+  min-height: 400px;
   overflow: hidden;
   isolation: isolate;
   background: #fbfbfb;
@@ -659,7 +658,7 @@
 }
 
 .hero-image {
-  width: min(100%, 520px);
+  width: min(100%, 560px);
   height: auto;
   display: block;
 }
@@ -671,25 +670,25 @@
 }
 
 .hero-orb-back {
-  top: 8%;
+  top: 10%;
   right: 18%;
-  width: min(38vw, 280px);
-  height: min(38vw, 280px);
+  width: min(40vw, 300px);
+  height: min(40vw, 300px);
   background: #111111;
 }
 
 .hero-orb-front {
-  top: 0%;
+  top: 2%;
   right: 4%;
-  width: min(44vw, 320px);
-  height: min(44vw, 320px);
+  width: min(48vw, 350px);
+  height: min(48vw, 350px);
   background: var(--brand-soft);
   z-index: 1;
 }
 
 .hero-figure {
   position: absolute;
-  inset: 4% 5% 5% 10%;
+  inset: 8% 6% 6% 12%;
   display: grid;
   align-items: end;
   z-index: 2;
@@ -698,7 +697,7 @@
 .hero-figure-face {
   display: grid;
   place-items: center;
-  width: min(28vw, 190px);
+  width: min(32vw, 220px);
   aspect-ratio: 1 / 1;
   margin-inline: auto;
   background: #fbfbfb;
@@ -713,9 +712,9 @@
   justify-self: end;
   display: grid;
   gap: 4px;
-  max-width: 200px;
-  margin-top: -14px;
-  padding: 10px 12px;
+  max-width: 220px;
+  margin-top: -18px;
+  padding: 12px 14px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #fbfbfb;
 }
@@ -736,52 +735,52 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 11px;
+  padding: 10px 12px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #fbfbfb;
 }
 
 .hero-floating-card-top {
-  top: 6%;
-  left: 3%;
+  top: 10%;
+  left: 4%;
 }
 
 .hero-floating-card-side {
-  top: 16%;
+  top: 22%;
   right: 2%;
 }
 
 .hero-floating-card-bottom {
-  right: 3%;
-  bottom: 2%;
-  max-width: 220px;
+  right: 4%;
+  bottom: 4%;
+  max-width: 230px;
 }
 
 .hero-floating-figure {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: var(--brand);
 }
 
 .hero-floating-label {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 
 .hero-floating-card-bottom strong {
   display: block;
   color: var(--brand);
-  font-size: 0.84rem;
+  font-size: 0.88rem;
 }
 
 .hero-floating-card-bottom span {
   color: var(--muted);
-  font-size: 0.74rem;
+  font-size: 0.78rem;
 }
 
 .icon-chip {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 0;
   display: grid;
   place-items: center;
@@ -793,11 +792,10 @@
 @media (max-width: 1024px) {
   .hero-section {
     grid-template-columns: 1fr;
-    min-height: auto;
   }
 
   .hero-visual {
-    min-height: 320px;
+    min-height: 360px;
     max-width: 680px;
     width: 100%;
     margin-inline: auto;
@@ -823,7 +821,7 @@
   }
 
   .hero-visual {
-    min-height: 280px;
+    min-height: 320px;
   }
 
   .hero-floating-card-top,
@@ -842,7 +840,7 @@
 
   .hero-copy h1 {
     max-width: 100%;
-    font-size: clamp(1.65rem, 8vw, 2.35rem);
+    font-size: clamp(1.7rem, 9vw, 2.8rem);
   }
 }
 
