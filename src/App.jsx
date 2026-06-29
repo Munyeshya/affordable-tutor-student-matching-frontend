@@ -148,21 +148,6 @@ function HomePage() {
               Become a tutor
             </Link>
           </div>
-
-          <div className="hero-stats" aria-label="Platform highlights">
-            <div>
-              <strong>Fast</strong>
-              <span>3-tap main journeys</span>
-            </div>
-            <div>
-              <strong>Verified</strong>
-              <span>Document-backed profiles</span>
-            </div>
-            <div>
-              <strong>Affordable</strong>
-              <span>Price-first matching</span>
-            </div>
-          </div>
         </div>
 
         <aside className="hero-visual" aria-label="Platform preview">

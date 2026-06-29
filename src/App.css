@@ -232,14 +232,6 @@
   transform: translateY(0);
 }
 
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.hero-stats div,
 .soft-chip,
 .mini-list > div,
 .info-card,
@@ -247,22 +239,11 @@
   border-radius: 0;
   background: var(--soft-surface);
 }
-
-.hero-stats div {
-  padding: 12px;
-}
-
-.hero-stats strong,
 .tutor-price,
 .step-number,
 .rating-pill {
   color: var(--brand);
   font-weight: 800;
-}
-
-.hero-stats strong {
-  display: block;
-  margin-bottom: 4px;
 }
 
 .hero-visual {
