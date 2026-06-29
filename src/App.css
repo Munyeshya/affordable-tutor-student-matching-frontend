@@ -13,7 +13,7 @@
   width: calc(100% + 40px);
   margin: 0 -20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(251, 251, 251, 0.96);
   backdrop-filter: blur(6px);
   position: sticky;
   top: 0;
@@ -48,8 +48,8 @@
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: #111;
-  color: #fff;
+  background: var(--brand);
+  color: #fbfbfb;
   font-weight: 800;
   letter-spacing: 0.04em;
   flex-shrink: 0;
@@ -64,7 +64,7 @@
 .brand-kicker {
   font-size: 0.98rem;
   font-weight: 800;
-  color: #111;
+  color: var(--brand);
 }
 
 .brand-subtitle {
@@ -87,7 +87,7 @@
 }
 
 .main-nav a.active {
-  color: #000;
+  color: var(--brand);
 }
 
 .header-actions {
@@ -133,7 +133,7 @@
 .contact-card h2,
 .page-card h1 {
   margin: 0;
-  color: #111;
+  color: var(--brand);
   font-size: clamp(1.35rem, 2.6vw, 1.95rem);
   line-height: 1.15;
 }
@@ -175,16 +175,16 @@
 }
 
 .primary-button {
-  border: 1px solid #111;
-  background: #111;
-  color: #fff;
+  border: 1px solid var(--brand);
+  background: var(--brand);
+  color: #fbfbfb;
 }
 
 .secondary-button,
 .link-button {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: #fff;
-  color: #111;
+  border: 1px solid var(--brand);
+  background: var(--soft-surface);
+  color: var(--brand);
 }
 
 .primary-button:hover,
@@ -225,7 +225,7 @@
 .tutor-price,
 .step-number,
 .rating-pill {
-  color: #111;
+  color: var(--brand);
   font-weight: 800;
 }
 
@@ -258,7 +258,7 @@
 .visual-card h2,
 .visual-card h3 {
   margin: 0;
-  color: #111;
+  color: var(--brand);
 }
 
 .visual-card p {
@@ -291,7 +291,7 @@
 
 .visual-pill {
   background: var(--brand-soft);
-  color: #111;
+  color: var(--brand);
 }
 
 .rating-pill {
@@ -326,7 +326,7 @@
   display: grid;
   place-items: center;
   background: var(--brand-soft);
-  color: #111;
+  color: var(--brand);
   flex-shrink: 0;
 }
 
@@ -381,7 +381,7 @@
 .tutor-card h3,
 .step-item h3 {
   margin: 10px 0 6px;
-  color: #111;
+  color: var(--brand);
   font-size: 1rem;
 }
 
@@ -399,7 +399,7 @@
 
 .tutor-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(253, 191, 45, 0.35);
+  border-color: rgba(0, 12, 60, 0.22);
 }
 
 .tutor-card-top p {
@@ -407,7 +407,7 @@
 }
 
 .soft-chip {
-  color: #111;
+  color: var(--brand);
   padding-inline: 0.72rem;
 }
 
@@ -454,7 +454,7 @@
 }
 
 .mini-list span {
-  color: #111;
+  color: var(--brand);
   font-weight: 700;
 }
 
@@ -565,7 +565,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(253, 191, 45, 0.18);
+  background: rgba(247, 246, 42, 0.24);
   animation: pulse 1.35s ease-in-out infinite;
 }
 
