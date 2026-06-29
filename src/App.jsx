@@ -31,7 +31,7 @@ function Layout() {
 
       <header className="site-header">
         <div className="header-inner">
-          <Link to="/" className="brand-wrap" aria-label="Affordable Tutor home">
+          <Link to="/" className="brand-wrap" aria-label="Isomo home">
             <img className="brand-logo brand-logo-wide" src="/logo-long-white.png" alt="Isomo" />
           </Link>
 
@@ -95,16 +95,16 @@ function HomePage() {
 
   const benefits = [
     {
-      title: 'Vetted tutors',
-      description: 'Approved profiles, uploaded qualifications, and visible trust markers.',
+      title: 'Search quickly',
+      description: 'Students can find tutors by name, lesson, topic, or level.',
     },
     {
-      title: 'Affordable options',
-      description: 'Students can filter by budget and compare lesson-specific pricing.',
+      title: 'Verified tutors',
+      description: 'Qualification documents and agreement uploads support trust.',
     },
     {
       title: 'Lesson-level matching',
-      description: 'Tutors can separate offers by subject, topic, and education level.',
+      description: 'Tutors separate offers by subject, topic, and education level.',
     },
   ]
 
@@ -130,23 +130,15 @@ function HomePage() {
     <>
       <section className="hero-section card">
         <div className="hero-copy">
+          <p className="hero-greeting">Hi, there!</p>
           <p className="eyebrow">Trusted learning marketplace</p>
-          <h1>Find qualified tutors without losing simplicity or affordability.</h1>
+          <h1>
+            <span>ISOMO</span> is here to make tutor matching clear, premium, and affordable.
+          </h1>
           <p className="supporting-text">
-            Students can search by tutor name, lesson, or topic. Tutors can showcase verified
-            documents, lesson-specific offers, and level-based expertise. The experience stays
-            calm, clear, and professional.
+            Search by tutor name, lesson, or topic. Compare verified tutors, lesson-specific
+            pricing, and level-based expertise in one place.
           </p>
-
-          <div className="hero-search" aria-label="Quick search options">
-            <span className="hero-search-label">Search by</span>
-            <div className="hero-search-chips">
-              <span>Name</span>
-              <span>Lesson</span>
-              <span>Topic</span>
-              <span>Level</span>
-            </div>
-          </div>
 
           <div className="hero-actions">
             <Link className="primary-button" to="/tutors">
@@ -174,35 +166,38 @@ function HomePage() {
         </div>
 
         <aside className="hero-visual" aria-label="Platform preview">
-          <div className="visual-card visual-card-hero">
-            <div className="visual-topline">
-              <span className="visual-pill">Recommended</span>
-              <span className="rating-pill">
-                <ShellIcon name="star" />
-                4.9
-              </span>
-            </div>
-            <h2>Mathematics tutor in Kigali</h2>
-            <p>Upper secondary, affordable hourly rate, verified qualification documents.</p>
-          </div>
+          <div className="hero-orb hero-orb-back" />
+          <div className="hero-orb hero-orb-front" />
+          <div className="hero-dot-cluster hero-dot-top" />
+          <div className="hero-dot-cluster hero-dot-bottom" />
 
-          <div className="visual-card visual-card-small">
-            <div className="icon-chip">
-              <ShellIcon name="search" />
+          <div className="hero-figure">
+            <div className="hero-figure-face">
+              <span>IS</span>
             </div>
-            <div>
-              <h3>Search by lesson</h3>
-              <p>Discover tutors by subject, topic, or level.</p>
+            <div className="hero-figure-card">
+              <strong>Verified tutor</strong>
+              <span>Mathematics - Upper Secondary</span>
             </div>
           </div>
 
-          <div className="visual-card visual-card-small">
+          <div className="hero-floating-card hero-floating-card-top">
+            <span className="hero-floating-figure">2K+</span>
+            <span className="hero-floating-label">Verified tutors</span>
+          </div>
+
+          <div className="hero-floating-card hero-floating-card-side">
+            <span className="hero-floating-figure">4.9</span>
+            <span className="hero-floating-label">Satisfaction</span>
+          </div>
+
+          <div className="hero-floating-card hero-floating-card-bottom">
             <div className="icon-chip">
-              <ShellIcon name="shield" />
+              <ShellIcon name="users" />
             </div>
             <div>
-              <h3>Approval flow</h3>
-              <p>Visibility stays restricted until admin approval.</p>
+              <strong>Productive matching</strong>
+              <span>By lesson, topic, or level</span>
             </div>
           </div>
         </aside>
@@ -211,7 +206,7 @@ function HomePage() {
       <section className="content-section" id="about">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">About the platform</p>
+            <p className="eyebrow">Our service</p>
             <h2>A trusted marketplace for learning.</h2>
           </div>
           <p className="section-text">
@@ -225,10 +220,10 @@ function HomePage() {
               <div className="icon-chip">
                 <ShellIcon
                   name={
-                    benefit.title === 'Vetted tutors'
-                      ? 'shield'
-                      : benefit.title === 'Affordable options'
-                        ? 'book'
+                    benefit.title === 'Search quickly'
+                      ? 'search'
+                      : benefit.title === 'Verified tutors'
+                        ? 'shield'
                         : 'users'
                   }
                 />
