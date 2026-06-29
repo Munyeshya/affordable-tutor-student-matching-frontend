@@ -417,11 +417,27 @@
     max-width: none;
   }
 
+  .topbar-actions,
+  .cta-row {
+    width: 100%;
+  }
+
+  .topbar-actions a,
+  .topbar-actions button,
+  .cta-row button,
+  .search-row button {
+    width: 100%;
+  }
+
   .search-row {
     flex-direction: column;
   }
 
   .mini-metrics {
     grid-template-columns: 1fr;
+  }
+
+  .section-heading a {
+    align-self: flex-start;
   }
 }
