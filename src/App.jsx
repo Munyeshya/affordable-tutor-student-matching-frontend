@@ -138,6 +138,16 @@ function HomePage() {
             calm, clear, and professional.
           </p>
 
+          <div className="hero-search" aria-label="Quick search options">
+            <span className="hero-search-label">Search by</span>
+            <div className="hero-search-chips">
+              <span>Name</span>
+              <span>Lesson</span>
+              <span>Topic</span>
+              <span>Level</span>
+            </div>
+          </div>
+
           <div className="hero-actions">
             <Link className="primary-button" to="/tutors">
               Search tutors
