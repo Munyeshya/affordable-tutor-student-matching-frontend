@@ -619,16 +619,106 @@
 }
 
 .site-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 2px 8px;
-  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 0.8fr));
+  gap: 24px;
+  padding: 30px clamp(18px, 2.8vw, 30px);
+  margin-top: 16px;
+  background: #111111;
+  color: #fbfbfb;
 }
 
 .site-footer p {
   margin: 0;
+}
+
+.site-footer a {
+  color: #fbfbfb;
+}
+
+.footer-brand,
+.footer-links,
+.footer-newsletter {
+  display: grid;
+  gap: 10px;
+}
+
+.footer-brand p {
+  color: rgba(251, 251, 251, 0.8);
+  max-width: 26ch;
+}
+
+.footer-logo {
+  width: 120px;
+  height: auto;
+  display: block;
+}
+
+.footer-links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.footer-links div,
+.footer-newsletter {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-links h3,
+.footer-newsletter h3 {
+  margin: 0 0 6px;
+  color: #fbfbfb;
+  font-size: 0.98rem;
+}
+
+.footer-links a {
+  color: rgba(251, 251, 251, 0.82);
+  font-size: 0.92rem;
+}
+
+.footer-newsletter p {
+  color: rgba(251, 251, 251, 0.8);
+}
+
+.footer-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.footer-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid rgba(251, 251, 251, 0.16);
+  background: rgba(251, 251, 251, 0.08);
+  color: #fbfbfb;
+  padding: 0.76rem 0.86rem;
+  font: inherit;
+}
+
+.footer-form input::placeholder {
+  color: rgba(251, 251, 251, 0.6);
+}
+
+.footer-form button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(251, 251, 251, 0.16);
+  background: var(--brand-soft);
+  color: #111111;
+  padding: 0;
+}
+
+.footer-form svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
 }
 
 .skeleton-card {
@@ -1040,6 +1130,14 @@
   }
 
   .stats-band-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-links {
     grid-template-columns: 1fr;
   }
 }
