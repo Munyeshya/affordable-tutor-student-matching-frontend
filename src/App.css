@@ -87,7 +87,7 @@
 }
 
 .main-nav a.active {
-  color: var(--brand);
+  color: var(--brand-soft);
 }
 
 .header-actions {
@@ -124,7 +124,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--brand-soft);
 }
 
 .hero-copy h1,
@@ -175,14 +175,14 @@
 }
 
 .primary-button {
-  border: 1px solid var(--brand);
-  background: var(--brand);
+  border: 1px solid var(--brand-soft);
+  background: var(--brand-soft);
   color: #fbfbfb;
 }
 
 .secondary-button,
 .link-button {
-  border: 1px solid var(--brand);
+  border: 1px solid var(--brand-soft);
   background: var(--soft-surface);
   color: var(--brand);
 }
@@ -291,7 +291,7 @@
 
 .visual-pill {
   background: var(--brand-soft);
-  color: var(--brand);
+  color: #fbfbfb;
 }
 
 .rating-pill {
@@ -326,7 +326,7 @@
   display: grid;
   place-items: center;
   background: var(--brand-soft);
-  color: var(--brand);
+  color: #fbfbfb;
   flex-shrink: 0;
 }
 
@@ -399,7 +399,7 @@
 
 .tutor-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(150, 0, 1, 0.22);
+  border-color: rgba(217, 107, 0, 0.22);
 }
 
 .tutor-card-top p {
@@ -438,6 +438,7 @@
   height: 2.25rem;
   border-radius: 999px;
   background: var(--brand-soft);
+  color: #fbfbfb;
 }
 
 .mini-list {
@@ -565,7 +566,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(253, 201, 151, 0.3);
+  background: rgba(217, 107, 0, 0.18);
   animation: pulse 1.35s ease-in-out infinite;
 }
 

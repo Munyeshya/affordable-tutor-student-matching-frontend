@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --brand: #960001;
-  --brand-soft: #fdc997;
+  --brand: #111111;
+  --brand-soft: #d96b00;
   --surface: #fbfbfb;
   --soft-surface: #fbfbfb;
   --muted: #5e5e5e;
   font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #960001;
+  color: #111111;
   background: #fbfbfb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -50,7 +50,7 @@ input {
 button:focus-visible,
 input:focus-visible,
 a:focus-visible {
-  box-shadow: 0 0 0 3px rgba(253, 201, 151, 0.42);
+  box-shadow: 0 0 0 3px rgba(217, 107, 0, 0.3);
 }
 
 #root {
