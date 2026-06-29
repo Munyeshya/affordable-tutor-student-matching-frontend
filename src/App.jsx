@@ -76,26 +76,6 @@ function Layout() {
 }
 
 function HomePage() {
-  const trustMarks = ['Parents', 'Tutors', 'Schools', 'Universities', 'Clubs', 'Students']
-
-  const platformCards = [
-    {
-      title: 'Verified profiles',
-      description: 'Documents, agreements, and admin approval keep tutor profiles trusted.',
-      icon: 'shield',
-    },
-    {
-      title: 'Smart discovery',
-      description: 'Search by name, lesson, topic, or level and compare in a few taps.',
-      icon: 'search',
-    },
-    {
-      title: 'Affordable matching',
-      description: 'Price-first discovery keeps tutoring accessible for more students.',
-      icon: 'star',
-    },
-  ]
-
   const impactStats = [
     { value: '2K+', label: 'Verified tutors' },
     { value: '46+', label: 'Lessons covered' },
@@ -158,39 +138,7 @@ function HomePage() {
         </aside>
       </section>
 
-      <section className="content-section trust-section card" id="about">
-        <div className="section-heading section-heading-center">
-          <div>
-            <p className="eyebrow">Our clients</p>
-            <h2>Trusted by the people who make learning work.</h2>
-          </div>
-          <p className="section-text section-text-center">
-            Isomo keeps tutoring clear, affordable, and easy to verify for every group involved.
-          </p>
-        </div>
-
-        <div className="trust-marks" aria-label="Trusted audiences">
-          {trustMarks.map((mark) => (
-            <span key={mark} className="trust-mark">
-              {mark}
-            </span>
-          ))}
-        </div>
-
-        <div className="feature-cards-grid">
-          {platformCards.map((card) => (
-            <article className="info-card feature-card" key={card.title}>
-              <div className="icon-chip">
-                <ShellIcon name={card.icon} />
-              </div>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="content-section showcase-section card" id="tutors">
+      <section className="content-section showcase-section card" id="about">
         <div className="showcase-visual">
           <img
             className="showcase-image"
