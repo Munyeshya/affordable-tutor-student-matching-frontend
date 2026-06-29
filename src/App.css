@@ -1,35 +1,38 @@
 .site-shell {
   min-height: 100vh;
-  padding: 16px 20px 20px;
+  padding: 0 20px 20px;
 }
 
-.site-shell::before {
-  content: '';
-  display: block;
+.top-strip {
   height: 46px;
+  margin: 0 -20px;
   background: var(--brand);
-  margin: -16px -20px 0;
 }
 
-.site-header,
+.site-header {
+  width: calc(100% + 40px);
+  margin: 0 -20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.header-inner,
 .page-content,
 .site-footer {
   max-width: 1180px;
   margin: 0 auto;
 }
 
-.site-header {
+.header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 16px 0 18px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(6px);
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  padding: 16px 20px 18px;
 }
 
 .brand-wrap {
@@ -45,7 +48,7 @@
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: var(--brand);
+  background: #111;
   color: #fff;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -81,6 +84,10 @@
 .section-link {
   color: #111;
   font-weight: 700;
+}
+
+.main-nav a.active {
+  color: #000;
 }
 
 .header-actions {
@@ -123,10 +130,11 @@
 .hero-copy h1,
 .section-heading h2,
 .panel h2,
-.contact-card h2 {
+.contact-card h2,
+.page-card h1 {
   margin: 0;
   color: #111;
-  font-size: clamp(1.45rem, 2.6vw, 1.95rem);
+  font-size: clamp(1.35rem, 2.6vw, 1.95rem);
   line-height: 1.15;
 }
 
@@ -167,8 +175,8 @@
 }
 
 .primary-button {
-  border: 1px solid var(--brand);
-  background: var(--brand);
+  border: 1px solid #111;
+  background: #111;
   color: #fff;
 }
 
@@ -203,7 +211,8 @@
 .hero-stats div,
 .soft-chip,
 .mini-list > div,
-.info-card {
+.info-card,
+.page-card {
   border-radius: 18px;
   background: var(--soft-surface);
 }
@@ -317,7 +326,7 @@
   display: grid;
   place-items: center;
   background: var(--brand-soft);
-  color: var(--brand);
+  color: #111;
   flex-shrink: 0;
 }
 
@@ -331,7 +340,7 @@
 }
 
 .section-heading h2 {
-  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
 }
 
 .section-text {
@@ -359,7 +368,8 @@
 .info-card,
 .panel,
 .tutor-card,
-.contact-card {
+.contact-card,
+.page-card {
   padding: 20px;
 }
 
@@ -389,7 +399,7 @@
 
 .tutor-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(246, 144, 77, 0.35);
+  border-color: rgba(253, 191, 45, 0.35);
 }
 
 .tutor-card-top p {
@@ -462,12 +472,20 @@
   stroke-width: 2;
 }
 
-.contact-card {
+.contact-card,
+.page-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
   flex-wrap: wrap;
+}
+
+.page-card {
+  min-height: 260px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .site-footer {
@@ -547,7 +565,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(246, 144, 77, 0.16);
+  background: rgba(253, 191, 45, 0.18);
   animation: pulse 1.35s ease-in-out infinite;
 }
 
@@ -583,17 +601,23 @@
 
 @media (max-width: 768px) {
   .site-shell {
-    padding: 14px;
+    padding: 0 14px 14px;
   }
 
-  .site-shell::before {
+  .top-strip {
     margin-inline: -14px;
   }
 
   .site-header {
+    width: calc(100% + 28px);
+    margin-inline: -14px;
+    position: static;
+  }
+
+  .header-inner {
+    padding: 14px;
     flex-direction: column;
     align-items: stretch;
-    position: static;
   }
 
   .main-nav,
@@ -606,6 +630,10 @@
   .main-nav {
     justify-content: flex-start;
     row-gap: 10px;
+  }
+
+  .main-nav a {
+    padding: 0.35rem 0;
   }
 
   .header-actions,
