@@ -627,12 +627,12 @@
 }
 
 .hero-copy {
-  padding-inline-start: clamp(18px, 3vw, 34px);
-  padding-inline-end: clamp(10px, 1.8vw, 22px);
+  padding-inline-start: clamp(14px, 2.4vw, 28px);
+  padding-inline-end: clamp(12px, 1.6vw, 18px);
 }
 
 .hero-visual {
-  padding-inline-start: clamp(14px, 2.2vw, 28px);
+  padding-inline-start: clamp(10px, 1.8vw, 22px);
 }
 
 .hero-visual::before {
