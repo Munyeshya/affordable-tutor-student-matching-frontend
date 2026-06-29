@@ -39,7 +39,7 @@ function Layout() {
       <header className="site-header">
         <div className="header-inner">
           <Link to="/" className="brand-wrap" aria-label="Isomo home">
-            <img className="brand-logo brand-logo-wide" src="/logo-long-white.png" alt="Isomo" />
+            <img className="brand-logo brand-logo-wide" src="/logo-small-white.png" alt="Isomo" />
           </Link>
 
           <nav className="main-nav" aria-label="Primary">
@@ -69,7 +69,7 @@ function Layout() {
 
       <footer className="site-footer">
         <div className="footer-brand">
-          <img className="footer-logo" src="/logo-long-white.png" alt="Isomo" />
+          <img className="footer-logo" src="/logo-small-white.png" alt="Isomo" />
           <p>Affordable learning, built for trust.</p>
           <p>Copyright © 2026 Isomo. All rights reserved.</p>
         </div>
@@ -256,3 +256,4 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
+

@@ -650,9 +650,12 @@
 }
 
 .footer-logo {
-  width: 154px;
+  width: 112px;
   height: auto;
   display: block;
+  padding: 6px;
+  border: 1px solid var(--brand-soft);
+  box-sizing: border-box;
 }
 
 .footer-links {
@@ -1233,6 +1236,8 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
 
 
 
