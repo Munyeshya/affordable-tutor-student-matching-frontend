@@ -683,7 +683,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  transform: translate(-6.5%, -8.5%);
+  transform: translate(-6.5%, -11%);
 }
 
 .hero-image {
@@ -699,7 +699,7 @@
 }
 
 .hero-orb-back {
-  top: 2%;
+  top: 0%;
   right: 10%;
   width: min(47vw, 370px);
   height: min(47vw, 370px);
@@ -707,7 +707,7 @@
 }
 
 .hero-orb-front {
-  top: -6%;
+  top: -10%;
   right: -1%;
   width: min(56vw, 420px);
   height: min(56vw, 420px);
@@ -717,7 +717,7 @@
 
 .hero-figure {
   position: absolute;
-  inset: 2% 0% 2% 4%;
+  inset: 0% 0% 2% 4%;
   display: grid;
   align-items: end;
   z-index: 2;
@@ -770,12 +770,12 @@
 }
 
 .hero-floating-card-top {
-  top: 8%;
+  top: 6%;
   left: 10%;
 }
 
 .hero-floating-card-side {
-  top: 18%;
+  top: 15%;
   right: -1%;
 }
 
