@@ -1,17 +1,17 @@
 .site-shell {
   min-height: 100vh;
-  padding: 0 0 20px;
+  padding: 0 10px 20px;
 }
 
 .top-strip {
   height: 46px;
-  margin: 0;
+  margin: 0 -10px;
   background: var(--brand);
 }
 
 .site-header {
-  width: 100%;
-  margin: 0;
+  width: calc(100% + 20px);
+  margin: 0 -10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(251, 251, 251, 0.96);
   backdrop-filter: blur(6px);
@@ -597,16 +597,16 @@
 
 @media (max-width: 768px) {
   .site-shell {
-    padding: 0 0 14px;
+    padding: 0 8px 14px;
   }
 
   .top-strip {
-    margin: 0;
+    margin: 0 -8px;
   }
 
   .site-header {
-    width: 100%;
-    margin: 0;
+    width: calc(100% + 16px);
+    margin: 0 -8px;
     position: static;
   }
 
