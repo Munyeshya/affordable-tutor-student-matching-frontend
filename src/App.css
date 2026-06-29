@@ -399,7 +399,7 @@
 
 .tutor-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(0, 12, 60, 0.22);
+  border-color: rgba(150, 0, 1, 0.22);
 }
 
 .tutor-card-top p {
@@ -565,7 +565,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(247, 246, 42, 0.24);
+  background: rgba(253, 201, 151, 0.3);
   animation: pulse 1.35s ease-in-out infinite;
 }
 
