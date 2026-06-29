@@ -619,14 +619,15 @@
 }
 
 .site-footer {
-  width: calc(100% + 36px);
+  width: 100vw;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 0.8fr));
   gap: 24px;
   padding: 40px clamp(18px, 2.8vw, 30px);
-  margin: 16px -18px 0;
+  margin: 16px calc(50% - 50vw) 0;
   background: #111111;
   color: #fbfbfb;
+  box-sizing: border-box;
 }
 
 .site-footer p {
