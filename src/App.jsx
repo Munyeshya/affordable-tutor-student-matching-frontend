@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import './App.css'
+import logoImage from './assets/isomo-logo.png'
 
 function ShellIcon({ name }) {
   const paths = {
@@ -32,11 +33,9 @@ function Layout() {
       <header className="site-header">
         <div className="header-inner">
           <Link to="/" className="brand-wrap" aria-label="Affordable Tutor home">
-            <div className="brand-mark" aria-hidden="true">
-              AT
-            </div>
+            <img className="brand-logo" src={logoImage} alt="Isomo logo" />
             <div>
-              <p className="brand-kicker">Affordable Tutor</p>
+              <p className="brand-kicker">Isomo</p>
               <p className="brand-subtitle">Tutor-student marketplace</p>
             </div>
           </Link>
@@ -67,7 +66,7 @@ function Layout() {
       </main>
 
       <footer className="site-footer">
-        <p>Affordable Tutor</p>
+        <p>Isomo</p>
         <p>Affordable learning, built for trust.</p>
       </footer>
     </div>
