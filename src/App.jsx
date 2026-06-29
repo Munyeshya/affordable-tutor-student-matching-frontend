@@ -27,7 +27,14 @@ function ShellIcon({ name }) {
 function Layout() {
   return (
     <div className="site-shell">
-      <div className="top-strip" />
+      <div className="top-strip">
+        <div className="top-strip-inner">
+          <span className="top-strip-text">New tutor applications are open. Verified profiles only.</span>
+          <Link to="/join" className="top-strip-link">
+            Apply now
+          </Link>
+        </div>
+      </div>
 
       <header className="site-header">
         <div className="header-inner">
