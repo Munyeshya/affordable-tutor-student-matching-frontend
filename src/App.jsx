@@ -9,7 +9,6 @@ const featuredTutors = [
     level: 'Upper Secondary',
     rating: '4.9',
     price: 'RWF 4,000 / hr',
-    tag: 'Verified',
   },
   {
     name: 'Eric N.',
@@ -17,7 +16,6 @@ const featuredTutors = [
     level: 'Primary',
     rating: '4.8',
     price: 'RWF 3,500 / hr',
-    tag: 'Affordable',
   },
   {
     name: 'Diane K.',
@@ -25,34 +23,78 @@ const featuredTutors = [
     level: 'University',
     rating: '5.0',
     price: 'RWF 6,000 / hr',
-    tag: 'Top rated',
+  },
+]
+
+const benefits = [
+  {
+    title: 'Vetted tutors',
+    description: 'Approved profiles, uploaded qualifications, and visible trust markers.',
+  },
+  {
+    title: 'Affordable options',
+    description: 'Students can filter by budget and compare lesson-specific pricing.',
+  },
+  {
+    title: 'Lesson-level matching',
+    description: 'Tutors can separate offers by subject, topic, and education level.',
   },
 ]
 
 const steps = [
   {
-    title: 'Search with confidence',
-    description: 'Find tutors by name, lesson, or topic with a clear marketplace view.',
+    number: '01',
+    title: 'Search tutors',
+    text: 'Find by name, lesson, or topic from a focused, easy-to-scan directory.',
   },
   {
-    title: 'Compare the essentials',
-    description: 'See ratings, level, lesson focus, and affordability before you decide.',
+    number: '02',
+    title: 'Review details',
+    text: 'Check lessons, ratings, documents, level, and affordability in one place.',
   },
   {
-    title: 'Book and learn',
-    description: 'Move from discovery to a lesson request in just a few simple taps.',
+    number: '03',
+    title: 'Request a lesson',
+    text: 'Send a simple request and continue inside the right role dashboard.',
   },
 ]
 
-function SkeletonCard() {
+function Icon({ name }) {
+  const paths = {
+    search:
+      'M21 21l-4.2-4.2m1.2-5.3a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z',
+    shield:
+      'M12 3l7 3v5c0 4.9-3.1 9.4-7 10.9C8.1 20.4 5 15.9 5 11V6l7-3z',
+    star:
+      'M12 17.3l-5.5 3 1.1-6.2L3 9.7l6.2-.9L12 3.2l2.8 5.6 6.2.9-4.6 4.4 1.1 6.2-5.5-3z',
+    users:
+      'M7.5 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm9 0a3 3 0 100-6 3 3 0 000 6zM3.5 19c0-2.5 2.3-4.5 5-4.5h1m2 4.5c0-2.7 2.5-4.5 5.5-4.5h1',
+    book: 'M6 4.5h11a2 2 0 012 2V19a2 2 0 01-2 2H6a2 2 0 01-2-2V6.5a2 2 0 012-2zm0 0v13m2-9h9m-9 3h9',
+    arrow:
+      'M5 12h12m0 0-5-5m5 5-5 5',
+  }
+
   return (
-    <div className="tutor-card skeleton-card" aria-hidden="true">
-      <div className="skeleton-line skeleton-avatar" />
-      <div className="skeleton-line skeleton-title" />
-      <div className="skeleton-line skeleton-subtitle" />
-      <div className="skeleton-line skeleton-chip" />
-      <div className="skeleton-line skeleton-chip short" />
-    </div>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d={paths[name]} />
+    </svg>
+  )
+}
+
+function SkeletonTutorCard() {
+  return (
+    <article className="tutor-card skeleton-card" aria-hidden="true">
+      <div className="skeleton-row">
+        <div className="skeleton-avatar" />
+        <div className="skeleton-headings">
+          <div className="skeleton-line title" />
+          <div className="skeleton-line subtitle" />
+        </div>
+      </div>
+      <div className="skeleton-line chip" />
+      <div className="skeleton-line chip short" />
+      <div className="skeleton-line price" />
+    </article>
   )
 }
 
@@ -60,164 +102,249 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setLoading(false), 1200)
+    const timer = window.setTimeout(() => setLoading(false), 1100)
     return () => window.clearTimeout(timer)
   }, [])
 
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div>
-          <p className="brand">Affordable Tutor</p>
-          <h1>Learning made simple, trusted, and affordable.</h1>
+    <div className="site-shell">
+      <header className="site-header">
+        <div className="brand-wrap">
+          <div className="brand-mark" aria-hidden="true">
+            AT
+          </div>
+          <div>
+            <p className="brand-kicker">Affordable Tutor</p>
+            <p className="brand-subtitle">Tutor-student marketplace</p>
+          </div>
         </div>
-        <nav className="topbar-actions" aria-label="Primary">
-          <a href="#explore">Find tutors</a>
-          <a href="#join">Join as tutor</a>
-          <button className="ghost-button" type="button">
+
+        <nav className="main-nav" aria-label="Primary">
+          <a href="#about">About</a>
+          <a href="#tutors">Tutors</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <div className="header-actions">
+          <button className="link-button" type="button">
             Sign in
           </button>
-        </nav>
+          <button className="primary-button" type="button">
+            Join now
+          </button>
+        </div>
       </header>
 
-      <main className="page">
-        <section className="hero card">
+      <main className="page-content">
+        <section className="hero-section card">
           <div className="hero-copy">
-            <p className="eyebrow">Airbnb-style marketplace for learning</p>
-            <h2>Discover qualified tutors with a calm, reliable experience.</h2>
+            <p className="eyebrow">Trusted learning marketplace</p>
+            <h1>Find qualified tutors without losing simplicity or affordability.</h1>
             <p className="supporting-text">
-              Students can compare tutors by lesson, topic, level, and price. Tutors can present
-              their expertise professionally without the interface ever feeling crowded.
+              Students can search by tutor name, lesson, or topic. Tutors can showcase verified
+              documents, lesson-specific offers, and level-based expertise. The experience stays
+              calm, clear, and professional.
             </p>
 
-            <div className="cta-row">
+            <div className="hero-actions">
               <button className="primary-button" type="button">
-                Start searching
+                Search tutors
               </button>
               <button className="secondary-button" type="button">
-                Explore how it works
+                Become a tutor
               </button>
             </div>
 
-            <div className="mini-metrics" aria-label="Platform highlights">
+            <div className="hero-stats" aria-label="Platform highlights">
               <div>
-                <strong>100+</strong>
-                <span>lesson listings</span>
+                <strong>Fast</strong>
+                <span>3-tap main journeys</span>
               </div>
               <div>
-                <strong>4.8/5</strong>
-                <span>average rating</span>
+                <strong>Verified</strong>
+                <span>Document-backed profiles</span>
               </div>
               <div>
                 <strong>Affordable</strong>
-                <span>price-first matching</span>
+                <span>Price-first matching</span>
               </div>
             </div>
           </div>
 
-          <div className="hero-panel" id="explore">
-            <div className="search-box">
-              <label className="search-label" htmlFor="search">
-                Search by name, lesson, or topic
-              </label>
-              <div className="search-row">
-                <input
-                  id="search"
-                  type="text"
-                  placeholder="e.g. Mathematics, Aline, algebra"
-                />
-                <button className="primary-button compact" type="button">
-                  Search
-                </button>
+          <aside className="hero-visual" aria-label="Platform preview">
+            <div className="visual-card visual-card-hero">
+              <div className="visual-topline">
+                <span className="visual-pill">Recommended</span>
+                <span className="rating-pill">
+                  <Icon name="star" />
+                  4.9
+                </span>
+              </div>
+              <h2>Mathematics tutor in Kigali</h2>
+              <p>Upper secondary, affordable hourly rate, verified qualification documents.</p>
+            </div>
+
+            <div className="visual-card visual-card-small">
+              <div className="icon-chip">
+                <Icon name="search" />
+              </div>
+              <div>
+                <h3>Search by lesson</h3>
+                <p>Discover tutors by subject, topic, or level.</p>
               </div>
             </div>
 
-            <div className="feature-list">
-              <div>
-                <span className="feature-label">Trusted tutors</span>
-                <p>Document-backed tutor profiles and approval-based visibility.</p>
+            <div className="visual-card visual-card-small">
+              <div className="icon-chip">
+                <Icon name="shield" />
               </div>
               <div>
-                <span className="feature-label">Lesson focused</span>
-                <p>Each tutor can separate offers by lesson and education level.</p>
-              </div>
-              <div>
-                <span className="feature-label">Simple booking</span>
-                <p>Clear pathways for students, tutors, and admins with no clutter.</p>
+                <h3>Approval flow</h3>
+                <p>Visibility stays restricted until admin approval.</p>
               </div>
             </div>
+          </aside>
+        </section>
+
+        <section className="content-section" id="about">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">About the platform</p>
+              <h2>A trusted marketplace for learning.</h2>
+            </div>
+            <p className="section-text">
+              Built for students, tutors, and admins with a clean hierarchy and predictable paths.
+            </p>
+          </div>
+
+          <div className="benefits-grid">
+            {benefits.map((benefit) => (
+              <article className="info-card" key={benefit.title}>
+                <div className="icon-chip">
+                  <Icon name={benefit.title === 'Vetted tutors' ? 'shield' : benefit.title === 'Affordable options' ? 'book' : 'users'} />
+                </div>
+                <h3>{benefit.title}</h3>
+                <p>{benefit.description}</p>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section className="section-block">
+        <section className="content-section" id="tutors">
           <div className="section-heading">
             <div>
               <p className="eyebrow">Featured tutors</p>
-              <h3>Profiles that feel professional and easy to compare.</h3>
+              <h2>Profiles that are easy to compare.</h2>
             </div>
-            <a href="#join">Become a tutor</a>
+            <a href="#contact" className="section-link">
+              View all <Icon name="arrow" />
+            </a>
           </div>
 
-          <div className="grid cards-grid">
+          <div className="cards-grid">
             {loading
-              ? featuredTutors.map((_, index) => <SkeletonCard key={index} />)
+              ? featuredTutors.map((_, index) => <SkeletonTutorCard key={index} />)
               : featuredTutors.map((tutor) => (
                   <article className="tutor-card" key={tutor.name}>
-                    <div className="card-topline">
+                    <div className="tutor-card-top">
                       <div>
-                        <p className="tutor-name">{tutor.name}</p>
-                        <p className="tutor-lesson">{tutor.lesson}</p>
+                        <h3>{tutor.name}</h3>
+                        <p>{tutor.lesson}</p>
                       </div>
-                      <span className="badge">{tutor.tag}</span>
+                      <span className="rating-pill">
+                        <Icon name="star" />
+                        {tutor.rating}
+                      </span>
                     </div>
 
-                    <div className="meta-row">
-                      <span>{tutor.level}</span>
-                      <span>{tutor.rating} rating</span>
+                    <div className="chip-row">
+                      <span className="soft-chip">{tutor.level}</span>
+                      <span className="soft-chip">Verified</span>
                     </div>
 
-                    <p className="price">{tutor.price}</p>
+                    <p className="tutor-price">{tutor.price}</p>
                   </article>
                 ))}
           </div>
         </section>
 
-        <section className="section-block split">
-          <div className="panel card">
-            <p className="eyebrow">User flow</p>
-            <h3>Three taps or less for the main actions.</h3>
-            <div className="steps">
-              {steps.map((step, index) => (
-                <div className="step" key={step.title}>
-                  <span className="step-index">0{index + 1}</span>
+        <section className="content-section split-layout" id="how-it-works">
+          <article className="panel card">
+            <p className="eyebrow">How it works</p>
+            <h2>Simple from first search to lesson request.</h2>
+
+            <div className="steps-list">
+              {steps.map((step) => (
+                <div className="step-item" key={step.number}>
+                  <span className="step-number">{step.number}</span>
                   <div>
-                    <h4>{step.title}</h4>
-                    <p>{step.description}</p>
+                    <h3>{step.title}</h3>
+                    <p>{step.text}</p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </article>
 
-          <div className="panel card" id="join">
+          <article className="panel card">
             <p className="eyebrow">Tutor onboarding</p>
-            <h3>A clean space for verified tutors to present lessons.</h3>
+            <h2>Professional, but not complicated.</h2>
             <p className="supporting-text">
-              Tutors will be able to upload documents, share the lessons they teach, and remain
-              limited until approved by admin. The interface keeps that process calm and simple.
+              Tutors upload documents, choose the lessons they teach, and remain limited until the
+              admin approves their account. The flow is kept inside the tutor dashboard so the
+              signup path stays easy.
             </p>
 
-            <div className="cta-row">
+            <div className="mini-list">
+              <div>
+                <Icon name="shield" />
+                <span>Upload qualification documents</span>
+              </div>
+              <div>
+                <Icon name="book" />
+                <span>Set lessons and levels</span>
+              </div>
+              <div>
+                <Icon name="users" />
+                <span>Gain visibility after approval</span>
+              </div>
+            </div>
+
+            <div className="hero-actions">
               <button className="primary-button" type="button">
-                Start tutor application
+                Start application
               </button>
               <button className="secondary-button" type="button">
-                View requirements
+                See requirements
               </button>
             </div>
+          </article>
+        </section>
+
+        <section className="content-section contact-card card" id="contact">
+          <div>
+            <p className="eyebrow">Need help?</p>
+            <h2>Reach support, request tutoring, or continue as an admin.</h2>
+            <p className="supporting-text">
+              Everything stays accessible, responsive, and consistent on mobile and desktop.
+            </p>
+          </div>
+          <div className="hero-actions">
+            <button className="primary-button" type="button">
+              Contact support
+            </button>
+            <button className="secondary-button" type="button">
+              Read more
+            </button>
           </div>
         </section>
       </main>
+
+      <footer className="site-footer">
+        <p>Affordable Tutor</p>
+        <p>Affordable learning, built for trust.</p>
+      </footer>
     </div>
   )
 }
