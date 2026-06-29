@@ -1,17 +1,17 @@
 .site-shell {
   min-height: 100vh;
-  padding: 0 10px 20px;
+  padding: 0 18px 20px;
 }
 
 .top-strip {
   height: 46px;
-  margin: 0 -10px;
+  margin: 0 -18px;
   background: var(--brand);
 }
 
 .site-header {
-  width: calc(100% + 20px);
-  margin: 0 -10px;
+  width: calc(100% + 36px);
+  margin: 0 -18px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(251, 251, 251, 0.96);
   backdrop-filter: blur(6px);
@@ -32,7 +32,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 18px;
+  padding: 10px 14px;
 }
 
 .brand-wrap {
@@ -146,7 +146,7 @@
 
 .supporting-text {
   margin: 14px 0 0;
-  max-width: 60ch;
+  max-width: 50ch;
 }
 
 .hero-actions {
@@ -154,14 +154,14 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 22px;
+  margin-top: 18px;
 }
 
 .hero-search {
   display: grid;
   gap: 8px;
   margin-top: 18px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: var(--soft-surface);
 }
@@ -183,11 +183,11 @@
 .hero-search-chips span {
   display: inline-flex;
   align-items: center;
-  padding: 0.48rem 0.7rem;
+  padding: 0.4rem 0.62rem;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #fbfbfb;
   color: var(--brand);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 700;
 }
 
@@ -195,7 +195,7 @@
 .secondary-button,
 .link-button {
   border-radius: 0;
-  padding: 0.88rem 1.18rem;
+  padding: 0.78rem 1.02rem;
   font: inherit;
   font-weight: 800;
   transition:
@@ -236,7 +236,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .hero-stats div,
@@ -249,7 +249,7 @@
 }
 
 .hero-stats div {
-  padding: 14px;
+  padding: 12px;
 }
 
 .hero-stats strong,
@@ -400,7 +400,7 @@
 .tutor-card,
 .contact-card,
 .page-card {
-  padding: 18px;
+  padding: 16px;
 }
 
 .info-card {
@@ -410,9 +410,9 @@
 .info-card h3,
 .tutor-card h3,
 .step-item h3 {
-  margin: 10px 0 6px;
+  margin: 8px 0 6px;
   color: var(--brand);
-  font-size: 1rem;
+  font-size: 0.96rem;
 }
 
 .tutor-card {
@@ -454,7 +454,7 @@
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 14px;
-  padding: 14px;
+  padding: 12px;
   border-radius: 0;
   background: var(--soft-surface);
 }
@@ -463,8 +463,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 0;
   background: var(--brand-soft);
   color: #fbfbfb;
@@ -477,7 +477,7 @@
 }
 
 .mini-list > div {
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: 0;
   background: var(--soft-surface);
   justify-content: flex-start;
@@ -512,7 +512,7 @@
 }
 
 .page-card {
-  min-height: 260px;
+  min-height: 220px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
@@ -644,7 +644,7 @@
 
 .hero-visual {
   position: relative;
-  min-height: 560px;
+  min-height: 500px;
   overflow: hidden;
   isolation: isolate;
   background: #fbfbfb;
@@ -658,7 +658,7 @@
 }
 
 .hero-image {
-  width: min(100%, 760px);
+  width: min(100%, 640px);
   height: auto;
   display: block;
 }
@@ -735,52 +735,52 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: #fbfbfb;
 }
 
 .hero-floating-card-top {
-  top: 18%;
-  left: 10%;
+  top: 16%;
+  left: 6%;
 }
 
 .hero-floating-card-side {
-  top: 33%;
-  right: 6%;
+  top: 30%;
+  right: 3%;
 }
 
 .hero-floating-card-bottom {
-  right: 9%;
-  bottom: 10%;
-  max-width: 280px;
+  right: 5%;
+  bottom: 8%;
+  max-width: 250px;
 }
 
 .hero-floating-figure {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--brand);
 }
 
 .hero-floating-label {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.86rem;
 }
 
 .hero-floating-card-bottom strong {
   display: block;
   color: var(--brand);
-  font-size: 0.98rem;
+  font-size: 0.92rem;
 }
 
 .hero-floating-card-bottom span {
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
 }
 
 .icon-chip {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   border-radius: 0;
   display: grid;
   place-items: center;
@@ -795,7 +795,7 @@
   }
 
   .hero-visual {
-    min-height: 460px;
+    min-height: 420px;
     max-width: 680px;
     width: 100%;
     margin-inline: auto;
@@ -803,8 +803,25 @@
 }
 
 @media (max-width: 768px) {
+  .site-shell {
+    padding: 0 12px 14px;
+  }
+
+  .top-strip {
+    margin: 0 -12px;
+  }
+
+  .site-header {
+    width: calc(100% + 24px);
+    margin: 0 -12px;
+  }
+
+  .header-inner {
+    padding: 10px 12px;
+  }
+
   .hero-visual {
-    min-height: 420px;
+    min-height: 360px;
   }
 
   .hero-floating-card-top,
@@ -823,6 +840,7 @@
 
   .hero-copy h1 {
     max-width: 100%;
+    font-size: clamp(1.8rem, 10vw, 3rem);
   }
 }
 
@@ -846,22 +864,12 @@
 }
 
 @media (max-width: 768px) {
-  .site-shell {
-    padding: 0 8px 14px;
-  }
-
-  .top-strip {
-    margin: 0 -8px;
-  }
-
   .site-header {
-    width: calc(100% + 16px);
-    margin: 0 -8px;
     position: static;
   }
 
   .header-inner {
-    padding: 12px 14px;
+    padding: 10px 12px;
     flex-direction: column;
     align-items: stretch;
   }
