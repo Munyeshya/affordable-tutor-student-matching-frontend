@@ -76,61 +76,31 @@ function Layout() {
 }
 
 function HomePage() {
-  const featuredTutors = [
+  const trustMarks = ['Parents', 'Tutors', 'Schools', 'Universities', 'Clubs', 'Students']
+
+  const platformCards = [
     {
-      name: 'Aline M.',
-      lesson: 'Mathematics',
-      level: 'Upper Secondary',
-      rating: '4.9',
-      price: 'RWF 4,000 / hr',
+      title: 'Verified profiles',
+      description: 'Documents, agreements, and admin approval keep tutor profiles trusted.',
+      icon: 'shield',
     },
     {
-      name: 'Eric N.',
-      lesson: 'English',
-      level: 'Primary',
-      rating: '4.8',
-      price: 'RWF 3,500 / hr',
+      title: 'Smart discovery',
+      description: 'Search by name, lesson, topic, or level and compare in a few taps.',
+      icon: 'search',
     },
     {
-      name: 'Diane K.',
-      lesson: 'Computer Studies',
-      level: 'University',
-      rating: '5.0',
-      price: 'RWF 6,000 / hr',
+      title: 'Affordable matching',
+      description: 'Price-first discovery keeps tutoring accessible for more students.',
+      icon: 'star',
     },
   ]
 
-  const benefits = [
-    {
-      title: 'Search quickly',
-      description: 'Students can find tutors by name, lesson, topic, or level.',
-    },
-    {
-      title: 'Verified tutors',
-      description: 'Qualification documents and agreement uploads support trust.',
-    },
-    {
-      title: 'Lesson-level matching',
-      description: 'Tutors separate offers by subject, topic, and education level.',
-    },
-  ]
-
-  const steps = [
-    {
-      number: '01',
-      title: 'Search tutors',
-      text: 'Find by name, lesson, or topic from a focused, easy-to-scan directory.',
-    },
-    {
-      number: '02',
-      title: 'Review details',
-      text: 'Check lessons, ratings, documents, level, and affordability in one place.',
-    },
-    {
-      number: '03',
-      title: 'Request a lesson',
-      text: 'Send a simple request and continue inside the right role dashboard.',
-    },
+  const impactStats = [
+    { value: '2K+', label: 'Verified tutors' },
+    { value: '46+', label: 'Lessons covered' },
+    { value: '4.9', label: 'Average satisfaction' },
+    { value: '3 taps', label: 'To request a tutor' },
   ]
 
   return (
@@ -161,7 +131,7 @@ function HomePage() {
           <div className="hero-image-wrap">
             <img
               className="hero-image"
-              src="/hero-right.svg"
+              src="/aking-notes.svg"
               alt="Stylized tutor illustration for the Isomo homepage hero"
             />
           </div>
@@ -188,142 +158,73 @@ function HomePage() {
         </aside>
       </section>
 
-      <section className="content-section" id="about">
-        <div className="section-heading">
+      <section className="content-section trust-section card" id="about">
+        <div className="section-heading section-heading-center">
           <div>
-            <p className="eyebrow">Our service</p>
-            <h2>A trusted marketplace for learning.</h2>
+            <p className="eyebrow">Our clients</p>
+            <h2>Trusted by the people who make learning work.</h2>
           </div>
-          <p className="section-text">
-            Built for students, tutors, and admins with a clean hierarchy and predictable paths.
+          <p className="section-text section-text-center">
+            Isomo keeps tutoring clear, affordable, and easy to verify for every group involved.
           </p>
         </div>
 
-        <div className="benefits-grid">
-          {benefits.map((benefit) => (
-            <article className="info-card" key={benefit.title}>
+        <div className="trust-marks" aria-label="Trusted audiences">
+          {trustMarks.map((mark) => (
+            <span key={mark} className="trust-mark">
+              {mark}
+            </span>
+          ))}
+        </div>
+
+        <div className="feature-cards-grid">
+          {platformCards.map((card) => (
+            <article className="info-card feature-card" key={card.title}>
               <div className="icon-chip">
-                <ShellIcon
-                  name={
-                    benefit.title === 'Search quickly'
-                      ? 'search'
-                      : benefit.title === 'Verified tutors'
-                        ? 'shield'
-                        : 'users'
-                  }
-                />
+                <ShellIcon name={card.icon} />
               </div>
-              <h3>{benefit.title}</h3>
-              <p>{benefit.description}</p>
+              <h3>{card.title}</h3>
+              <p>{card.description}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="content-section" id="tutors">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Featured tutors</p>
-            <h2>Profiles that are easy to compare.</h2>
-          </div>
-          <Link to="/tutors" className="section-link">
-            View all <ShellIcon name="arrow" />
-          </Link>
+      <section className="content-section showcase-section card" id="tutors">
+        <div className="showcase-visual">
+          <img
+            className="showcase-image"
+            src="/aking-notes.svg"
+            alt="Illustration representing tutor matching and student support"
+          />
         </div>
 
-        <div className="cards-grid">
-          {featuredTutors.map((tutor) => (
-            <article className="tutor-card" key={tutor.name}>
-              <div className="tutor-card-top">
-                <div>
-                  <h3>{tutor.name}</h3>
-                  <p>{tutor.lesson}</p>
-                </div>
-                <span className="rating-pill">
-                  <ShellIcon name="star" />
-                  {tutor.rating}
-                </span>
-              </div>
-
-              <div className="chip-row">
-                <span className="soft-chip">{tutor.level}</span>
-                <span className="soft-chip">Verified</span>
-              </div>
-
-              <p className="tutor-price">{tutor.price}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="content-section split-layout" id="how-it-works">
-        <article className="panel card">
-          <p className="eyebrow">How it works</p>
-          <h2>Simple from first search to lesson request.</h2>
-
-          <div className="steps-list">
-            {steps.map((step) => (
-              <div className="step-item" key={step.number}>
-                <span className="step-number">{step.number}</span>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="panel card">
-          <p className="eyebrow">Tutor onboarding</p>
-          <h2>Professional, but not complicated.</h2>
+        <div className="showcase-copy">
+          <p className="eyebrow">Why Isomo</p>
+          <h2>Affordable tutor matching built around trust and speed.</h2>
           <p className="supporting-text">
-            Tutors upload documents, choose the lessons they teach, and remain limited until the
-            admin approves their account. The flow is kept inside the tutor dashboard so the signup
-            path stays easy.
+            Students can search by tutor name, lesson, topic, or level. Tutors can present their
+            lessons professionally, while admins keep quality high through document-backed
+            approval.
           </p>
 
-          <div className="mini-list">
-            <div>
-              <ShellIcon name="shield" />
-              <span>Upload qualification documents</span>
-            </div>
-            <div>
-              <ShellIcon name="book" />
-              <span>Set lessons and levels</span>
-            </div>
-            <div>
-              <ShellIcon name="users" />
-              <span>Gain visibility after approval</span>
-            </div>
+          <div className="impact-stats">
+            {impactStats.map((stat) => (
+              <article className="stat-card" key={stat.label}>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </article>
+            ))}
           </div>
 
           <div className="hero-actions">
-            <Link className="primary-button" to="/join">
-              Start application
+            <Link className="primary-button" to="/tutors">
+              Browse tutors
             </Link>
-            <Link className="secondary-button" to="/contact">
-              See requirements
+            <Link className="secondary-button" to="/join">
+              Start tutoring
             </Link>
           </div>
-        </article>
-      </section>
-
-      <section className="content-section contact-card card" id="contact">
-        <div>
-          <p className="eyebrow">Need help?</p>
-          <h2>Reach support, request tutoring, or continue as an admin.</h2>
-          <p className="supporting-text">
-            Everything stays accessible, responsive, and consistent on mobile and desktop.
-          </p>
-        </div>
-        <div className="hero-actions">
-          <Link className="primary-button" to="/contact">
-            Contact support
-          </Link>
-          <Link className="secondary-button" to="/about">
-            Read more
-          </Link>
         </div>
       </section>
     </>
