@@ -142,8 +142,8 @@ function HomePage() {
         <div className="showcase-visual">
           <img
             className="showcase-image"
-            src="/aking-notes.svg"
-            alt="Illustration representing tutor matching and student support"
+            src="/researcher.svg"
+            alt="Illustration of a researcher representing the Isomo platform"
           />
         </div>
 
