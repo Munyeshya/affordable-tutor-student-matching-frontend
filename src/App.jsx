@@ -39,7 +39,7 @@ function Layout() {
       <header className="site-header">
         <div className="header-inner">
           <Link to="/" className="brand-wrap" aria-label="Isomo home">
-            <img className="brand-logo brand-logo-wide" src="/logo-small-white.png" alt="Isomo" />
+            <img className="brand-logo brand-logo-wide" src="/logo-long-white.png" alt="Isomo" />
           </Link>
 
           <nav className="main-nav" aria-label="Primary">
@@ -256,4 +256,6 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
+
+
 
