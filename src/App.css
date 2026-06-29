@@ -79,8 +79,8 @@
   width: calc(100% + 36px);
   margin: 0 -18px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(251, 251, 251, 0.96);
-  backdrop-filter: blur(6px);
+  background: #fbfbfb;
+  backdrop-filter: none;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -1322,6 +1322,8 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
 
 
 
