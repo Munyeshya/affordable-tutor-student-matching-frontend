@@ -185,10 +185,7 @@
   padding: 24px;
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(217, 107, 0, 0.18) 0 6%, rgba(217, 107, 0, 0.1) 10%, rgba(251, 251, 251, 0.92) 16%, transparent 30%),
-    radial-gradient(circle at 50% 42%, rgba(17, 17, 17, 0.05) 0 2%, transparent 12%),
-    linear-gradient(135deg, #fffaf4 0%, #fbfbfb 52%, #fff6ea 100%);
+  background: var(--surface);
 }
 
 
@@ -1386,6 +1383,7 @@
     transition-duration: 0.01ms !important;
   }
 }
+
 
 
 
