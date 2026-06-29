@@ -166,19 +166,12 @@ function HomePage() {
         </div>
 
         <aside className="hero-visual" aria-label="Platform preview">
-          <div className="hero-orb hero-orb-back" />
-          <div className="hero-orb hero-orb-front" />
-          <div className="hero-dot-cluster hero-dot-top" />
-          <div className="hero-dot-cluster hero-dot-bottom" />
-
-          <div className="hero-figure">
-            <div className="hero-figure-face">
-              <span>IS</span>
-            </div>
-            <div className="hero-figure-card">
-              <strong>Verified tutor</strong>
-              <span>Mathematics - Upper Secondary</span>
-            </div>
+          <div className="hero-image-wrap">
+            <img
+              className="hero-image"
+              src="/hero-right.svg"
+              alt="Stylized tutor illustration for the Isomo homepage hero"
+            />
           </div>
 
           <div className="hero-floating-card hero-floating-card-top">

@@ -650,6 +650,19 @@
   background: #fbfbfb;
 }
 
+.hero-image-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.hero-image {
+  width: min(100%, 760px);
+  height: auto;
+  display: block;
+}
+
 .hero-orb {
   position: absolute;
   display: block;
@@ -786,18 +799,6 @@
     max-width: 680px;
     width: 100%;
     margin-inline: auto;
-  }
-
-  .hero-orb-back {
-    right: 24%;
-  }
-
-  .hero-orb-front {
-    right: 10%;
-  }
-
-  .hero-figure {
-    inset: 15% 10% 8% 16%;
   }
 }
 
