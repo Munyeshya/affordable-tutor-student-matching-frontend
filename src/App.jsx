@@ -76,6 +76,13 @@ function Layout() {
 }
 
 function HomePage() {
+  const platformMetrics = [
+    { value: '2K+', label: 'Verified tutors' },
+    { value: '46+', label: 'Lessons covered' },
+    { value: '4.9', label: 'Average satisfaction' },
+    { value: '3 taps', label: 'To request a tutor' },
+  ]
+
   const impactStats = [
     { value: '2K+', label: 'Verified tutors' },
     { value: '46+', label: 'Lessons covered' },
@@ -136,6 +143,26 @@ function HomePage() {
             </div>
           </div>
         </aside>
+      </section>
+
+      <section className="stats-band card" aria-label="Platform highlights">
+        <div className="stats-band-copy">
+          <p className="eyebrow">Helping learning stay affordable</p>
+          <h2>Connecting students with trusted tutors in one simple system.</h2>
+          <p className="supporting-text">
+            The platform keeps discovery fast, tutor verification clear, and lesson pricing easy
+            to compare.
+          </p>
+        </div>
+
+        <div className="stats-band-grid">
+          {platformMetrics.map((metric) => (
+            <article className="stats-band-item" key={metric.label}>
+              <strong>{metric.value}</strong>
+              <span>{metric.label}</span>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="content-section showcase-section card" id="about">
