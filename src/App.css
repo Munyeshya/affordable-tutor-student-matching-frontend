@@ -160,7 +160,7 @@
   margin: 0;
   color: var(--brand);
   font-size: clamp(1.35rem, 2.6vw, 1.95rem);
-  line-height: 1.15;
+  line-height: 1.10;
 }
 
 .supporting-text,
@@ -620,10 +620,18 @@
 }
 
 .hero-section {
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
-  gap: clamp(14px, 3vw, 28px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(18px, 4vw, 36px);
   align-items: center;
-  padding: clamp(16px, 3vw, 28px);
+  padding: clamp(16px, 2.5vw, 28px);
+}
+
+.hero-copy {
+  padding-inline-end: clamp(6px, 1.4vw, 18px);
+}
+
+.hero-visual {
+  padding-inline-start: clamp(6px, 1.4vw, 18px);
 }
 
 .hero-greeting {
