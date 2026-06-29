@@ -627,12 +627,12 @@
 }
 
 .hero-copy {
-  padding-inline-start: clamp(10px, 2vw, 24px);
+  padding-inline-start: clamp(18px, 3vw, 36px);
   padding-inline-end: clamp(6px, 1.4vw, 18px);
 }
 
 .hero-visual {
-  padding-inline-start: clamp(6px, 1.4vw, 18px);
+  padding-inline-start: clamp(12px, 2vw, 24px);
 }
 
 .hero-visual::before {
@@ -683,11 +683,11 @@
   inset: 0;
   display: grid;
   place-items: center;
-  transform: translate(-2.5%, -5%);
+  transform: translate(-4%, -6%);
 }
 
 .hero-image {
-  width: min(100%, 620px);
+  width: min(100%, 650px);
   height: auto;
   display: block;
 }
@@ -699,25 +699,25 @@
 }
 
 .hero-orb-back {
-  top: 6%;
-  right: 15%;
-  width: min(42vw, 320px);
-  height: min(42vw, 320px);
+  top: 4%;
+  right: 13%;
+  width: min(44vw, 340px);
+  height: min(44vw, 340px);
   background: #111111;
 }
 
 .hero-orb-front {
-  top: -2%;
-  right: 1%;
-  width: min(50vw, 370px);
-  height: min(50vw, 370px);
+  top: -4%;
+  right: 0%;
+  width: min(52vw, 390px);
+  height: min(52vw, 390px);
   background: var(--brand-soft);
   z-index: 1;
 }
 
 .hero-figure {
   position: absolute;
-  inset: 5% 3% 5% 8%;
+  inset: 4% 2% 4% 7%;
   display: grid;
   align-items: end;
   z-index: 2;
@@ -726,7 +726,7 @@
 .hero-figure-face {
   display: grid;
   place-items: center;
-  width: min(34vw, 240px);
+  width: min(36vw, 250px);
   aspect-ratio: 1 / 1;
   margin-inline: auto;
   background: #fbfbfb;
@@ -770,18 +770,18 @@
 }
 
 .hero-floating-card-top {
-  top: 7%;
-  left: 3%;
+  top: 10%;
+  left: 6%;
 }
 
 .hero-floating-card-side {
-  top: 17%;
-  right: 1%;
+  top: 18%;
+  right: 0%;
 }
 
 .hero-floating-card-bottom {
-  right: 2%;
-  bottom: 3%;
+  right: 1%;
+  bottom: 2%;
   max-width: 240px;
 }
 
