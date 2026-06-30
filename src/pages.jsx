@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { Page } from './App'
 
@@ -123,28 +123,22 @@ export function TutorsPage() {
         </div>
       </section>
 
-      <section className="cards-grid">
-        {tutorCards.map((tutor) => (
-          <article className="tutor-card" key={tutor.name}>
-            <div className="tutor-card-top">
-              <div>
-                <h3>{tutor.name}</h3>
-                <p>{tutor.lesson}</p>
-              </div>
-              <span className="soft-chip">{tutor.level}</span>
-            </div>
-            <p className="tutor-price">{tutor.price}</p>
-            <div className="hero-actions" style={{ marginTop: 0 }}>
-              <Link className="primary-button" to="/join">
-                Request tutor
-              </Link>
-              <Link className="secondary-button" to="/about">
-                View profile
-              </Link>
-            </div>
-          </article>
-        ))}
+            <section className="panel card">
+        <p className="eyebrow">Quick search</p>
+        <h2>Search by name, lesson, or topic.</h2>
+        <div className="steps-list">
+          <input type="text" placeholder="Tutor name" aria-label="Tutor name" />
+          <input type="text" placeholder="Lesson or topic" aria-label="Lesson or topic" />
+          <select aria-label="Level">
+            <option>Primary</option>
+            <option>Secondary lower level</option>
+            <option>Secondary upper level</option>
+            <option>University</option>
+          </select>
+        </div>
       </section>
+
+
     </>
   )
 }
@@ -226,14 +220,19 @@ export function ContactPage() {
         </article>
       </section>
 
-      <section className="split-layout">
+            <section className="split-layout">
         <article className="panel card">
           <p className="eyebrow">Send a message</p>
           <h2>Tell us what you need.</h2>
           <div className="steps-list">
             <input type="text" placeholder="Your name" aria-label="Your name" />
             <input type="email" placeholder="Email address" aria-label="Email address" />
-            <textarea rows="5" placeholder="Message" aria-label="Message" />
+            <select aria-label="Topic">
+              <option>Student help</option>
+              <option>Tutor approval</option>
+              <option>General support</option>
+            </select>
+            <textarea rows="4" placeholder="Message" aria-label="Message" />
             <button className="primary-button" type="button">
               Send message
             </button>
@@ -332,3 +331,4 @@ export function JoinPage() {
     </>
   )
 }
+
