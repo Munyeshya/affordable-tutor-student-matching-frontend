@@ -123,7 +123,7 @@ export function TutorsPage() {
         </div>
       </section>
 
-            <section className="panel card">
+      <section className="panel card">
         <p className="eyebrow">Quick search</p>
         <h2>Search by name, lesson, or topic.</h2>
         <div className="steps-list">
@@ -138,7 +138,47 @@ export function TutorsPage() {
         </div>
       </section>
 
+      <section className="trust-section card">
+        <div className="section-heading section-heading-center">
+          <div>
+            <p className="eyebrow">Results</p>
+            <h2>3 tutors found</h2>
+          </div>
+          <p className="section-text section-text-center">
+            Showing affordable tutors with verified profiles.
+          </p>
+        </div>
 
+        <div className="trust-marks">
+          <span className="trust-mark">Mathematics</span>
+          <span className="trust-mark">English</span>
+          <span className="trust-mark">Computer</span>
+          <span className="trust-mark">Verified</span>
+        </div>
+      </section>
+
+      <section className="cards-grid">
+        {tutorCards.map((tutor) => (
+          <article className="tutor-card" key={tutor.name}>
+            <div className="tutor-card-top">
+              <div>
+                <h3>{tutor.name}</h3>
+                <p>{tutor.lesson}</p>
+              </div>
+              <span className="soft-chip">{tutor.level}</span>
+            </div>
+            <p className="tutor-price">{tutor.price}</p>
+            <div className="hero-actions" style={{ marginTop: 0 }}>
+              <Link className="primary-button" to="/join">
+                Request tutor
+              </Link>
+              <Link className="secondary-button" to="/about">
+                View profile
+              </Link>
+            </div>
+          </article>
+        ))}
+      </section>
     </>
   )
 }
@@ -331,4 +371,5 @@ export function JoinPage() {
     </>
   )
 }
+
 
