@@ -7,18 +7,21 @@ const tutorCards = [
     lesson: 'Mathematics',
     level: 'Lower secondary',
     price: 'From $8 / lesson',
+    note: 'Focuses on exam preparation and confidence building.',
   },
   {
     name: 'Jean P.',
     lesson: 'English',
     level: 'Upper secondary',
     price: 'From $7 / lesson',
+    note: 'Helps with grammar, writing, and speaking practice.',
   },
   {
     name: 'Diane K.',
     lesson: 'Computer',
     level: 'University',
     price: 'From $10 / lesson',
+    note: 'Covers practical digital skills and coursework support.',
   },
 ]
 
@@ -54,6 +57,45 @@ const supportCards = [
     title: 'Admins',
     text: 'Approve tutors, review documents, and keep the marketplace trusted.',
   },
+]
+
+const tutorBenefits = [
+  'Document-backed approval',
+  'Lesson-specific profiles',
+  'Affordable comparison first',
+]
+
+const trustPoints = [
+  'All tutor profiles are reviewed before visibility.',
+  'Tutors can be rated on individual lessons they teach.',
+  'Students can search by name, lesson, topic, or level.',
+]
+
+const onboardingPoints = [
+  'Create a student or tutor account.',
+  'Upload documents and choose your lessons.',
+  'Wait for admin approval before going public.',
+  'Keep your profile updated as you add skills.',
+]
+
+const supportTopics = [
+  'Tutor account approval',
+  'Document upload support',
+  'Lesson and pricing updates',
+  'Student matching help',
+]
+
+const signInRoles = [
+  'Student dashboard access',
+  'Tutor profile and lesson management',
+  'Admin review and approval tools',
+]
+
+const joinChecklist = [
+  'Qualification documents',
+  'Signed agreement form',
+  'Lessons and levels taught',
+  'Profile photo and bio',
 ]
 
 export function AboutPage() {
@@ -117,6 +159,32 @@ export function AboutPage() {
           </article>
         ))}
       </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Why students trust Isomo</p>
+          <h2>Built around transparency from the first search.</h2>
+          <div className="mini-list">
+            {trustPoints.map((point) => (
+              <div key={point}>
+                <span>{point}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">What tutoring feels like here</p>
+          <h2>Professional, organized, and affordable.</h2>
+          <div className="mini-list">
+            {tutorBenefits.map((point) => (
+              <div key={point}>
+                <span>{point}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
     </>
   )
 }
@@ -161,6 +229,7 @@ export function TutorsPage() {
               </div>
               <span className="soft-chip">{tutor.level}</span>
             </div>
+            <p>{tutor.note}</p>
             <p className="tutor-price">{tutor.price}</p>
             <div className="hero-actions" style={{ marginTop: 0 }}>
               <Link className="primary-button" to="/join">
@@ -172,6 +241,40 @@ export function TutorsPage() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Popular filters</p>
+          <h2>Use the same search logic the platform was built for.</h2>
+          <div className="mini-list">
+            <div>
+              <span>Mathematics, English, Computer</span>
+            </div>
+            <div>
+              <span>Primary, secondary, university</span>
+            </div>
+            <div>
+              <span>Lesson-specific rates</span>
+            </div>
+          </div>
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Tutor profile expectations</p>
+          <h2>Profiles stay focused on what matters.</h2>
+          <div className="mini-list">
+            <div>
+              <span>Qualifications and approvals</span>
+            </div>
+            <div>
+              <span>Lessons taught and topics covered</span>
+            </div>
+            <div>
+              <span>Ratings per lesson</span>
+            </div>
+          </div>
+        </article>
       </section>
     </>
   )
@@ -223,6 +326,60 @@ export function HowItWorksPage() {
             </div>
             <div>
               <span>Get approved by admin</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section className="benefits-grid">
+        <article className="info-card card">
+          <p className="eyebrow">Step 1</p>
+          <h3>Search fast</h3>
+          <p>Start by typing a tutor name, subject, topic, or academic level.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">Step 2</p>
+          <h3>Verify quality</h3>
+          <p>Check documents, lesson focus, and tutor ratings before deciding.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">Step 3</p>
+          <h3>Learn confidently</h3>
+          <p>Meet the tutor, take the lesson, and leave a rating after the session.</p>
+        </article>
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Admin review</p>
+          <h2>Approval keeps the platform trusted.</h2>
+          <div className="mini-list">
+            <div>
+              <span>Confirm documents</span>
+            </div>
+            <div>
+              <span>Check lessons and levels</span>
+            </div>
+            <div>
+              <span>Publish only approved tutors</span>
+            </div>
+          </div>
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Tutor management</p>
+          <h2>Tutors can update their teaching focus later.</h2>
+          <div className="mini-list">
+            <div>
+              <span>Add new lessons</span>
+            </div>
+            <div>
+              <span>Change pricing by lesson</span>
+            </div>
+            <div>
+              <span>Track ratings per subject</span>
             </div>
           </div>
         </article>
@@ -281,19 +438,32 @@ export function ContactPage() {
           <p className="eyebrow">Help topics</p>
           <h2>Common reasons people contact us.</h2>
           <div className="mini-list">
-            <div>
-              <span>Tutor account approval</span>
-            </div>
-            <div>
-              <span>Document upload support</span>
-            </div>
-            <div>
-              <span>Lesson and pricing updates</span>
-            </div>
-            <div>
-              <span>Student matching help</span>
-            </div>
+            {supportTopics.map((topic) => (
+              <div key={topic}>
+                <span>{topic}</span>
+              </div>
+            ))}
           </div>
+        </article>
+      </section>
+
+      <section className="benefits-grid">
+        <article className="info-card card">
+          <p className="eyebrow">For students</p>
+          <h3>Help finding the right tutor</h3>
+          <p>Need help comparing tutors by lesson or level? We can guide you.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">For tutors</p>
+          <h3>Account and document support</h3>
+          <p>Need help with upload or approval? We can walk you through it.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">For admins</p>
+          <h3>Platform operations</h3>
+          <p>Need a workflow update or report issue? Contact the team directly.</p>
         </article>
       </section>
     </>
@@ -327,16 +497,32 @@ export function SignInPage() {
           <p className="eyebrow">Need access?</p>
           <h2>Students and tutors use the same clean entry point.</h2>
           <div className="mini-list">
-            <div>
-              <span>Student dashboard</span>
-            </div>
-            <div>
-              <span>Tutor dashboard</span>
-            </div>
-            <div>
-              <span>Admin review tools</span>
-            </div>
+            {signInRoles.map((role) => (
+              <div key={role}>
+                <span>{role}</span>
+              </div>
+            ))}
           </div>
+        </article>
+      </section>
+
+      <section className="benefits-grid">
+        <article className="info-card card">
+          <p className="eyebrow">Secure</p>
+          <h3>Keep accounts protected</h3>
+          <p>Use a strong password and sign in only from your own device.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">Fast</p>
+          <h3>Return in one step</h3>
+          <p>Once you sign in, your dashboard should take you straight to the next action.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">Simple</p>
+          <h3>No confusion, no clutter</h3>
+          <p>The same entry point works for the main user types on the platform.</p>
         </article>
       </section>
     </>
@@ -395,19 +581,32 @@ export function JoinPage() {
           <p className="eyebrow">Tutor checklist</p>
           <h2>What tutors should prepare.</h2>
           <div className="mini-list">
-            <div>
-              <span>Qualification documents</span>
-            </div>
-            <div>
-              <span>Signed agreement form</span>
-            </div>
-            <div>
-              <span>Lessons and levels taught</span>
-            </div>
-            <div>
-              <span>Profile photo and bio</span>
-            </div>
+            {joinChecklist.map((item) => (
+              <div key={item}>
+                <span>{item}</span>
+              </div>
+            ))}
           </div>
+        </article>
+      </section>
+
+      <section className="benefits-grid">
+        <article className="info-card card">
+          <p className="eyebrow">Before approval</p>
+          <h3>Keep your profile complete</h3>
+          <p>Write a clear bio, add your teaching levels, and prepare your documents.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">After approval</p>
+          <h3>Become visible to students</h3>
+          <p>Once admin approves your application, your tutor profile can be searched publicly.</p>
+        </article>
+
+        <article className="info-card card">
+          <p className="eyebrow">Next step</p>
+          <h3>Start managing lessons</h3>
+          <p>Use your account to update lessons, pricing, and availability over time.</p>
         </article>
       </section>
     </>

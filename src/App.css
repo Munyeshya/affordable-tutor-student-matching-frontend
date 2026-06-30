@@ -599,6 +599,33 @@
   padding: 16px;
 }
 
+.panel input,
+.panel select,
+.panel textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fbfbfb;
+  color: var(--brand);
+  padding: 0.82rem 0.92rem;
+  font: inherit;
+}
+
+.panel textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.panel input::placeholder,
+.panel textarea::placeholder {
+  color: var(--muted);
+}
+
+.panel input:focus-visible,
+.panel select:focus-visible,
+.panel textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgba(217, 107, 0, 0.2);
+}
+
 .feature-card {
   text-align: center;
 }
@@ -1418,6 +1445,7 @@
     transition-duration: 0.01ms !important;
   }
 }
+
 
 
 
