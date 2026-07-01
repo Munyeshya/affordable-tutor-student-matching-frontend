@@ -41,6 +41,22 @@ export function getTutorDocuments() {
   return apiClient.get(API_ENDPOINTS.tutors.documents)
 }
 
+export function uploadTutorDocument(payload) {
+  return apiClient.post(API_ENDPOINTS.tutors.documents, payload, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
+
+export function getTutorAgreementDetails() {
+  return apiClient.get(API_ENDPOINTS.tutors.agreement)
+}
+
+export function uploadTutorAgreement(payload) {
+  return apiClient.post(API_ENDPOINTS.tutors.agreement, payload, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
+
 export function getTutorLessons() {
   return apiClient.get(API_ENDPOINTS.tutors.lessons)
 }

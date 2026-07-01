@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getTutorDashboard, getTutorChecklist, listTutors } from './api/services/tutors.js'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { downloadTutorAgreement, getTutorAgreementDetails, getTutorDashboard, getTutorChecklist, getTutorDocuments, listTutors, uploadTutorAgreement, uploadTutorDocument } from './api/services/tutors.js'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import { Page } from './App'
@@ -480,12 +480,207 @@ export function TutorDashboardPage() {
               {latestCourses.map((course) => (
                 <div key={course.id}>
                   <span>{course.title}</span>
-                  <small>{course.subject__name} · {course.status}</small>
+                  <small>{course.subject__name} Ãƒâ€šÃ‚Â· {course.status}</small>
                 </div>
               ))}
             </div>
           )}
         </article>
+      </section>
+    </>
+  )
+}
+
+export function TutorDocumentsPage() {
+  const { user, isAuthenticated } = useAuth()
+  const queryClient = useQueryClient()
+  const [documentForm, setDocumentForm] = useState({ doc_type: 'ID', file: null })
+  const [agreementForm, setAgreementForm] = useState({ signed_name: '', signed_file: null, agreed_to_terms: false })
+  const [notice, setNotice] = useState('')
+
+  const documentsQuery = useQuery({
+    queryKey: ['tutor-documents'],
+    queryFn: async () => {
+      const response = await getTutorDocuments()
+      return response.data
+    },
+    enabled: isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  const agreementQuery = useQuery({
+    queryKey: ['tutor-agreement'],
+    queryFn: async () => {
+      const response = await getTutorAgreementDetails()
+      return response.data
+    },
+    enabled: isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  const documentMutation = useMutation({
+    mutationFn: async () => {
+      const formData = new FormData()
+      formData.append('doc_type', documentForm.doc_type)
+      formData.append('file', documentForm.file)
+      const response = await uploadTutorDocument(formData)
+      return response.data
+    },
+    onSuccess: async () => {
+      setNotice('Document uploaded successfully.')
+      setDocumentForm({ doc_type: 'ID', file: null })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-documents'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+  })
+
+  const agreementMutation = useMutation({
+    mutationFn: async () => {
+      const formData = new FormData()
+      formData.append('signed_name', agreementForm.signed_name)
+      formData.append('signed_file', agreementForm.signed_file)
+      formData.append('agreed_to_terms', agreementForm.agreed_to_terms ? 'true' : 'false')
+      const response = await uploadTutorAgreement(formData)
+      return response.data
+    },
+    onSuccess: async () => {
+      setNotice('Agreement uploaded successfully.')
+      setAgreementForm({ signed_name: '', signed_file: null, agreed_to_terms: false })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-agreement'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+  })
+
+  if (!isAuthenticated) {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Tutor documents</p>
+        <h1>Sign in to manage your verification documents.</h1>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/sign-in">Sign in</Link>
+          <Link className="secondary-button" to="/join">Create account</Link>
+        </div>
+      </section>
+    )
+  }
+
+  if (user?.role !== 'TUTOR') {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Tutor documents</p>
+        <h1>This area is only for tutors.</h1>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/tutors">Browse tutors</Link>
+          <Link className="secondary-button" to="/contact">Contact support</Link>
+        </div>
+      </section>
+    )
+  }
+
+  const documents = Array.isArray(documentsQuery.data) ? documentsQuery.data : []
+
+  return (
+    <>
+      <section className="page-card card">
+        <p className="eyebrow">Tutor verification</p>
+        <h1>Upload your documents and sign the agreement.</h1>
+        <p className="supporting-text">
+          Tutors stay hidden until ID, certificate, subject choices, and agreement requirements are complete.
+        </p>
+        <div className="hero-actions">
+          <button className="secondary-button" type="button" onClick={async () => {
+            try {
+              const response = await downloadTutorAgreement()
+              const blob = new Blob([response.data], { type: 'text/plain;charset=utf-8' })
+              const url = window.URL.createObjectURL(blob)
+              const anchor = document.createElement('a')
+              anchor.href = url
+              anchor.download = 'tutor-agreement-template.txt'
+              anchor.click()
+              window.URL.revokeObjectURL(url)
+            } catch {
+              setNotice('Could not download the agreement template.')
+            }
+          }}>
+            Download agreement
+          </button>
+          <Link className="primary-button" to="/tutor-dashboard">Back to dashboard</Link>
+        </div>
+        <div className="trust-marks" style={{ marginTop: '1rem' }}>
+          <span className="trust-mark">Documents: {documentsQuery.isLoading ? 'Loading' : documents.length}</span>
+          <span className="trust-mark">Agreement: {agreementQuery.isLoading ? 'Loading' : agreementQuery.data?.status || 'Pending'}</span>
+          <span className="trust-mark">Signed: {agreementQuery.data?.signed_file ? 'Yes' : 'No'}</span>
+        </div>
+        {notice ? <p className="supporting-text">{notice}</p> : null}
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Upload document</p>
+          <h2>Submit your ID or certificate.</h2>
+          <p className="supporting-text">
+            Accepted files include national ID and qualification certificates.
+          </p>
+          <form className="steps-list" onSubmit={(event) => {
+            event.preventDefault()
+            if (!documentForm.file) {
+              setNotice('Please choose a file first.')
+              return
+            }
+            documentMutation.mutate()
+          }}>
+            <select value={documentForm.doc_type} onChange={(event) => setDocumentForm((current) => ({ ...current, doc_type: event.target.value }))}>
+              <option value="ID">National ID</option>
+              <option value="CERTIFICATE">Certificate</option>
+              <option value="OTHER">Other</option>
+            </select>
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => setDocumentForm((current) => ({ ...current, file: event.target.files?.[0] || null }))} />
+            <button className="primary-button" type="submit" disabled={documentMutation.isPending}>Upload document</button>
+          </form>
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Sign agreement</p>
+          <h2>Upload the signed agreement form.</h2>
+          <p className="supporting-text">
+            Download the agreement, sign it, and upload the signed copy back here.
+          </p>
+          <form className="steps-list" onSubmit={(event) => {
+            event.preventDefault()
+            if (!agreementForm.signed_file || !agreementForm.agreed_to_terms) {
+              setNotice('Please sign the agreement and confirm the terms.')
+              return
+            }
+            agreementMutation.mutate()
+          }}>
+            <input type="text" placeholder="Signed name" aria-label="Signed name" value={agreementForm.signed_name} onChange={(event) => setAgreementForm((current) => ({ ...current, signed_name: event.target.value }))} />
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => setAgreementForm((current) => ({ ...current, signed_file: event.target.files?.[0] || null }))} />
+            <label className="check-row">
+              <input type="checkbox" checked={agreementForm.agreed_to_terms} onChange={(event) => setAgreementForm((current) => ({ ...current, agreed_to_terms: event.target.checked }))} />
+              <span>I agree to the platform terms and integrity requirements.</span>
+            </label>
+            <button className="primary-button" type="submit" disabled={agreementMutation.isPending}>Upload agreement</button>
+          </form>
+        </article>
+      </section>
+
+      <section className="panel card">
+        <p className="eyebrow">Uploaded documents</p>
+        <h2>Recent verification files.</h2>
+        {documentsQuery.isLoading ? (
+          <p className="supporting-text">Loading documents...</p>
+        ) : documents.length === 0 ? (
+          <p className="supporting-text">No documents uploaded yet.</p>
+        ) : (
+          <div className="mini-list">
+            {documents.map((document) => (
+              <div key={document.id}>
+                <span>{document.doc_type_display || document.doc_type}</span>
+                <small>{document.created_at}</small>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </>
   )
