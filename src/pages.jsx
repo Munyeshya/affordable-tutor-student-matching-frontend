@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { listTutors } from './api/services/tutors.js'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import { Page } from './App'
@@ -35,6 +37,41 @@ const signInRoles = [
   'Tutor profile and lesson management',
   'Admin review and approval tools',
 ]
+
+const levelOptions = [
+  { value: '', label: 'Any level' },
+  { value: 'PRIMARY', label: 'Primary' },
+  { value: 'SECONDARY_LOWER', label: 'Secondary lower level' },
+  { value: 'SECONDARY_UPPER', label: 'Secondary upper level' },
+  { value: 'UNIVERSITY', label: 'University' },
+]
+
+function formatTutorRate(rate, currency = 'RWF') {
+  if (rate === null || rate === undefined || rate === '') {
+    return 'Price on request'
+  }
+
+  const numericRate = Number(rate)
+  if (Number.isNaN(numericRate)) {
+    return 'Price on request'
+  }
+
+  return `${currency} ${new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: numericRate % 1 === 0 ? 0 : 2,
+  }).format(numericRate)} / lesson`
+}
+
+function normalizeTutorListResponse(responseData) {
+  if (Array.isArray(responseData)) {
+    return responseData
+  }
+
+  if (responseData && Array.isArray(responseData.results)) {
+    return responseData.results
+  }
+
+  return []
+}
 
 function CompactCard({ title, text }) {
   return (
@@ -96,6 +133,41 @@ export function AboutPage() {
 }
 
 export function TutorsPage() {
+  const [filters, setFilters] = useState({
+    q: '',
+    lesson: '',
+    topic: '',
+    level: '',
+  })
+
+  const tutorsQuery = useQuery({
+    queryKey: ['tutors', filters],
+    queryFn: async () => {
+      const params = {}
+
+      if (filters.q.trim()) {
+        params.q = filters.q.trim()
+      }
+
+      if (filters.lesson.trim()) {
+        params.lesson = filters.lesson.trim()
+      }
+
+      if (filters.topic.trim()) {
+        params.topic = filters.topic.trim()
+      }
+
+      if (filters.level) {
+        params.level = filters.level
+      }
+
+      const response = await listTutors(params)
+      return normalizeTutorListResponse(response.data)
+    },
+  })
+
+  const tutors = tutorsQuery.data ?? []
+
   return (
     <>
       <Page
@@ -127,23 +199,60 @@ export function TutorsPage() {
       <section className="panel card">
         <p className="eyebrow">Quick search</p>
         <h2>Search by name, lesson, or topic.</h2>
-        <div className="steps-list">
-          <input type="text" placeholder="Tutor name" aria-label="Tutor name" />
-          <input type="text" placeholder="Lesson or topic" aria-label="Lesson or topic" />
-          <select aria-label="Level">
-            <option>Primary</option>
-            <option>Secondary lower level</option>
-            <option>Secondary upper level</option>
-            <option>University</option>
+        <form
+          className="steps-list"
+          onSubmit={(event) => {
+            event.preventDefault()
+            tutorsQuery.refetch()
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Tutor name"
+            aria-label="Tutor name"
+            value={filters.q}
+            onChange={(event) => setFilters((current) => ({ ...current, q: event.target.value }))}
+          />
+          <input
+            type="text"
+            placeholder="Lesson"
+            aria-label="Lesson"
+            value={filters.lesson}
+            onChange={(event) => setFilters((current) => ({ ...current, lesson: event.target.value }))}
+          />
+          <input
+            type="text"
+            placeholder="Topic"
+            aria-label="Topic"
+            value={filters.topic}
+            onChange={(event) => setFilters((current) => ({ ...current, topic: event.target.value }))}
+          />
+          <select
+            aria-label="Level"
+            value={filters.level}
+            onChange={(event) => setFilters((current) => ({ ...current, level: event.target.value }))}
+          >
+            {levelOptions.map((option) => (
+              <option key={option.value || 'any'} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
-        </div>
+          <button className="primary-button" type="submit">
+            Search
+          </button>
+        </form>
       </section>
 
       <section className="trust-section card">
         <div className="section-heading section-heading-center">
           <div>
             <p className="eyebrow">Results</p>
-            <h2>3 tutors found</h2>
+            <h2>
+              {tutorsQuery.isLoading
+                ? 'Loading tutors...'
+                : `${tutors.length} tutor${tutors.length === 1 ? '' : 's'} found`}
+            </h2>
           </div>
           <p className="section-text section-text-center">
             Showing affordable tutors with verified profiles.
@@ -159,26 +268,57 @@ export function TutorsPage() {
       </section>
 
       <section className="cards-grid">
-        {tutorCards.map((tutor) => (
-          <article className="tutor-card" key={tutor.name}>
-            <div className="tutor-card-top">
-              <div>
-                <h3>{tutor.name}</h3>
-                <p>{tutor.lesson}</p>
-              </div>
-              <span className="soft-chip">{tutor.level}</span>
-            </div>
-            <p className="tutor-price">{tutor.price}</p>
-            <div className="hero-actions" style={{ marginTop: 0 }}>
-              <Link className="primary-button" to="/join">
-                Request tutor
-              </Link>
-              <Link className="secondary-button" to="/about">
-                View profile
-              </Link>
-            </div>
+        {tutorsQuery.isLoading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <article className="tutor-card tutor-card-skeleton" key={index} aria-busy="true">
+              <div className="skeleton skeleton-line skeleton-title" />
+              <div className="skeleton skeleton-line" />
+              <div className="skeleton skeleton-line" />
+              <div className="skeleton skeleton-line skeleton-button" />
+            </article>
+          ))
+        ) : tutorsQuery.isError ? (
+          <article className="panel card">
+            <p className="supporting-text">We could not load tutors right now. Please try again.</p>
           </article>
-        ))}
+        ) : tutors.length === 0 ? (
+          <article className="panel card">
+            <p className="supporting-text">No tutors match your search yet. Try a different lesson or topic.</p>
+          </article>
+        ) : (
+          tutors.map((tutor) => {
+            const levels = Array.isArray(tutor.subject_levels) ? tutor.subject_levels : []
+            const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : []
+
+            return (
+              <article className="tutor-card" key={tutor.id}>
+                <div className="tutor-card-top">
+                  <div>
+                    <h3>{tutor.full_name}</h3>
+                    <p>{tutor.headline || subjects[0] || 'Tutor profile'}</p>
+                  </div>
+                  <span className="soft-chip">{tutor.location || 'Online'}</span>
+                </div>
+                <p className="tutor-price">{formatTutorRate(tutor.hourly_rate, tutor.currency)}</p>
+                <div className="trust-marks" style={{ marginBottom: '1rem' }}>
+                  {levels.slice(0, 3).map((levelItem) => (
+                    <span className="trust-mark" key={`${tutor.id}-${levelItem.subject}-${levelItem.level}`}>
+                      {levelItem.subject} - {levelItem.level}
+                    </span>
+                  ))}
+                </div>
+                <div className="hero-actions" style={{ marginTop: 0 }}>
+                  <Link className="primary-button" to="/join">
+                    Request tutor
+                  </Link>
+                  <Link className="secondary-button" to="/contact">
+                    Ask question
+                  </Link>
+                </div>
+              </article>
+            )
+          })
+        )}
       </section>
     </>
   )
