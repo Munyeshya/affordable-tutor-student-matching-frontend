@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { downloadTutorAgreement, getTutorAgreementDetails, getTutorDashboard, getTutorChecklist, getTutorDocuments, listTutors, uploadTutorAgreement, uploadTutorDocument } from './api/services/tutors.js'
+import { createBooking } from './api/services/bookings.js'
 import { createCourse, createLesson, createTutorSubject, deleteTutorSubject, listLessons, listMyCourses, listSubjects, listTutorSubjects, submitCourseForReview } from './api/services/catalog.js'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import { Page } from './App'
 
@@ -309,7 +310,7 @@ export function TutorsPage() {
                   ))}
                 </div>
                 <div className="hero-actions" style={{ marginTop: 0 }}>
-                  <Link className="primary-button" to="/join">
+                  <Link className="primary-button" to={`/book?tutor=${tutor.id}`}>
                     Request tutor
                   </Link>
                   <Link className="secondary-button" to="/contact">
@@ -481,7 +482,7 @@ export function TutorDashboardPage() {
               {latestCourses.map((course) => (
                 <div key={course.id}>
                   <span>{course.title}</span>
-                  <small>{course.subject__name} ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· {course.status}</small>
+                  <small>{course.subject__name} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· {course.status}</small>
                 </div>
               ))}
             </div>
@@ -886,7 +887,7 @@ export function TutorTeachingPage() {
               {courses.map((course) => (
                 <div key={course.id}>
                   <span>{course.title}</span>
-                  <small>{course.subject_name} Â· {course.status}</small>
+                  <small>{course.subject_name} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· {course.status}</small>
                   <div className="hero-actions" style={{ marginTop: '0.75rem' }}>
                     <button className="secondary-button" type="button" onClick={() => setSelectedCourseId(String(course.id))}>Manage lessons</button>
                     <button className="primary-button" type="button" onClick={() => submitCourseMutation.mutate(course.id)} disabled={submitCourseMutation.isPending || course.status === 'PUBLISHED' || course.status === 'PENDING_REVIEW'}>
@@ -927,13 +928,144 @@ export function TutorTeachingPage() {
                 ) : lessons.map((lesson) => (
                   <div key={lesson.id}>
                     <span>{lesson.order_number}. {lesson.title}</span>
-                    <small>{lesson.topic || 'No topic'} Â· {lesson.is_preview ? 'Preview' : 'Private'}</small>
+                    <small>{lesson.topic || 'No topic'} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· {lesson.is_preview ? 'Preview' : 'Private'}</small>
                   </div>
                 ))}
               </div>
             </>
           ) : (
             <p className="supporting-text">Choose a course from the list to start adding lessons.</p>
+          )}
+        </article>
+      </section>
+    </>
+  )
+}
+
+export function BookingRequestPage() {
+  const { user, isAuthenticated } = useAuth()
+  const [searchParams] = useSearchParams()
+  const queryClient = useQueryClient()
+  const [form, setForm] = useState({
+    tutor_id: searchParams.get('tutor') || '',
+    subject_id: '',
+    start_datetime: '',
+    end_datetime: '',
+    mode: 'ONLINE',
+    notes: '',
+  })
+  const [notice, setNotice] = useState('')
+
+  const tutorsQuery = useQuery({
+    queryKey: ['booking-tutors'],
+    queryFn: async () => (await listTutors()).data,
+    enabled: true,
+  })
+
+  const subjectsQuery = useQuery({
+    queryKey: ['booking-subjects'],
+    queryFn: async () => (await listSubjects()).data,
+    enabled: isAuthenticated,
+  })
+
+  const bookingMutation = useMutation({
+    mutationFn: async () => (await createBooking({
+      tutor_id: Number(form.tutor_id),
+      subject_id: Number(form.subject_id),
+      start_datetime: form.start_datetime,
+      end_datetime: form.end_datetime,
+      mode: form.mode,
+      notes: form.notes,
+    })).data,
+    onSuccess: async () => {
+      setNotice('Booking request submitted successfully.')
+      setForm((current) => ({ ...current, subject_id: '', start_datetime: '', end_datetime: '', notes: '' }))
+      await queryClient.invalidateQueries({ queryKey: ['booking-list'] })
+    },
+  })
+
+  const tutors = normalizeTutorListResponse(tutorsQuery.data)
+  const selectedTutor = tutors.find((tutor) => String(tutor.id) === String(form.tutor_id)) || null
+  const subjects = Array.isArray(subjectsQuery.data) ? subjectsQuery.data : []
+
+  if (!isAuthenticated) {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Request tutor</p>
+        <h1>Sign in to request a booking.</h1>
+        <p className="supporting-text">Students and parents can create bookings after authentication.</p>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/sign-in">Sign in</Link>
+          <Link className="secondary-button" to="/join">Create account</Link>
+        </div>
+      </section>
+    )
+  }
+
+  if (user?.role === 'TUTOR' || user?.role === 'ADMIN') {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Request tutor</p>
+        <h1>Booking requests are for students and parents.</h1>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/tutors">Browse tutors</Link>
+          <Link className="secondary-button" to="/contact">Contact support</Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <>
+      <section className="page-card card">
+        <p className="eyebrow">Request tutor</p>
+        <h1>Send a booking request in a few steps.</h1>
+        <p className="supporting-text">Choose the tutor, the subject, and the time you need.</p>
+        {notice ? <p className="supporting-text">{notice}</p> : null}
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Booking form</p>
+          <h2>Create a request.</h2>
+          <form className="steps-list" onSubmit={(event) => {
+            event.preventDefault()
+            bookingMutation.mutate()
+          }}>
+            <select value={form.tutor_id} onChange={(event) => setForm((current) => ({ ...current, tutor_id: event.target.value }))}>
+              <option value="">Choose tutor</option>
+              {tutors.map((tutor) => (
+                <option key={tutor.id} value={tutor.id}>{tutor.full_name}</option>
+              ))}
+            </select>
+            <select value={form.subject_id} onChange={(event) => setForm((current) => ({ ...current, subject_id: event.target.value }))}>
+              <option value="">Choose subject</option>
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>{subject.name}</option>
+              ))}
+            </select>
+            <select value={form.mode} onChange={(event) => setForm((current) => ({ ...current, mode: event.target.value }))}>
+              <option value="ONLINE">Online</option>
+              <option value="IN_PERSON">In person</option>
+            </select>
+            <input type="datetime-local" value={form.start_datetime} onChange={(event) => setForm((current) => ({ ...current, start_datetime: event.target.value }))} />
+            <input type="datetime-local" value={form.end_datetime} onChange={(event) => setForm((current) => ({ ...current, end_datetime: event.target.value }))} />
+            <textarea rows="4" placeholder="Notes" value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} />
+            <button className="primary-button" type="submit" disabled={bookingMutation.isPending}>Submit request</button>
+          </form>
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Selected tutor</p>
+          <h2>{selectedTutor ? selectedTutor.full_name : 'Choose a tutor to continue'}</h2>
+          {selectedTutor ? (
+            <div className="mini-list">
+              <div><span>{selectedTutor.headline || 'Tutor profile'}</span></div>
+              <div><span>{selectedTutor.location || 'Online'}</span></div>
+              <div><span>{formatTutorRate(selectedTutor.hourly_rate, selectedTutor.currency)}</span></div>
+            </div>
+          ) : (
+            <p className="supporting-text">The tutor card search page can pass a tutor automatically.</p>
           )}
         </article>
       </section>

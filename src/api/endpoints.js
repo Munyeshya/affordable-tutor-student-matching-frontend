@@ -25,6 +25,13 @@ export const API_ENDPOINTS = {
     detail: (id) => `/students/${id}/`,
     bookings: '/students/bookings/',
   },
+  bookings: {
+    list: '/bookings/',
+    create: '/bookings/create/',
+    action: (id) => `/bookings/${id}/action/`,
+    disputes: '/bookings/disputes/',
+    disputeCreate: '/bookings/disputes/create/',
+  },
   catalog: {
     subjects: '/catalog/subjects/',
     tutorSubjects: '/catalog/tutor-subjects/',
