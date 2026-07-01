@@ -1,5 +1,6 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from './context/AuthContext.jsx'
 import { Page } from './App'
 
 const tutorCards = [
@@ -226,6 +227,12 @@ export function HowItWorksPage() {
           />
         </article>
       </section>
+
+      <section className="benefits-grid">
+        <CompactCard title="FAQ" text="Approval usually follows document review. Ratings are lesson-specific. Search works by name, lesson, topic, and level." />
+        <CompactCard title="FAQ" text="After booking, the tutor and student continue inside their accounts. Tutors submit ID, certificates, agreement form, and lesson list." />
+        <CompactCard title="FAQ" text="Admin reviews documents and lesson coverage before tutors become visible." />
+      </section>
     </>
   )
 }
@@ -260,7 +267,7 @@ export function ContactPage() {
         </article>
       </section>
 
-            <section className="split-layout">
+      <section className="split-layout">
         <article className="panel card">
           <p className="eyebrow">Send a message</p>
           <h2>Tell us what you need.</h2>
@@ -296,6 +303,26 @@ export function ContactPage() {
 }
 
 export function SignInPage() {
+  const { signIn, submitting, error, setError, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [email, setEmail] = useState(location.state?.registeredEmail || '')
+  const [password, setPassword] = useState('')
+  const [localMessage, setLocalMessage] = useState('')
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setLocalMessage('')
+    setError('')
+
+    try {
+      await signIn({ email, password })
+      navigate('/')
+    } catch {
+      // context already sets the error message
+    }
+  }
+
   return (
     <>
       <Page
@@ -309,19 +336,33 @@ export function SignInPage() {
         <article className="panel card">
           <p className="eyebrow">Welcome back</p>
           <h2>Sign in to manage your activity.</h2>
-          <div className="steps-list">
-            <input type="email" placeholder="Email address" aria-label="Email address" />
-            <input type="password" placeholder="Password" aria-label="Password" />
-            <button className="primary-button" type="button">
-              Sign in
+          <form className="steps-list" onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Email address"
+              aria-label="Email address"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              aria-label="Password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            {error ? <p className="supporting-text">{error}</p> : null}
+            <button className="primary-button" type="submit" disabled={submitting}>
+              {submitting ? 'Signing in...' : 'Sign in'}
             </button>
-          </div>
+          </form>
         </article>
 
         <article className="panel card">
           <p className="eyebrow">Access</p>
           <h2>One entry point for the main user types.</h2>
           <MinimalList items={signInRoles} />
+          {isAuthenticated ? <p className="supporting-text">You are already signed in.</p> : null}
         </article>
       </section>
     </>
@@ -329,6 +370,34 @@ export function SignInPage() {
 }
 
 export function JoinPage() {
+  const { signUp, submitting, error, setError } = useAuth()
+  const navigate = useNavigate()
+  const [form, setForm] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    role: 'STUDENT',
+  })
+  const [successMessage, setSuccessMessage] = useState('')
+
+  function updateField(name, value) {
+    setForm((current) => ({ ...current, [name]: value }))
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setSuccessMessage('')
+    setError('')
+
+    try {
+      await signUp(form)
+      setSuccessMessage('Account created. Please sign in to continue.')
+      navigate('/sign-in', { state: { registeredEmail: form.email } })
+    } catch {
+      // context already sets the error message
+    }
+  }
+
   return (
     <>
       <Page
@@ -348,18 +417,43 @@ export function JoinPage() {
         <article className="panel card">
           <p className="eyebrow">Create account</p>
           <h2>Choose the role that fits you.</h2>
-          <div className="steps-list">
-            <input type="text" placeholder="Full name" aria-label="Full name" />
-            <select aria-label="Account type">
-              <option>Student</option>
-              <option>Tutor</option>
+          <form className="steps-list" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Full name"
+              aria-label="Full name"
+              value={form.full_name}
+              onChange={(event) => updateField('full_name', event.target.value)}
+            />
+            <select
+              aria-label="Account type"
+              value={form.role}
+              onChange={(event) => updateField('role', event.target.value)}
+            >
+              <option value="STUDENT">Student</option>
+              <option value="TUTOR">Tutor</option>
+              <option value="PARENT">Parent</option>
             </select>
-            <input type="email" placeholder="Email address" aria-label="Email address" />
-            <input type="password" placeholder="Password" aria-label="Password" />
-            <button className="primary-button" type="button">
-              Create account
+            <input
+              type="email"
+              placeholder="Email address"
+              aria-label="Email address"
+              value={form.email}
+              onChange={(event) => updateField('email', event.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              aria-label="Password"
+              value={form.password}
+              onChange={(event) => updateField('password', event.target.value)}
+            />
+            {error ? <p className="supporting-text">{error}</p> : null}
+            {successMessage ? <p className="supporting-text">{successMessage}</p> : null}
+            <button className="primary-button" type="submit" disabled={submitting}>
+              {submitting ? 'Creating account...' : 'Create account'}
             </button>
-          </div>
+          </form>
         </article>
 
         <article className="panel card">
@@ -371,5 +465,4 @@ export function JoinPage() {
     </>
   )
 }
-
 

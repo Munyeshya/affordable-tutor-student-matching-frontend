@@ -1,6 +1,7 @@
-import React from 'react'
+﻿import React from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import './App.css'
+import { useAuth } from './context/AuthContext.jsx'
 
 function ShellIcon({ name }) {
   const paths = {
@@ -25,6 +26,8 @@ function ShellIcon({ name }) {
 }
 
 function Layout() {
+  const { user, isAuthenticated, loading, signOut } = useAuth()
+
   return (
     <div className="site-shell">
       <div className="top-strip">
@@ -53,12 +56,24 @@ function Layout() {
           </nav>
 
           <div className="header-actions">
-            <Link className="link-button" to="/sign-in">
-              Sign in
-            </Link>
-            <Link className="primary-button" to="/join">
-              Join now
-            </Link>
+            {loading ? <span className="top-strip-text">Loading...</span> : null}
+            {isAuthenticated ? (
+              <>
+                <span className="top-strip-text">{user?.email}</span>
+                <button className="link-button" type="button" onClick={signOut}>
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link className="link-button" to="/sign-in">
+                  Sign in
+                </Link>
+                <Link className="primary-button" to="/join">
+                  Join now
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -71,7 +86,7 @@ function Layout() {
         <div className="footer-brand">
           <img className="footer-logo" src="/logo-small-white.png" alt="Isomo" />
           <p>Affordable learning, built for trust.</p>
-          <p>Copyright © 2026 Isomo. All rights reserved.</p>
+          <p>Copyright Â© 2026 Isomo. All rights reserved.</p>
         </div>
 
         <div className="footer-links">
@@ -256,6 +271,3 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
-
-
-
