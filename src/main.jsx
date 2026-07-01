@@ -21,6 +21,7 @@ import {
   AdminDisputesPage,
   ReportsPage,
 } from './pages.jsx'
+import { AccountPage } from './pages/AccountPage.jsx'
 import { queryClient } from './lib/queryClient'
 import { AuthProvider } from './context/AuthContext.jsx'
 
@@ -44,6 +45,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/admin/disputes" element={<AdminDisputesPage />} />
               <Route path="/admin/tutor-reviews" element={<AdminTutorReviewsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/account" element={<AccountPage />} />
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/join" element={<JoinPage />} />
             </Route>

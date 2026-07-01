@@ -17,6 +17,11 @@ export function getCurrentUser() {
   return apiClient.get(API_ENDPOINTS.auth.me)
 }
 
+export function updateCurrentUser(data) {
+  return apiClient.patch(API_ENDPOINTS.auth.me, data)
+}
+
 export function refreshToken(refresh) {
   return apiClient.post(API_ENDPOINTS.auth.refresh, { refresh })
 }
+

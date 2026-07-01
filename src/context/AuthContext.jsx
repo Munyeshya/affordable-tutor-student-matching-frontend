@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { clearAuthSession, getStoredRefreshToken, hasStoredAccessToken, setAuthSession } from '../api/client'
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from '../api/services/auth'
 
@@ -53,6 +53,23 @@ export function AuthProvider({ children }) {
       ignore = true
     }
   }, [])
+
+  async function refreshUser() {
+    if (!hasStoredAccessToken()) {
+      setUser(null)
+      return null
+    }
+
+    try {
+      const response = await getCurrentUser()
+      setUser(response.data)
+      return response.data
+    } catch {
+      clearAuthSession()
+      setUser(null)
+      return null
+    }
+  }
 
   async function signIn(credentials) {
     setSubmitting(true)
@@ -113,6 +130,7 @@ export function AuthProvider({ children }) {
       signIn,
       signUp,
       signOut,
+      refreshUser,
       setError,
       isAuthenticated: Boolean(user),
     }),
@@ -131,3 +149,4 @@ export function useAuth() {
 
   return context
 }
+
