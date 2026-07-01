@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -12,6 +12,7 @@ import {
   JoinPage,
   SignInPage,
   TutorsPage,
+  TutorDashboardPage,
 } from './pages.jsx'
 import { queryClient } from './lib/queryClient'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/tutors" element={<TutorsPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/join" element={<JoinPage />} />
             </Route>

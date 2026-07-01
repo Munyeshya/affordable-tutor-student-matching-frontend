@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { listTutors } from './api/services/tutors.js'
+import { getTutorDashboard, getTutorChecklist, listTutors } from './api/services/tutors.js'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import { Page } from './App'
@@ -319,6 +319,173 @@ export function TutorsPage() {
             )
           })
         )}
+      </section>
+    </>
+  )
+}
+
+export function TutorDashboardPage() {
+  const { user, isAuthenticated } = useAuth()
+
+  const dashboardQuery = useQuery({
+    queryKey: ['tutor-dashboard'],
+    queryFn: async () => {
+      const response = await getTutorDashboard()
+      return response.data
+    },
+    enabled: isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  const checklistQuery = useQuery({
+    queryKey: ['tutor-checklist'],
+    queryFn: async () => {
+      const response = await getTutorChecklist()
+      return response.data
+    },
+    enabled: isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  if (!isAuthenticated) {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Tutor dashboard</p>
+        <h1>Sign in to access your tutor account.</h1>
+        <p className="supporting-text">
+          This area is protected and available after tutor authentication.
+        </p>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/sign-in">
+            Sign in
+          </Link>
+          <Link className="secondary-button" to="/join">
+            Create account
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  if (user?.role !== 'TUTOR') {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Tutor dashboard</p>
+        <h1>This area is for tutors only.</h1>
+        <p className="supporting-text">
+          Students and parents can use the public pages, while tutor tools stay restricted.
+        </p>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/tutors">
+            Browse tutors
+          </Link>
+          <Link className="secondary-button" to="/contact">
+            Contact support
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  const dashboard = dashboardQuery.data
+  const checklist = checklistQuery.data
+  const steps = Array.isArray(checklist?.steps) ? checklist.steps : []
+  const missingSteps = Array.isArray(checklist?.missing_steps) ? checklist.missing_steps : []
+  const latestCourses = Array.isArray(dashboard?.latest_courses) ? dashboard.latest_courses : []
+  const courseStats = dashboard?.course_stats || {}
+  const lessonStats = dashboard?.lesson_stats || {}
+
+  return (
+    <>
+      <section className="page-card card">
+        <p className="eyebrow">Tutor dashboard</p>
+        <h1>Your account setup and course workspace.</h1>
+        <p className="supporting-text">
+          Keep your tutor profile, subjects, documents, agreement, and courses organized in one place.
+        </p>
+      </section>
+
+      <section className="stats-band card" aria-label="Tutor account status">
+        <div className="stats-band-copy">
+          <p className="eyebrow">Setup status</p>
+          <h2>
+            {dashboardQuery.isLoading || checklistQuery.isLoading
+              ? 'Loading tutor dashboard...'
+              : `${dashboard?.completion_percentage ?? checklist?.completion_percentage ?? 0}% complete`}
+          </h2>
+          <p className="supporting-text">
+            {dashboard?.marketplace_ready
+              ? 'Your tutor account is ready for marketplace visibility.'
+              : 'Finish the remaining steps to become visible to students.'}
+          </p>
+        </div>
+
+        <div className="stats-band-grid">
+          <article className="stats-band-item">
+            <strong>{courseStats.total_courses ?? 0}</strong>
+            <span>Total courses</span>
+          </article>
+          <article className="stats-band-item">
+            <strong>{lessonStats.total_lessons ?? 0}</strong>
+            <span>Total lessons</span>
+          </article>
+          <article className="stats-band-item">
+            <strong>{dashboard?.marketplace_ready ? 'Ready' : 'Pending'}</strong>
+            <span>Marketplace status</span>
+          </article>
+          <article className="stats-band-item">
+            <strong>{dashboard?.completion_percentage ?? checklist?.completion_percentage ?? 0}%</strong>
+            <span>Profile completion</span>
+          </article>
+        </div>
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Checklist</p>
+          <h2>Follow the approval steps.</h2>
+          <div className="steps-list">
+            {dashboardQuery.isLoading || checklistQuery.isLoading ? (
+              <p className="supporting-text">Loading checklist...</p>
+            ) : (
+              steps.map((step) => (
+                <div className="step-item" key={step.key}>
+                  <div className="step-number">{step.completed ? 'Done' : 'Todo'}</div>
+                  <div>
+                    <h3>{step.label}</h3>
+                    <p>{step.completed ? 'Completed' : 'Still needed'}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          {missingSteps.length > 0 ? (
+            <div className="trust-marks" style={{ marginTop: '1rem' }}>
+              {missingSteps.map((step) => (
+                <span className="trust-mark" key={step}>
+                  {step}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Recent courses</p>
+          <h2>Your latest tutor course updates.</h2>
+          {dashboardQuery.isLoading ? (
+            <p className="supporting-text">Loading recent courses...</p>
+          ) : latestCourses.length === 0 ? (
+            <p className="supporting-text">You do not have any courses yet.</p>
+          ) : (
+            <div className="mini-list">
+              {latestCourses.map((course) => (
+                <div key={course.id}>
+                  <span>{course.title}</span>
+                  <small>{course.subject__name} · {course.status}</small>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
       </section>
     </>
   )

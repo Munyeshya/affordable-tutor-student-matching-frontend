@@ -15,6 +15,28 @@ export function searchTutors(query) {
   })
 }
 
+export function getTutorDashboard() {
+  return apiClient.get(API_ENDPOINTS.tutors.dashboard)
+}
+
+export function getTutorChecklist() {
+  return apiClient.get(API_ENDPOINTS.tutors.checklist)
+}
+
+export function getTutorCompletion() {
+  return apiClient.get(API_ENDPOINTS.tutors.completion)
+}
+
+export function getTutorAgreement() {
+  return apiClient.get(API_ENDPOINTS.tutors.agreement)
+}
+
+export function downloadTutorAgreement() {
+  return apiClient.get(API_ENDPOINTS.tutors.agreementDownload, {
+    responseType: 'blob',
+  })
+}
+
 export function getTutorDocuments() {
   return apiClient.get(API_ENDPOINTS.tutors.documents)
 }
@@ -26,3 +48,4 @@ export function getTutorLessons() {
 export function rateTutorLesson(payload) {
   return apiClient.post(API_ENDPOINTS.tutors.ratings, payload)
 }
+

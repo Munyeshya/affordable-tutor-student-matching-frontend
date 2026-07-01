@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import './App.css'
 import { useAuth } from './context/AuthContext.jsx'
@@ -53,6 +53,7 @@ function Layout() {
             <NavLink to="/tutors">Tutors</NavLink>
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-dashboard">Tutor dashboard</NavLink> : null}
           </nav>
 
           <div className="header-actions">

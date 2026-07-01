@@ -11,6 +11,11 @@ export const API_ENDPOINTS = {
     list: '/tutors/',
     detail: (id) => `/tutors/${id}/`,
     search: '/tutors/search/',
+    dashboard: '/tutors/dashboard/',
+    checklist: '/tutors/setup/checklist/',
+    completion: '/tutors/me/completion/',
+    agreement: '/tutors/agreement/',
+    agreementDownload: '/tutors/agreement/download/',
     documents: '/tutors/documents/',
     lessons: '/tutors/lessons/',
     ratings: '/tutors/ratings/',
@@ -25,3 +30,5 @@ export const API_ENDPOINTS = {
     mine: '/analytics/my-report/',
   },
 }
+
+
