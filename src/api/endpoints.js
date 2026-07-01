@@ -17,6 +17,8 @@ export const API_ENDPOINTS = {
     agreement: '/tutors/agreement/',
     agreementDownload: '/tutors/agreement/download/',
     documents: '/tutors/documents/',
+    verifications: '/tutors/verifications/',
+    verificationDecision: (id) => `/tutors/verifications/${id}/decide/`,
     lessons: '/tutors/lessons/',
     ratings: '/tutors/ratings/',
   },

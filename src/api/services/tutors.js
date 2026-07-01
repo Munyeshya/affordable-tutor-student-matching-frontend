@@ -57,6 +57,14 @@ export function uploadTutorAgreement(payload) {
   })
 }
 
+export function listTutorVerifications(params = {}) {
+  return apiClient.get(API_ENDPOINTS.tutors.verifications, { params })
+}
+
+export function decideTutorVerification(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.tutors.verificationDecision(id), payload)
+}
+
 export function getTutorLessons() {
   return apiClient.get(API_ENDPOINTS.tutors.lessons)
 }
