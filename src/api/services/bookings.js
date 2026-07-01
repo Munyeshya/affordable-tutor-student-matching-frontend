@@ -12,3 +12,11 @@ export function listBookings() {
 export function updateBookingAction(id, payload) {
   return apiClient.patch(API_ENDPOINTS.bookings.action(id), payload)
 }
+
+export function listDisputes() {
+  return apiClient.get(API_ENDPOINTS.bookings.disputes)
+}
+
+export function decideDispute(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.bookings.disputeDecision(id), payload)
+}
