@@ -54,6 +54,7 @@ function Layout() {
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/contact">Contact</NavLink>
             {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-dashboard">Tutor dashboard</NavLink> : null}
+            {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-teaching">Teaching</NavLink> : null}
           </nav>
 
           <div className="header-actions">
@@ -87,7 +88,7 @@ function Layout() {
         <div className="footer-brand">
           <img className="footer-logo" src="/logo-small-white.png" alt="Isomo" />
           <p>Affordable learning, built for trust.</p>
-          <p>Copyright Â© 2026 Isomo. All rights reserved.</p>
+          <p>Copyright Ã‚Â© 2026 Isomo. All rights reserved.</p>
         </div>
 
         <div className="footer-links">

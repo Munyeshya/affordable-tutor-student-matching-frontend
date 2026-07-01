@@ -14,6 +14,7 @@ import {
   TutorsPage,
   TutorDashboardPage,
   TutorDocumentsPage,
+  TutorTeachingPage,
 } from './pages.jsx'
 import { queryClient } from './lib/queryClient'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -32,6 +33,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
               <Route path="/tutor-documents" element={<TutorDocumentsPage />} />
+              <Route path="/tutor-teaching" element={<TutorTeachingPage />} />
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/join" element={<JoinPage />} />
             </Route>

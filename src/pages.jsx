@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { downloadTutorAgreement, getTutorAgreementDetails, getTutorDashboard, getTutorChecklist, getTutorDocuments, listTutors, uploadTutorAgreement, uploadTutorDocument } from './api/services/tutors.js'
+import { createCourse, createLesson, createTutorSubject, deleteTutorSubject, listLessons, listMyCourses, listSubjects, listTutorSubjects, submitCourseForReview } from './api/services/catalog.js'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 import { Page } from './App'
@@ -480,7 +481,7 @@ export function TutorDashboardPage() {
               {latestCourses.map((course) => (
                 <div key={course.id}>
                   <span>{course.title}</span>
-                  <small>{course.subject__name} Ãƒâ€šÃ‚Â· {course.status}</small>
+                  <small>{course.subject__name} ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· {course.status}</small>
                 </div>
               ))}
             </div>
@@ -681,6 +682,260 @@ export function TutorDocumentsPage() {
             ))}
           </div>
         )}
+      </section>
+    </>
+  )
+}
+
+export function TutorTeachingPage() {
+  const { user, isAuthenticated } = useAuth()
+  const queryClient = useQueryClient()
+  const [selectedCourseId, setSelectedCourseId] = useState('')
+  const [subjectForm, setSubjectForm] = useState({ subject: '', level: 'PRIMARY', experience_years: '' })
+  const [courseForm, setCourseForm] = useState({ title: '', description: '', subject: '', academic_level: '', price: '' })
+  const [lessonForm, setLessonForm] = useState({ title: '', topic: '', description: '', order_number: '1', duration: '', is_preview: false })
+  const [notice, setNotice] = useState('')
+
+  const subjectsQuery = useQuery({
+    queryKey: ['catalog-subjects'],
+    queryFn: async () => (await listSubjects()).data,
+    enabled: isAuthenticated,
+  })
+
+  const tutorSubjectsQuery = useQuery({
+    queryKey: ['tutor-subjects'],
+    queryFn: async () => (await listTutorSubjects()).data,
+    enabled: isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  const coursesQuery = useQuery({
+    queryKey: ['tutor-courses'],
+    queryFn: async () => (await listMyCourses()).data,
+    enabled: isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  const lessonsQuery = useQuery({
+    queryKey: ['tutor-course-lessons', selectedCourseId],
+    queryFn: async () => (await listLessons(selectedCourseId)).data,
+    enabled: Boolean(selectedCourseId) && isAuthenticated && user?.role === 'TUTOR',
+  })
+
+  const tutorSubjects = Array.isArray(tutorSubjectsQuery.data) ? tutorSubjectsQuery.data : []
+  const subjects = Array.isArray(subjectsQuery.data) ? subjectsQuery.data : []
+  const courses = Array.isArray(coursesQuery.data) ? coursesQuery.data : []
+  const lessons = Array.isArray(lessonsQuery.data) ? lessonsQuery.data : []
+
+  const createSubjectMutation = useMutation({
+    mutationFn: async () => (await createTutorSubject({
+      subject: subjectForm.subject,
+      level: subjectForm.level,
+      experience_years: subjectForm.experience_years ? Number(subjectForm.experience_years) : null,
+    })).data,
+    onSuccess: async () => {
+      setNotice('Subject added successfully.')
+      setSubjectForm({ subject: '', level: 'PRIMARY', experience_years: '' })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-subjects'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+  })
+
+  const createCourseMutation = useMutation({
+    mutationFn: async () => (await createCourse({
+      title: courseForm.title,
+      description: courseForm.description,
+      subject: courseForm.subject,
+      academic_level: courseForm.academic_level,
+      price: courseForm.price,
+    })).data,
+    onSuccess: async (createdCourse) => {
+      setNotice('Course created successfully.')
+      setCourseForm({ title: '', description: '', subject: '', academic_level: '', price: '' })
+      setSelectedCourseId(String(createdCourse.id))
+      await queryClient.invalidateQueries({ queryKey: ['tutor-courses'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+    },
+  })
+
+  const createLessonMutation = useMutation({
+    mutationFn: async () => (await createLesson(selectedCourseId, {
+      title: lessonForm.title,
+      topic: lessonForm.topic,
+      description: lessonForm.description,
+      order_number: Number(lessonForm.order_number || 1),
+      duration: lessonForm.duration ? Number(lessonForm.duration) : null,
+      is_preview: lessonForm.is_preview,
+    })).data,
+    onSuccess: async () => {
+      setNotice('Lesson added successfully.')
+      setLessonForm({ title: '', topic: '', description: '', order_number: '1', duration: '', is_preview: false })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-course-lessons', selectedCourseId] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-courses'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+    },
+  })
+
+  const submitCourseMutation = useMutation({
+    mutationFn: async (courseId) => (await submitCourseForReview(courseId)).data,
+    onSuccess: async () => {
+      setNotice('Course submitted for review.')
+      await queryClient.invalidateQueries({ queryKey: ['tutor-courses'] })
+      await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+    },
+  })
+
+  if (!isAuthenticated) {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Tutor teaching</p>
+        <h1>Sign in to manage your subjects and lessons.</h1>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/sign-in">Sign in</Link>
+          <Link className="secondary-button" to="/join">Create account</Link>
+        </div>
+      </section>
+    )
+  }
+
+  if (user?.role !== 'TUTOR') {
+    return (
+      <section className="page-card card">
+        <p className="eyebrow">Tutor teaching</p>
+        <h1>This area is only for tutors.</h1>
+        <div className="hero-actions">
+          <Link className="primary-button" to="/tutors">Browse tutors</Link>
+          <Link className="secondary-button" to="/contact">Contact support</Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <>
+      <section className="page-card card">
+        <p className="eyebrow">Teaching setup</p>
+        <h1>Manage the subjects, courses, and lessons you teach.</h1>
+        <p className="supporting-text">Add only the subjects and levels you are qualified to teach.</p>
+        {notice ? <p className="supporting-text">{notice}</p> : null}
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">Add subject</p>
+          <h2>Tell us what you teach.</h2>
+          <form className="steps-list" onSubmit={(event) => {
+            event.preventDefault()
+            createSubjectMutation.mutate()
+          }}>
+            <select value={subjectForm.subject} onChange={(event) => setSubjectForm((current) => ({ ...current, subject: event.target.value }))}>
+              <option value="">Choose a subject</option>
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>{subject.name}</option>
+              ))}
+            </select>
+            <select value={subjectForm.level} onChange={(event) => setSubjectForm((current) => ({ ...current, level: event.target.value }))}>
+              <option value="PRIMARY">Primary</option>
+              <option value="SECONDARY_LOWER">Secondary lower level</option>
+              <option value="SECONDARY_UPPER">Secondary upper level</option>
+              <option value="UNIVERSITY">University</option>
+            </select>
+            <input type="number" min="0" placeholder="Experience years" value={subjectForm.experience_years} onChange={(event) => setSubjectForm((current) => ({ ...current, experience_years: event.target.value }))} />
+            <button className="primary-button" type="submit" disabled={createSubjectMutation.isPending}>Add subject</button>
+          </form>
+          <div className="trust-marks" style={{ marginTop: '1rem' }}>
+            {tutorSubjects.map((item) => (
+              <span className="trust-mark" key={item.id}>
+                {item.subject_name} - {item.level_display}
+              </span>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Create course</p>
+          <h2>Package a lesson series.</h2>
+          <form className="steps-list" onSubmit={(event) => {
+            event.preventDefault()
+            createCourseMutation.mutate()
+          }}>
+            <input type="text" placeholder="Course title" value={courseForm.title} onChange={(event) => setCourseForm((current) => ({ ...current, title: event.target.value }))} />
+            <select value={courseForm.subject} onChange={(event) => setCourseForm((current) => ({ ...current, subject: event.target.value }))}>
+              <option value="">Choose a subject</option>
+              {tutorSubjects.map((item) => (
+                <option key={item.id} value={item.subject}>{item.subject_name} - {item.level_display}</option>
+              ))}
+            </select>
+            <input type="text" placeholder="Academic level" value={courseForm.academic_level} onChange={(event) => setCourseForm((current) => ({ ...current, academic_level: event.target.value }))} />
+            <input type="number" min="0" placeholder="Price" value={courseForm.price} onChange={(event) => setCourseForm((current) => ({ ...current, price: event.target.value }))} />
+            <textarea rows="4" placeholder="Course description" value={courseForm.description} onChange={(event) => setCourseForm((current) => ({ ...current, description: event.target.value }))} />
+            <button className="primary-button" type="submit" disabled={createCourseMutation.isPending}>Create course</button>
+          </form>
+        </article>
+      </section>
+
+      <section className="split-layout">
+        <article className="panel card">
+          <p className="eyebrow">My courses</p>
+          <h2>Ready-to-review course drafts.</h2>
+          {coursesQuery.isLoading ? (
+            <p className="supporting-text">Loading courses...</p>
+          ) : courses.length === 0 ? (
+            <p className="supporting-text">No courses yet.</p>
+          ) : (
+            <div className="mini-list">
+              {courses.map((course) => (
+                <div key={course.id}>
+                  <span>{course.title}</span>
+                  <small>{course.subject_name} Â· {course.status}</small>
+                  <div className="hero-actions" style={{ marginTop: '0.75rem' }}>
+                    <button className="secondary-button" type="button" onClick={() => setSelectedCourseId(String(course.id))}>Manage lessons</button>
+                    <button className="primary-button" type="button" onClick={() => submitCourseMutation.mutate(course.id)} disabled={submitCourseMutation.isPending || course.status === 'PUBLISHED' || course.status === 'PENDING_REVIEW'}>
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
+
+        <article className="panel card">
+          <p className="eyebrow">Lessons</p>
+          <h2>{selectedCourseId ? 'Add lessons to the selected course.' : 'Select a course to manage lessons.'}</h2>
+          {selectedCourseId ? (
+            <>
+              <form className="steps-list" onSubmit={(event) => {
+                event.preventDefault()
+                createLessonMutation.mutate()
+              }}>
+                <input type="text" placeholder="Lesson title" value={lessonForm.title} onChange={(event) => setLessonForm((current) => ({ ...current, title: event.target.value }))} />
+                <input type="text" placeholder="Topic" value={lessonForm.topic} onChange={(event) => setLessonForm((current) => ({ ...current, topic: event.target.value }))} />
+                <textarea rows="3" placeholder="Lesson description" value={lessonForm.description} onChange={(event) => setLessonForm((current) => ({ ...current, description: event.target.value }))} />
+                <input type="number" min="1" placeholder="Order" value={lessonForm.order_number} onChange={(event) => setLessonForm((current) => ({ ...current, order_number: event.target.value }))} />
+                <input type="number" min="1" placeholder="Duration in minutes" value={lessonForm.duration} onChange={(event) => setLessonForm((current) => ({ ...current, duration: event.target.value }))} />
+                <label className="check-row">
+                  <input type="checkbox" checked={lessonForm.is_preview} onChange={(event) => setLessonForm((current) => ({ ...current, is_preview: event.target.checked }))} />
+                  <span>Preview lesson</span>
+                </label>
+                <button className="primary-button" type="submit" disabled={createLessonMutation.isPending}>Add lesson</button>
+              </form>
+              <div className="mini-list" style={{ marginTop: '1rem' }}>
+                {lessonsQuery.isLoading ? (
+                  <div><span>Loading lessons...</span></div>
+                ) : lessons.length === 0 ? (
+                  <div><span>No lessons for this course yet.</span></div>
+                ) : lessons.map((lesson) => (
+                  <div key={lesson.id}>
+                    <span>{lesson.order_number}. {lesson.title}</span>
+                    <small>{lesson.topic || 'No topic'} Â· {lesson.is_preview ? 'Preview' : 'Private'}</small>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="supporting-text">Choose a course from the list to start adding lessons.</p>
+          )}
+        </article>
       </section>
     </>
   )
