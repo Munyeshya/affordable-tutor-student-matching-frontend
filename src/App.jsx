@@ -53,6 +53,7 @@ function Layout() {
             <NavLink to="/tutors">Tutors</NavLink>
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            {isAuthenticated ? <NavLink to="/bookings">Bookings</NavLink> : null}
             {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-dashboard">Tutor dashboard</NavLink> : null}
             {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-teaching">Teaching</NavLink> : null}
           </nav>

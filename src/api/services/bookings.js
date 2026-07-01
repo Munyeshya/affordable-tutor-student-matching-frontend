@@ -8,3 +8,7 @@ export function createBooking(payload) {
 export function listBookings() {
   return apiClient.get(API_ENDPOINTS.bookings.list)
 }
+
+export function updateBookingAction(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.bookings.action(id), payload)
+}
