@@ -54,6 +54,7 @@ function Layout() {
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/contact">Contact</NavLink>
             {isAuthenticated ? <NavLink to="/bookings">Bookings</NavLink> : null}
+            {isAuthenticated ? <NavLink to="/reports">Reports</NavLink> : null}
             {isAuthenticated && user?.role === 'ADMIN' ? <NavLink to="/admin/tutor-reviews">Admin reviews</NavLink> : null}
             {isAuthenticated && user?.role === 'ADMIN' ? <NavLink to="/admin/disputes">Admin disputes</NavLink> : null}
             {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-dashboard">Tutor dashboard</NavLink> : null}
