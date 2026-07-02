@@ -24,6 +24,7 @@ import {
 import { AccountPage } from './pages/AccountPage.jsx'
 import { ParentDashboardPage } from './pages/ParentDashboardPage.jsx'
 import { ParentStudentsPage } from './pages/ParentStudentsPage.jsx'
+import { NotificationsPage } from './pages/NotificationsPage.jsx'
 import { queryClient } from './lib/queryClient'
 import { AuthProvider } from './context/AuthContext.jsx'
 
@@ -50,6 +51,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/account" element={<AccountPage />} />
               <Route path="/parent-dashboard" element={<ParentDashboardPage />} />
               <Route path="/parent-students" element={<ParentStudentsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/join" element={<JoinPage />} />
             </Route>
@@ -59,6 +61,8 @@ createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </StrictMode>,
 )
+
+
 
 
 

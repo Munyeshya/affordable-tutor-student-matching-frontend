@@ -1629,3 +1629,81 @@
     grid-template-columns: 1fr;
   }
 }
+
+.notifications-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.notifications-hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.notifications-summary {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.notifications-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.notification-card {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.notification-head,
+.notification-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.notification-meta {
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.notification-card.is-unread {
+  border-color: rgba(216, 106, 0, 0.28);
+}
+
+.parent-link-card {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.parent-link-head,
+.parent-link-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.parent-link-meta {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.95rem;
+}
+
+.parent-link-form {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .notification-head,
+  .notification-meta,
+  .parent-link-head,
+  .parent-link-meta {
+    flex-direction: column;
+  }
+}

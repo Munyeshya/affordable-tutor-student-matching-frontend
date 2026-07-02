@@ -55,6 +55,7 @@ function Layout() {
             <NavLink to="/contact">Contact</NavLink>
             {isAuthenticated ? <NavLink to="/bookings">Bookings</NavLink> : null}
             {isAuthenticated ? <NavLink to="/reports">Reports</NavLink> : null}
+            {isAuthenticated ? <NavLink to="/notifications">Notifications</NavLink> : null}
             {isAuthenticated ? <NavLink to="/account">Account</NavLink> : null}
             {isAuthenticated && user?.role === 'PARENT' ? <NavLink to="/parent-dashboard">Parent dashboard</NavLink> : null}
             {isAuthenticated && user?.role === 'PARENT' ? <NavLink to="/parent-students">Parent students</NavLink> : null}
@@ -280,6 +281,10 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
+
+
+
+
 
 
 

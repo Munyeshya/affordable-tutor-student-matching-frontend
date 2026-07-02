@@ -31,6 +31,12 @@ export const API_ENDPOINTS = {
     profile: '/parents/me/',
     links: '/parents/students/',
   },
+  notifications: {
+    list: '/notifications/',
+    unread: '/notifications/unread/',
+    readAll: '/notifications/read-all/',
+    readOne: (id) => `/notifications/${id}/read/`,
+  },
   bookings: {
     list: '/bookings/',
     create: '/bookings/create/',
@@ -54,6 +60,7 @@ export const API_ENDPOINTS = {
     mine: '/analytics/my-report/',
   },
 }
+
 
 
 
