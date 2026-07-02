@@ -65,6 +65,7 @@ function Layout() {
             {isAuthenticated && user?.role === 'ADMIN' ? <NavLink to="/admin/disputes">Admin disputes</NavLink> : null}
             {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-dashboard">Tutor dashboard</NavLink> : null}
             {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-teaching">Teaching</NavLink> : null}
+            {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-earnings">Earnings</NavLink> : null}
           </nav>
 
           <div className="header-actions">
@@ -283,6 +284,10 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
+
+
+
+
 
 
 

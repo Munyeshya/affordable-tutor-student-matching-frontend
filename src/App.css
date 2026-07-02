@@ -1904,3 +1904,46 @@
     flex-direction: column;
   }
 }
+
+.earnings-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.earnings-hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.earnings-summary-grid,
+.earnings-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.earnings-actions-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.payout-form,
+.payout-list,
+.payout-card {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.payout-list {
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .earnings-summary-grid,
+  .earnings-stats-grid,
+  .earnings-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -56,6 +56,16 @@ export const API_ENDPOINTS = {
     disputes: '/bookings/disputes/',
     disputeCreate: '/bookings/disputes/create/',
   },
+  payments: {
+    list: '/payments/bookings/',
+    coursePurchases: '/payments/course-purchases/',
+    lessonProgress: '/payments/lesson-progress/',
+    payouts: '/payments/payouts/',
+    payoutRequest: '/payments/payouts/request/',
+    payoutDecision: (id) => `/payments/payouts/${id}/decide/`,
+    payoutHistory: (id) => `/payments/payouts/${id}/history/`,
+    earnings: '/payments/earnings/',
+  },
   catalog: {
     subjects: '/catalog/subjects/',
     tutorSubjects: '/catalog/tutor-subjects/',
@@ -72,6 +82,7 @@ export const API_ENDPOINTS = {
     mine: '/analytics/my-report/',
   },
 }
+
 
 
 
