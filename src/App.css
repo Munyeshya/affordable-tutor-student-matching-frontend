@@ -1707,3 +1707,119 @@
     flex-direction: column;
   }
 }
+
+.messages-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.messages-hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.messages-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.messages-sidebar,
+.messages-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.messages-sidebar-head,
+.messages-panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.thread-list,
+.message-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.thread-item {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  padding: 0.9rem 1rem;
+  font: inherit;
+}
+
+.thread-item.is-active {
+  border-color: rgba(216, 106, 0, 0.45);
+  background: rgba(216, 106, 0, 0.05);
+}
+
+.thread-item small {
+  color: rgba(0, 0, 0, 0.62);
+}
+
+.message-bubble {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.message-bubble.is-mine {
+  background: rgba(216, 106, 0, 0.06);
+}
+
+.message-bubble.is-theirs {
+  background: #ffffff;
+}
+
+.message-bubble p {
+  margin: 0;
+}
+
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.message-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.message-form textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.9rem 1rem;
+  font: inherit;
+  resize: vertical;
+}
+
+.messages-empty {
+  min-height: 280px;
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .messages-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-sidebar-head,
+  .messages-panel-head {
+    flex-direction: column;
+  }
+}

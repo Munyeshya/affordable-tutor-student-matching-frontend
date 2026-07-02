@@ -37,6 +37,12 @@ export const API_ENDPOINTS = {
     readAll: '/notifications/read-all/',
     readOne: (id) => `/notifications/${id}/read/`,
   },
+  chats: {
+    unread: '/chats/unread/',
+    threads: '/chats/threads/',
+    messages: (bookingId) => `/chats/bookings/${bookingId}/messages/`,
+    markRead: (bookingId) => `/chats/bookings/${bookingId}/messages/read/`,
+  },
   bookings: {
     list: '/bookings/',
     create: '/bookings/create/',
@@ -60,6 +66,7 @@ export const API_ENDPOINTS = {
     mine: '/analytics/my-report/',
   },
 }
+
 
 
 
