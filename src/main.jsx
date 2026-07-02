@@ -54,6 +54,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/parent-students" element={<ParentStudentsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/reviews" element={<ReviewsPage />} />
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/join" element={<JoinPage />} />
             </Route>
@@ -63,6 +64,7 @@ createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </StrictMode>,
 )
+
 
 
 
