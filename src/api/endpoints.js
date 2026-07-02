@@ -26,6 +26,10 @@ export const API_ENDPOINTS = {
     list: '/students/',
     detail: (id) => `/students/${id}/`,
     bookings: '/students/bookings/',
+  },  parents: {
+    dashboard: '/parents/dashboard/',
+    profile: '/parents/me/',
+    links: '/parents/students/',
   },
   bookings: {
     list: '/bookings/',
@@ -50,5 +54,6 @@ export const API_ENDPOINTS = {
     mine: '/analytics/my-report/',
   },
 }
+
 
 
