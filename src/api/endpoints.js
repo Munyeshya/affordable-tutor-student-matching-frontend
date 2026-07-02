@@ -26,7 +26,8 @@ export const API_ENDPOINTS = {
     list: '/students/',
     detail: (id) => `/students/${id}/`,
     bookings: '/students/bookings/',
-  },  parents: {
+  },
+  parents: {
     dashboard: '/parents/dashboard/',
     profile: '/parents/me/',
     links: '/parents/students/',
@@ -59,6 +60,7 @@ export const API_ENDPOINTS = {
   payments: {
     list: '/payments/bookings/',
     coursePurchases: '/payments/course-purchases/',
+    coursePurchaseCreate: '/payments/course-purchases/create/',
     lessonProgress: '/payments/lesson-progress/',
     payouts: '/payments/payouts/',
     payoutRequest: '/payments/payouts/request/',
@@ -73,6 +75,7 @@ export const API_ENDPOINTS = {
     myCourses: '/catalog/my-courses/',
     courseCreate: '/catalog/courses/create/',
     courseSubmit: (id) => `/catalog/courses/${id}/submit/`,
+    courses: '/catalog/courses/',
     courseDetail: (id) => `/catalog/courses/${id}/`,
     lessons: (courseId) => `/catalog/courses/${courseId}/lessons/`,
     lessonDetail: (id) => `/catalog/lessons/${id}/`,
@@ -82,10 +85,5 @@ export const API_ENDPOINTS = {
     mine: '/analytics/my-report/',
   },
 }
-
-
-
-
-
 
 

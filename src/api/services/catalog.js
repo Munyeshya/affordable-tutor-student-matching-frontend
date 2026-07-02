@@ -36,3 +36,7 @@ export function createLesson(courseId, payload) {
 export function listLessons(courseId) {
   return apiClient.get(API_ENDPOINTS.catalog.lessons(courseId))
 }
+
+export function listPublicCourses(params = {}) {
+  return apiClient.get(API_ENDPOINTS.catalog.courses, { params })
+}

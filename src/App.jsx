@@ -51,6 +51,7 @@ function Layout() {
             </NavLink>
             <NavLink to="/about">About</NavLink>
             <NavLink to="/tutors">Tutors</NavLink>
+            <NavLink to="/courses">Courses</NavLink>
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/contact">Contact</NavLink>
             {isAuthenticated ? <NavLink to="/bookings">Bookings</NavLink> : null}
@@ -284,6 +285,7 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
+
 
 
 

@@ -23,6 +23,7 @@ import {
 } from './pages.jsx'
 import { AccountPage } from './pages/AccountPage.jsx'
 import { ParentDashboardPage } from './pages/ParentDashboardPage.jsx'
+import { CoursesPage } from './pages/CoursesPage.jsx'
 import { ParentStudentsPage } from './pages/ParentStudentsPage.jsx'
 import { NotificationsPage } from './pages/NotificationsPage.jsx'
 import { MessagesPage } from './pages/MessagesPage.jsx'
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')).render(
               <Route index element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/tutors" element={<TutorsPage />} />
+              <Route path="/courses" element={<CoursesPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
@@ -65,6 +67,11 @@ createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </StrictMode>,
 )
+
+
+
+
+
 
 
 
