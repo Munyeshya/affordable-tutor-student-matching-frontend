@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import './App.css'
 import { useAuth } from './context/AuthContext.jsx'
@@ -55,6 +55,7 @@ function Layout() {
             <NavLink to="/how-it-works">How it works</NavLink>
             <NavLink to="/contact">Contact</NavLink>
             {isAuthenticated ? <NavLink to="/bookings">Bookings</NavLink> : null}
+            {isAuthenticated && user?.role === 'STUDENT' ? <NavLink to="/learning">Learning</NavLink> : null}
             {isAuthenticated ? <NavLink to="/reports">Reports</NavLink> : null}
             {isAuthenticated ? <NavLink to="/notifications">Notifications</NavLink> : null}
             {isAuthenticated ? <NavLink to="/messages">Messages</NavLink> : null}
@@ -285,6 +286,8 @@ function Page({ title, text, action, secondary }) {
 }
 
 export { Layout, HomePage, Page }
+
+
 
 
 

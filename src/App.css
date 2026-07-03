@@ -2015,3 +2015,50 @@
     flex-direction: column;
   }
 }
+
+.learning-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.learning-hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.learning-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.learning-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.learning-panel,
+.learning-list-column,
+.learning-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.learning-card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.learning-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .learning-summary-grid,
+  .learning-layout {
+    grid-template-columns: 1fr;
+  }
+}

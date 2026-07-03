@@ -28,3 +28,7 @@ export function getTutorEarnings() {
 export function createCoursePurchase(data) {
   return apiClient.post(API_ENDPOINTS.payments.coursePurchaseCreate, data)
 }
+
+export function updateLessonProgress(data) {
+  return apiClient.post(API_ENDPOINTS.payments.lessonProgress, data)
+}

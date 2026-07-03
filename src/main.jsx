@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -24,6 +24,7 @@ import {
 import { AccountPage } from './pages/AccountPage.jsx'
 import { ParentDashboardPage } from './pages/ParentDashboardPage.jsx'
 import { CoursesPage } from './pages/CoursesPage.jsx'
+import { LearningPage } from './pages/LearningPage.jsx'
 import { ParentStudentsPage } from './pages/ParentStudentsPage.jsx'
 import { NotificationsPage } from './pages/NotificationsPage.jsx'
 import { MessagesPage } from './pages/MessagesPage.jsx'
@@ -41,6 +42,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/about" element={<AboutPage />} />
               <Route path="/tutors" element={<TutorsPage />} />
               <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/learning" element={<LearningPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
@@ -67,6 +69,8 @@ createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </StrictMode>,
 )
+
+
 
 
 
