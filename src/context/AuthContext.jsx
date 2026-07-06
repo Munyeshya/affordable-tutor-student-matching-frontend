@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { toast } from 'react-toastify'
 import { clearAuthSession, getStoredRefreshToken, hasStoredAccessToken, setAuthSession } from '../api/client'
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from '../api/services/auth'
 
@@ -67,6 +68,7 @@ export function AuthProvider({ children }) {
     } catch {
       clearAuthSession()
       setUser(null)
+      toast.info('You have been signed out.')
       return null
     }
   }
@@ -80,10 +82,12 @@ export function AuthProvider({ children }) {
       const { access, refresh, user: nextUser } = response.data
       setAuthSession({ accessToken: access, refreshToken: refresh })
       setUser(nextUser)
+      toast.success(`Welcome back, ${nextUser?.full_name || nextUser?.email || 'user'}.`)
       return nextUser
     } catch (requestError) {
       const message = extractErrorMessage(requestError)
       setError(message)
+      toast.error(message)
       throw new Error(message)
     } finally {
       setSubmitting(false)
@@ -96,10 +100,12 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await registerRequest(payload)
+      toast.success('Account created successfully. You can sign in now.')
       return response.data
     } catch (requestError) {
       const message = extractErrorMessage(requestError)
       setError(message)
+      toast.error(message)
       throw new Error(message)
     } finally {
       setSubmitting(false)
@@ -118,6 +124,7 @@ export function AuthProvider({ children }) {
     } finally {
       clearAuthSession()
       setUser(null)
+      toast.info('You have been signed out.')
     }
   }
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { decideTutorVerification, downloadTutorAgreement, getTutorAgreementDetails, getTutorDashboard, getTutorChecklist, getTutorDocuments, listTutorVerifications, listTutors, uploadTutorAgreement, uploadTutorDocument } from './api/services/tutors.js'
 import { createBooking, decideDispute, listBookings, listDisputes, updateBookingAction } from './api/services/bookings.js'
@@ -74,6 +75,16 @@ function normalizeTutorListResponse(responseData) {
   }
 
   return []
+}
+
+function getToastErrorMessage(error) {
+  return (
+    error?.response?.data?.detail ||
+    error?.response?.data?.message ||
+    error?.response?.data?.non_field_errors?.[0] ||
+    error?.message ||
+    'Something went wrong. Please try again.'
+  )
 }
 
 function CompactCard({ title, text }) {
@@ -529,10 +540,14 @@ export function TutorDocumentsPage() {
     },
     onSuccess: async () => {
       setNotice('Document uploaded successfully.')
+      toast.success('Document uploaded successfully.')
       setDocumentForm({ doc_type: 'ID', file: null })
       await queryClient.invalidateQueries({ queryKey: ['tutor-documents'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -547,10 +562,14 @@ export function TutorDocumentsPage() {
     },
     onSuccess: async () => {
       setNotice('Agreement uploaded successfully.')
+      toast.success('Agreement uploaded successfully.')
       setAgreementForm({ signed_name: '', signed_file: null, agreed_to_terms: false })
       await queryClient.invalidateQueries({ queryKey: ['tutor-agreement'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -603,6 +622,7 @@ export function TutorDocumentsPage() {
               window.URL.revokeObjectURL(url)
             } catch {
               setNotice('Could not download the agreement template.')
+              toast.error('Could not download the agreement template.')
             }
           }}>
             Download agreement
@@ -628,6 +648,7 @@ export function TutorDocumentsPage() {
             event.preventDefault()
             if (!documentForm.file) {
               setNotice('Please choose a file first.')
+              toast.warn('Please choose a file first.')
               return
             }
             documentMutation.mutate()
@@ -652,6 +673,7 @@ export function TutorDocumentsPage() {
             event.preventDefault()
             if (!agreementForm.signed_file || !agreementForm.agreed_to_terms) {
               setNotice('Please sign the agreement and confirm the terms.')
+              toast.warn('Please sign the agreement and confirm the terms.')
               return
             }
             agreementMutation.mutate()
@@ -735,10 +757,14 @@ export function TutorTeachingPage() {
     })).data,
     onSuccess: async () => {
       setNotice('Subject added successfully.')
+      toast.success('Subject added successfully.')
       setSubjectForm({ subject: '', level: 'PRIMARY', experience_years: '' })
       await queryClient.invalidateQueries({ queryKey: ['tutor-subjects'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -752,10 +778,14 @@ export function TutorTeachingPage() {
     })).data,
     onSuccess: async (createdCourse) => {
       setNotice('Course created successfully.')
+      toast.success('Course created successfully.')
       setCourseForm({ title: '', description: '', subject: '', academic_level: '', price: '' })
       setSelectedCourseId(String(createdCourse.id))
       await queryClient.invalidateQueries({ queryKey: ['tutor-courses'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -770,10 +800,14 @@ export function TutorTeachingPage() {
     })).data,
     onSuccess: async () => {
       setNotice('Lesson added successfully.')
+      toast.success('Lesson added successfully.')
       setLessonForm({ title: '', topic: '', description: '', order_number: '1', duration: '', is_preview: false })
       await queryClient.invalidateQueries({ queryKey: ['tutor-course-lessons', selectedCourseId] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-courses'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -781,8 +815,12 @@ export function TutorTeachingPage() {
     mutationFn: async (courseId) => (await submitCourseForReview(courseId)).data,
     onSuccess: async () => {
       setNotice('Course submitted for review.')
+      toast.success('Course submitted for review.')
       await queryClient.invalidateQueries({ queryKey: ['tutor-courses'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -980,8 +1018,12 @@ export function BookingRequestPage() {
     })).data,
     onSuccess: async () => {
       setNotice('Booking request submitted successfully.')
+      toast.success('Booking request submitted successfully.')
       setForm((current) => ({ ...current, subject_id: '', start_datetime: '', end_datetime: '', notes: '' }))
       await queryClient.invalidateQueries({ queryKey: ['booking-list'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -1089,7 +1131,11 @@ export function BookingsPage() {
     mutationFn: async ({ id, action }) => (await updateBookingAction(id, { action })).data,
     onSuccess: async () => {
       setNotice('Booking updated successfully.')
+      toast.success('Booking updated successfully.')
       await queryClient.invalidateQueries({ queryKey: ['bookings'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -1211,10 +1257,14 @@ export function AdminTutorReviewsPage() {
     mutationFn: async ({ id, status, reason }) => (await decideTutorVerification(id, { status, reason })).data,
     onSuccess: async () => {
       setNotice('Tutor verification updated successfully.')
+      toast.success('Tutor verification updated successfully.')
       await queryClient.invalidateQueries({ queryKey: ['admin-tutor-verifications'] })
       await queryClient.invalidateQueries({ queryKey: ['tutors'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-dashboard'] })
       await queryClient.invalidateQueries({ queryKey: ['tutor-checklist'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -1359,7 +1409,11 @@ export function AdminDisputesPage() {
     mutationFn: async ({ id, status, comment }) => (await decideDispute(id, { status, comment })).data,
     onSuccess: async () => {
       setNotice('Dispute updated successfully.')
+      toast.success('Dispute updated successfully.')
       await queryClient.invalidateQueries({ queryKey: ['admin-disputes'] })
+    },
+    onError: (error) => {
+      toast.error(getToastErrorMessage(error))
     },
   })
 
@@ -1520,8 +1574,15 @@ export function ReportsPage() {
             className="primary-button"
             type="button"
             onClick={() => {
-              openMyPrintableReport()
-              setNotice('Your printable report opened in a new tab.')
+              try {
+                openMyPrintableReport()
+                setNotice('Your printable report opened in a new tab.')
+                toast.success('Your printable report opened in a new tab.')
+              } catch (error) {
+                const message = getToastErrorMessage(error)
+                setNotice(message)
+                toast.error(message)
+              }
             }}
           >
             Open my report
@@ -1539,8 +1600,15 @@ export function ReportsPage() {
               className="primary-button"
               type="button"
               onClick={() => {
-                openAdminPrintableReport()
-                setNotice('Admin printable report opened in a new tab.')
+                try {
+                  openAdminPrintableReport()
+                  setNotice('Admin printable report opened in a new tab.')
+                  toast.success('Admin printable report opened in a new tab.')
+                } catch (error) {
+                  const message = getToastErrorMessage(error)
+                  setNotice(message)
+                  toast.error(message)
+                }
               }}
             >
               Open admin report
