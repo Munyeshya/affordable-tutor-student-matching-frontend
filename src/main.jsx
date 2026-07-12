@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -29,6 +29,8 @@ import { LearningPage } from './pages/LearningPage.jsx'
 import { ParentStudentsPage } from './pages/ParentStudentsPage.jsx'
 import { NotificationsPage } from './pages/NotificationsPage.jsx'
 import { MessagesPage } from './pages/MessagesPage.jsx'
+import { ReviewsPage } from './pages/ReviewsPage.jsx'
+import { TutorEarningsPage } from './pages/TutorEarningsPage.jsx'
 import { queryClient } from './lib/queryClient'
 import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -79,6 +81,7 @@ createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </StrictMode>,
 )
+
 
 
 

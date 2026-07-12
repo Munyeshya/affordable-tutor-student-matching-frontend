@@ -408,8 +408,8 @@ export function TutorDashboardPage() {
   const lessonStats = dashboard?.lesson_stats || {}
 
   return (
-    <>
-      <section className="page-card card">
+    <section className="dashboard-page tutor-dashboard-page">
+      <section className="page-card card dashboard-hero">
         <p className="eyebrow">Tutor dashboard</p>
         <h1>Your account setup and course workspace.</h1>
         <p className="supporting-text">
@@ -501,7 +501,7 @@ export function TutorDashboardPage() {
           )}
         </article>
       </section>
-    </>
+    </section>
   )
 }
 
@@ -1903,4 +1903,5 @@ export function JoinPage() {
     </>
   )
 }
+
 
