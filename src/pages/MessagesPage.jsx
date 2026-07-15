@@ -1,199 +1,309 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { queryKeys } from '../api/queryKeys'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { getApiErrorMessage } from '../api/errors'
 import { useAuth } from '../context/AuthContext.jsx'
-import { getUnreadChatCount, listBookingMessages, listConversationThreads, markBookingMessagesRead, sendBookingMessage } from '../api/services/chats'
+import {
+  getUnreadChatCount,
+  listBookingMessages,
+  listConversationThreads,
+  markBookingMessagesRead,
+  sendBookingMessage,
+} from '../api/services/chats'
+import './MessagesPage.css'
+
+const EMPTY_LIST = []
+
+function formatDateTime(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  return new Intl.DateTimeFormat('en-RW', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
 
 function ThreadItem({ thread, isActive, onClick }) {
   return (
-    <button className={`thread-item ${isActive ? 'is-active' : ''}`} type="button" onClick={onClick}>
-      <strong>Booking #{thread.booking_id}</strong>
-      <span>{thread.sender_name} ? {thread.receiver_name}</span>
-      <small>{thread.last_message}</small>
-      <span className="status-pill">{thread.unread_count || 0} unread</span>
+    <button
+      className={'messages-thread-button ' + (isActive ? 'is-active' : '')}
+      type="button"
+      onClick={onClick}
+      aria-pressed={isActive}
+    >
+      <span className="messages-thread-row">
+        <strong>{thread.participant_name}</strong>
+        <time>{formatDateTime(thread.last_message_at || thread.start_datetime)}</time>
+      </span>
+      <span className="messages-thread-subject">{thread.subject_name} / Booking #{thread.booking_id}</span>
+      <span className="messages-thread-preview">{thread.last_message}</span>
+      <span className="messages-thread-meta">
+        <span className="messages-thread-status">{thread.booking_status}</span>
+        {thread.unread_count ? <span className="messages-thread-unread">{thread.unread_count}</span> : null}
+      </span>
     </button>
   )
 }
 
 function MessageBubble({ message, isMine }) {
   return (
-    <article className={`message-bubble ${isMine ? 'is-mine' : 'is-theirs'}`}>
+    <article className={'messages-bubble ' + (isMine ? 'is-mine' : '')}>
       <p>{message.message}</p>
-      <div className="message-meta">
-        <span>{message.sender_name || 'You'}</span>
-        <span>{message.created_at ? new Date(message.created_at).toLocaleString() : ''}</span>
+      <div className="messages-bubble-meta">
+        <span>{isMine ? 'You' : message.sender_name}</span>
+        <time>{formatDateTime(message.created_at)}</time>
       </div>
     </article>
   )
 }
 
 export function MessagesPage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
   const [draft, setDraft] = useState('')
+  const [threadSearch, setThreadSearch] = useState('')
+  const feedEndRef = useRef(null)
   const selectedBookingId = searchParams.get('booking')
 
   const unreadQuery = useQuery({
-    queryKey: ['chat-unread-count'],
-    queryFn: () => getUnreadChatCount().then((response) => response.data),
-    enabled: isAuthenticated,
+    queryKey: queryKeys.chats.unread,
+    queryFn: async () => (await getUnreadChatCount()).data,
   })
 
   const threadsQuery = useQuery({
-    queryKey: ['chat-threads'],
-    queryFn: () => listConversationThreads().then((response) => response.data),
-    enabled: isAuthenticated,
+    queryKey: queryKeys.chats.threads,
+    queryFn: async () => (await listConversationThreads()).data,
+    initialData: EMPTY_LIST,
   })
+
+  const threads = threadsQuery.data
+  const normalizedSearch = threadSearch.trim().toLowerCase()
+  const filteredThreads = normalizedSearch
+    ? threads.filter((thread) => (
+      thread.participant_name?.toLowerCase().includes(normalizedSearch)
+      || thread.subject_name?.toLowerCase().includes(normalizedSearch)
+      || String(thread.booking_id).includes(normalizedSearch)
+    ))
+    : threads
+  const activeThread = threads.find(
+    (thread) => String(thread.booking_id) === String(selectedBookingId),
+  )
 
   useEffect(() => {
-    if (!selectedBookingId && threadsQuery.data?.length) {
-      setSearchParams({ booking: String(threadsQuery.data[0].booking_id) }, { replace: true })
+    if (!selectedBookingId && threads.length) {
+      setSearchParams({ booking: String(threads[0].booking_id) }, { replace: true })
     }
-  }, [selectedBookingId, threadsQuery.data, setSearchParams])
+  }, [selectedBookingId, threads, setSearchParams])
 
   const messagesQuery = useQuery({
-    queryKey: ['chat-messages', selectedBookingId],
-    queryFn: () => listBookingMessages(selectedBookingId).then((response) => response.data),
-    enabled: isAuthenticated && Boolean(selectedBookingId),
+    queryKey: queryKeys.chats.messages(selectedBookingId),
+    queryFn: async () => (await listBookingMessages(selectedBookingId)).data,
+    enabled: Boolean(selectedBookingId),
+    initialData: EMPTY_LIST,
   })
+
+  const messages = messagesQuery.data
 
   const sendMutation = useMutation({
     mutationFn: (payload) => sendBookingMessage(selectedBookingId, payload),
     onSuccess: async () => {
       setDraft('')
-      await queryClient.invalidateQueries({ queryKey: ['chat-messages', selectedBookingId] })
-      await queryClient.invalidateQueries({ queryKey: ['chat-threads'] })
-      await queryClient.invalidateQueries({ queryKey: ['chat-unread-count'] })
+      toast.success('Message sent.')
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.chats.messages(selectedBookingId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.chats.threads }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.chats.unread }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+      ])
     },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not send this message.')),
   })
 
-  const markReadMutation = useMutation({
+  const { mutate: markMessagesRead } = useMutation({
     mutationFn: (ids) => markBookingMessagesRead(selectedBookingId, ids),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['chat-threads'] })
-      await queryClient.invalidateQueries({ queryKey: ['chat-unread-count'] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.chats.threads }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.chats.unread }),
+      ])
     },
   })
 
   useEffect(() => {
-    if (!messagesQuery.data?.length || !user?.id || !selectedBookingId) {
-      return
-    }
+    if (!messages.length || !user?.id || !selectedBookingId) return
 
-    const unreadIds = messagesQuery.data
+    const unreadIds = messages
       .filter((message) => message.receiver === user.id && !message.is_read)
       .map((message) => message.id)
 
-    if (unreadIds.length) {
-      markReadMutation.mutate(unreadIds)
+    if (unreadIds.length) markMessagesRead(unreadIds)
+  }, [messages, user?.id, selectedBookingId, markMessagesRead])
+
+  useEffect(() => {
+    feedEndRef.current?.scrollIntoView({ block: 'end' })
+  }, [messages, selectedBookingId])
+
+  function selectThread(bookingId) {
+    setDraft('')
+    setSearchParams({ booking: String(bookingId) })
+  }
+
+  function submitMessage(event) {
+    event.preventDefault()
+    const message = draft.trim()
+    if (!message) {
+      toast.error('Write a message before sending.')
+      return
     }
-  }, [messagesQuery.data, user?.id, selectedBookingId])
-
-  const activeThread = useMemo(
-    () => threadsQuery.data?.find((thread) => String(thread.booking_id) === String(selectedBookingId)),
-    [threadsQuery.data, selectedBookingId],
-  )
-
-  if (!isAuthenticated) {
-    return (
-      <section className="page-card card">
-        <p className="eyebrow">Messages</p>
-        <h1>Sign in to view booking conversations</h1>
-        <p className="supporting-text">Students, tutors, and parents can use chat once a booking exists.</p>
-        <div className="hero-actions">
-          <Link className="primary-button" to="/sign-in">Sign in</Link>
-          <Link className="secondary-button" to="/join">Join now</Link>
-        </div>
-      </section>
-    )
+    sendMutation.mutate({ message })
   }
 
   return (
-    <section className="messages-page">
-      <section className="page-card card messages-hero">
+    <section className="messages-workspace">
+      <header className="messages-workspace-hero">
         <div>
           <p className="eyebrow">Messages</p>
-          <h1>Booking conversations</h1>
-          <p className="supporting-text">Keep one conversation per booking and stay close to lesson updates.</p>
+          <h1>Keep lesson conversations together.</h1>
+          <p className="supporting-text">
+            Each conversation stays connected to one booking so schedules, goals, and updates remain easy to follow.
+          </p>
         </div>
-        <div className="notifications-summary">
-          <article className="stat-card">
-            <strong>{unreadQuery.data?.unread_count ?? 0}</strong>
-            <span>Unread messages</span>
-          </article>
+        <div className="messages-unread-card">
+          <strong>{unreadQuery.data?.unread_count ?? 0}</strong>
+          <span>Unread messages</span>
         </div>
-      </section>
+      </header>
 
-      <section className="messages-layout">
-        <aside className="page-card card messages-sidebar">
-          <div className="messages-sidebar-head">
-            <p className="eyebrow">Threads</p>
-            <span className="status-pill">{threadsQuery.data?.length || 0}</span>
+      <section className="messages-workspace-layout">
+        <aside className="messages-thread-panel">
+          <div className="messages-thread-toolbar">
+            <div className="messages-thread-title">
+              <h2>Booking conversations</h2>
+              <span>{threads.length}</span>
+            </div>
+            <input
+              className="messages-thread-search"
+              type="search"
+              placeholder="Search tutor, subject, or booking"
+              aria-label="Search conversations"
+              value={threadSearch}
+              onChange={(event) => setThreadSearch(event.target.value)}
+            />
           </div>
-          {threadsQuery.isLoading ? (
-            <p className="supporting-text">Loading conversations...</p>
-          ) : threadsQuery.data?.length ? (
-            <div className="thread-list">
-              {threadsQuery.data.map((thread) => (
+
+          <div className="messages-thread-list">
+            {threadsQuery.isLoading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <div className="messages-thread-skeleton" key={index} aria-busy="true">
+                  <span className="skeleton skeleton-line skeleton-title" />
+                  <span className="skeleton skeleton-line" />
+                </div>
+              ))
+            ) : threadsQuery.isError ? (
+              <div className="messages-panel-state">
+                <p>{getApiErrorMessage(threadsQuery.error, 'Could not load conversations.')}</p>
+                <button className="secondary-button" type="button" onClick={() => threadsQuery.refetch()}>Try again</button>
+              </div>
+            ) : filteredThreads.length ? (
+              filteredThreads.map((thread) => (
                 <ThreadItem
                   key={thread.booking_id}
                   thread={thread}
                   isActive={String(thread.booking_id) === String(selectedBookingId)}
-                  onClick={() => setSearchParams({ booking: String(thread.booking_id) })}
+                  onClick={() => selectThread(thread.booking_id)}
                 />
-              ))}
-            </div>
-          ) : (
-            <p className="supporting-text">No conversations yet.</p>
-          )}
+              ))
+            ) : (
+              <div className="messages-panel-state">
+                <h2>{threads.length ? 'No matching conversations' : 'No booking conversations yet'}</h2>
+                <p>{threads.length ? 'Try a different search.' : 'Create or accept a booking to start messaging.'}</p>
+                {!threads.length ? <Link className="secondary-button" to="/bookings">View bookings</Link> : null}
+              </div>
+            )}
+          </div>
         </aside>
 
-        <section className="page-card card messages-panel">
-          {activeThread ? (
+        <section className="messages-conversation-panel">
+          {!selectedBookingId ? (
+            <div className="messages-panel-state">
+              <p className="eyebrow">Conversation</p>
+              <h2>Select a booking</h2>
+              <p>Choose a conversation to read messages and send an update.</p>
+            </div>
+          ) : messagesQuery.isError ? (
+            <div className="messages-panel-state">
+              <p className="eyebrow">Conversation unavailable</p>
+              <h2>We could not open this booking conversation.</h2>
+              <p>{getApiErrorMessage(messagesQuery.error)}</p>
+              <button className="secondary-button" type="button" onClick={() => messagesQuery.refetch()}>Try again</button>
+            </div>
+          ) : (
             <>
-              <div className="messages-panel-head">
+              <header className="messages-conversation-head">
                 <div>
-                  <p className="eyebrow">Booking #{activeThread.booking_id}</p>
-                  <h2>{activeThread.sender_name} ? {activeThread.receiver_name}</h2>
+                  <p className="eyebrow">Booking #{selectedBookingId}</p>
+                  <h2>{activeThread?.participant_name || 'Booking conversation'}</h2>
                 </div>
-                <span className="status-pill">{activeThread.unread_count || 0} unread</span>
-              </div>
+                <div className="messages-conversation-context">
+                  <strong>{activeThread?.subject_name || 'Lesson'}</strong>
+                  <span> / {activeThread?.booking_status || 'Active'}</span>
+                </div>
+              </header>
 
-              <div className="message-list">
+              <div className="messages-feed" aria-live="polite">
                 {messagesQuery.isLoading ? (
-                  <p className="supporting-text">Loading messages...</p>
-                ) : messagesQuery.data?.length ? (
-                  messagesQuery.data.map((message) => (
-                    <MessageBubble key={message.id} message={message} isMine={message.sender === user.id} />
+                  <div className="messages-panel-state" aria-busy="true">
+                    <p>Loading messages...</p>
+                  </div>
+                ) : messages.length ? (
+                  messages.map((message) => (
+                    <MessageBubble
+                      key={message.id}
+                      message={message}
+                      isMine={message.sender === user?.id}
+                    />
                   ))
                 ) : (
-                  <p className="supporting-text">No messages in this booking yet.</p>
+                  <div className="messages-panel-state">
+                    <p className="eyebrow">Start the conversation</p>
+                    <h2>No messages yet.</h2>
+                    <p>Share the learner's goals or ask a practical question about the lesson.</p>
+                  </div>
                 )}
+                <span ref={feedEndRef} />
               </div>
 
-              <form
-                className="message-form"
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  if (!draft.trim()) return
-                  sendMutation.mutate({ message: draft.trim() })
-                }}
-              >
-                <textarea rows="4" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Write a message..." />
-                <div className="hero-actions">
-                  <button className="primary-button" type="submit" disabled={sendMutation.isPending}>
-                    {sendMutation.isPending ? 'Sending...' : 'Send message'}
-                  </button>
+              {user?.role === 'ADMIN' ? (
+                <div className="messages-composer">
+                  <p className="supporting-text">Admins can review conversations but cannot send messages.</p>
                 </div>
-              </form>
+              ) : (
+                <form className="messages-composer" onSubmit={submitMessage}>
+                  <textarea
+                    aria-label="Message"
+                    rows="3"
+                    maxLength="2000"
+                    placeholder="Write a message about this lesson..."
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                    disabled={sendMutation.isPending}
+                  />
+                  <div className="messages-composer-actions">
+                    <small>{draft.length}/2000</small>
+                    <button className="primary-button" type="submit" disabled={sendMutation.isPending}>
+                      {sendMutation.isPending ? 'Sending...' : 'Send message'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </>
-          ) : (
-            <div className="messages-empty">
-              <p className="eyebrow">Messages</p>
-              <h2>Select a booking thread</h2>
-              <p className="supporting-text">Choose a thread from the sidebar to view the conversation.</p>
-            </div>
           )}
         </section>
       </section>

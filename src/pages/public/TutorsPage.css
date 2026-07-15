@@ -1,0 +1,518 @@
+.tutor-marketplace {
+  display: grid;
+  gap: 22px;
+}
+.tutor-marketplace .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.marketplace-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 2px 8px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.14);
+}
+
+.marketplace-intro > div {
+  max-width: 700px;
+}
+
+.marketplace-intro h1 {
+  max-width: 18ch;
+  margin: 4px 0 8px;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+}
+
+.marketplace-search {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+}
+
+.marketplace-workspace {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.marketplace-filter-panel {
+  position: sticky;
+  top: 96px;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  background: #ffffff;
+}
+
+.marketplace-filter-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 0;
+}
+
+.marketplace-filter-header h2 {
+  margin: 2px 0 0;
+  font-size: 1.1rem;
+}
+
+.marketplace-filter-header > button {
+  display: none;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.marketplace-filter-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.marketplace-filter-actions .link-button {
+  min-height: 44px;
+}
+
+.marketplace-results {
+  min-width: 0;
+  display: grid;
+  gap: 18px;
+}
+
+.marketplace-mobile-toolbar,
+.marketplace-filter-backdrop {
+  display: none;
+}
+
+.marketplace-filter-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #8f2d00;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.marketplace-search label,
+.marketplace-sort {
+  display: grid;
+  gap: 7px;
+}
+
+.marketplace-search label > span,
+.marketplace-sort > span {
+  color: #2e2e2e;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.marketplace-search input,
+.marketplace-search select,
+.marketplace-sort select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(17, 17, 17, 0.2);
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
+  padding: 0.7rem 0.78rem;
+  font: inherit;
+}
+
+.marketplace-search input:focus,
+.marketplace-search select:focus,
+.marketplace-sort select:focus {
+  outline: 3px solid rgba(217, 107, 0, 0.2);
+  border-color: var(--brand-soft);
+}
+
+.marketplace-submit {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.marketplace-results-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.marketplace-results-heading h2 {
+  margin: 3px 0 0;
+  font-size: 1.35rem;
+}
+
+.marketplace-sort {
+  width: min(100%, 210px);
+}
+
+.marketplace-active-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: -10px;
+}
+
+.marketplace-active-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border: 1px solid rgba(217, 107, 0, 0.35);
+  border-radius: 0;
+  background: #fff8f1;
+  color: #111111;
+  padding: 0.48rem 0.68rem;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.marketplace-active-filters .marketplace-clear {
+  border-color: transparent;
+  background: transparent;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.marketplace-tutor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.market-tutor-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  background: #ffffff;
+  padding: 18px;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.market-tutor-card:hover {
+  border-color: rgba(217, 107, 0, 0.58);
+  transform: translateY(-2px);
+}
+
+.market-tutor-profile {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.market-tutor-avatar {
+  width: 66px;
+  height: 66px;
+  flex: 0 0 66px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid var(--brand-soft);
+  background: #111111;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.market-tutor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.market-tutor-identity {
+  min-width: 0;
+}
+
+.market-tutor-identity h2 {
+  margin: 3px 0 0;
+  font-size: 1.15rem;
+}
+
+.market-tutor-identity p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.market-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brand);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.market-verified-badge > span {
+  width: 7px;
+  height: 7px;
+  background: var(--brand-soft);
+}
+
+.market-tutor-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.market-tutor-facts > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  padding: 10px 8px;
+  border-right: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.market-tutor-facts > div:last-child {
+  border-right: 0;
+}
+
+.market-tutor-facts span,
+.market-tutor-offer span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.market-tutor-facts strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+}
+
+.market-tutor-tags {
+  min-height: 64px;
+  display: flex;
+  align-content: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.market-tutor-tags span {
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  padding: 0.38rem 0.5rem;
+  color: #3f3f3f;
+  font-size: 0.74rem;
+}
+
+.market-tutor-offer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(217, 107, 0, 0.18);
+  border: 1px solid rgba(217, 107, 0, 0.24);
+}
+
+.market-tutor-offer > div {
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  background: #fff8f1;
+}
+
+.market-tutor-offer strong {
+  font-size: 0.82rem;
+}
+
+.market-tutor-offer > div:first-child strong {
+  color: var(--brand);
+}
+
+.market-tutor-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.market-tutor-actions > * {
+  width: 100%;
+}
+.marketplace-state {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 28px;
+}
+
+.marketplace-state h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.marketplace-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 0 20px;
+}
+
+.marketplace-pagination button {
+  min-width: 42px;
+  min-height: 42px;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.marketplace-pagination button.active {
+  border-color: var(--brand-soft);
+  background: var(--brand-soft);
+  color: #ffffff;
+}
+
+.marketplace-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.market-tutor-skeleton {
+  min-height: 410px;
+}
+
+@media (max-width: 1180px) {
+  .marketplace-tutor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .marketplace-mobile-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .marketplace-mobile-toolbar > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .marketplace-filter-toggle {
+    min-width: 120px;
+    min-height: 46px;
+  }
+
+  .marketplace-workspace {
+    display: block;
+  }
+
+  .marketplace-filter-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: block;
+    border: 0;
+    background: rgba(17, 17, 17, 0.58);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 180ms ease, visibility 180ms ease;
+  }
+
+  .marketplace-filter-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .marketplace-filter-panel {
+    position: fixed;
+    z-index: 120;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(88vw, 370px);
+    overflow-y: auto;
+    border-width: 0 1px 0 0;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 220ms ease, visibility 220ms ease;
+  }
+
+  .marketplace-filter-panel.open {
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .marketplace-filter-header {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+    background: #ffffff;
+    padding: 14px 16px;
+  }
+
+  .marketplace-filter-header > button {
+    display: block;
+  }
+}
+
+@media (max-width: 700px) {
+  .marketplace-intro,
+  .marketplace-results-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .marketplace-intro > .secondary-button,
+  .marketplace-sort {
+    width: 100%;
+  }
+
+  .marketplace-tutor-grid,
+  .market-tutor-actions,
+  .marketplace-filter-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplace-filter-actions .link-button {
+    justify-content: center;
+  }
+
+  .marketplace-pagination {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketplace-filter-backdrop,
+  .marketplace-filter-panel {
+    transition: none;
+  }
+}

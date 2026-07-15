@@ -1,24 +1,31 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
-import { clearAuthSession, getStoredRefreshToken, hasStoredAccessToken, setAuthSession } from '../api/client'
+import { AUTH_SESSION_EXPIRED_EVENT, clearAuthSession, getStoredRefreshToken, hasStoredAccessToken, setAuthSession } from '../api/client'
+import { getApiErrorMessage } from '../api/errors'
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from '../api/services/auth'
 
 const AuthContext = createContext(null)
 
-function extractErrorMessage(error) {
-  return (
-    error?.response?.data?.detail ||
-    error?.response?.data?.message ||
-    error?.response?.data?.non_field_errors?.[0] ||
-    'Something went wrong. Please try again.'
-  )
-}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    function handleSessionExpired() {
+      setUser(null)
+      setLoading(false)
+      setError('')
+      toast.info('Your session expired. Please sign in again.')
+    }
+
+    window.addEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired)
+    return () => {
+      window.removeEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired)
+    }
+  }, [])
 
   useEffect(() => {
     let ignore = false
@@ -85,7 +92,7 @@ export function AuthProvider({ children }) {
       toast.success(`Welcome back, ${nextUser?.full_name || nextUser?.email || 'user'}.`)
       return nextUser
     } catch (requestError) {
-      const message = extractErrorMessage(requestError)
+      const message = getApiErrorMessage(requestError)
       setError(message)
       toast.error(message)
       throw new Error(message)
@@ -103,7 +110,7 @@ export function AuthProvider({ children }) {
       toast.success('Account created successfully. You can sign in now.')
       return response.data
     } catch (requestError) {
-      const message = extractErrorMessage(requestError)
+      const message = getApiErrorMessage(requestError)
       setError(message)
       toast.error(message)
       throw new Error(message)
@@ -147,6 +154,8 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// The hook intentionally shares this module with its provider.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
 

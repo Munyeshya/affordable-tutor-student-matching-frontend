@@ -1,8 +1,12 @@
 import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { getApiErrorMessage } from '../api/errors'
 import { getTutorEarnings, listPayouts, requestPayout } from '../api/services/payments'
 import { useAuth } from '../context/AuthContext.jsx'
+import { queryKeys } from '../api/queryKeys'
+import { StatusBadge } from '../components/ui/StatusBadge.jsx'
 
 function SummaryCard({ label, value }) {
   return (
@@ -22,7 +26,12 @@ function PayoutCard({ payout }) {
           <h3>{payout.amount} {payout.status}</h3>
           <p className="supporting-text">Requested on {payout.created_at ? new Date(payout.created_at).toLocaleString() : 'unknown date'}</p>
         </div>
-        <span className="status-pill">{payout.status}</span>
+        <StatusBadge
+          className="status-pill"
+          tone={['PAID', 'COMPLETED', 'APPROVED'].includes(payout.status) ? 'success' : ['REJECTED', 'CANCELLED'].includes(payout.status) ? 'danger' : 'warning'}
+        >
+          {payout.status}
+        </StatusBadge>
       </div>
       <div className="review-meta">
         <span>{payout.paid_at ? `Paid ${new Date(payout.paid_at).toLocaleDateString()}` : 'Not paid yet'}</span>
@@ -39,13 +48,13 @@ export function TutorEarningsPage() {
   const [message, setMessage] = useState('')
 
   const earningsQuery = useQuery({
-    queryKey: ['tutor-earnings'],
+    queryKey: queryKeys.payments.tutorEarnings,
     queryFn: () => getTutorEarnings().then((response) => response.data),
     enabled: isAuthenticated && user?.role === 'TUTOR',
   })
 
   const payoutsQuery = useQuery({
-    queryKey: ['tutor-payouts'],
+    queryKey: queryKeys.payments.tutorPayouts,
     queryFn: () => listPayouts().then((response) => response.data),
     enabled: isAuthenticated && user?.role === 'TUTOR',
   })
@@ -55,11 +64,14 @@ export function TutorEarningsPage() {
     onSuccess: async () => {
       setPayoutAmount('')
       setMessage('Payout request submitted.')
-      await queryClient.invalidateQueries({ queryKey: ['tutor-payouts'] })
-      await queryClient.invalidateQueries({ queryKey: ['tutor-earnings'] })
+      toast.success('Payout request submitted.')
+      await queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorPayouts })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings })
     },
-    onError: () => {
-      setMessage('We could not submit the payout request. Please try again.')
+    onError: (error) => {
+      const errorMessage = getApiErrorMessage(error, 'We could not submit the payout request. Please try again.')
+      setMessage(errorMessage)
+      toast.error(errorMessage)
     },
   })
 

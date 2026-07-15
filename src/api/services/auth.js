@@ -9,8 +9,8 @@ export function register(data) {
   return apiClient.post(API_ENDPOINTS.auth.register, data)
 }
 
-export function logout() {
-  return apiClient.post(API_ENDPOINTS.auth.logout)
+export function logout(data) {
+  return apiClient.post(API_ENDPOINTS.auth.logout, data)
 }
 
 export function getCurrentUser() {

@@ -1,213 +1,346 @@
-import React, { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { queryKeys } from '../api/queryKeys'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { Link, useSearchParams } from 'react-router-dom'
+import { getApiErrorMessage } from '../api/errors'
+import {
+  createBookingReview,
+  createLessonReview,
+  listBookingReviews,
+  listEligibleReviews,
+  listLessonReviews,
+} from '../api/services/reviews'
 import { useAuth } from '../context/AuthContext.jsx'
-import { createBookingReview, createLessonReview, listBookingReviews, listLessonReviews } from '../api/services/reviews'
+import './ReviewsPage.css'
 
-function ReviewCard({ item, kind }) {
+const RATING_OPTIONS = [
+  { value: 1, label: 'Poor' },
+  { value: 2, label: 'Fair' },
+  { value: 3, label: 'Good' },
+  { value: 4, label: 'Very good' },
+  { value: 5, label: 'Excellent' },
+]
+
+function formatDate(value) {
+  if (!value) return 'Date unavailable'
+  return new Intl.DateTimeFormat('en-RW', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(value))
+}
+
+function ReviewSkeleton() {
   return (
-    <article className="panel review-card">
-      <div className="review-head">
-        <div>
-          <p className="eyebrow">{kind}</p>
-          <h3>{kind === 'Booking review' ? item.tutor_name : item.lesson_title}</h3>
-          <p className="supporting-text">{item.comment || 'No comment provided.'}</p>
-        </div>
-        <span className="status-pill">{item.rating}/5</span>
-      </div>
-      <div className="review-meta">
-        <span>{item.student_name || 'Student'}</span>
-        <span>{item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}</span>
-      </div>
-    </article>
+    <div className="review-skeleton" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </div>
   )
 }
 
-function ReviewForm({ title, fields, onSubmit, busy, cta }) {
+function EmptyState({ kind }) {
+  const isBooking = kind === 'bookings'
   return (
-    <form className="page-card card review-form" onSubmit={onSubmit}>
-      <p className="eyebrow">{title}</p>
-      {fields}
-      <button className="primary-button" type="submit" disabled={busy}>
-        {busy ? 'Saving...' : cta}
-      </button>
-    </form>
+    <div className="review-empty">
+      <span className="review-empty-mark">{isBooking ? '01' : '02'}</span>
+      <div>
+        <h3>No {isBooking ? 'sessions' : 'lessons'} waiting for feedback</h3>
+        <p>
+          {isBooking
+            ? 'A completed tutoring session will appear here automatically.'
+            : 'Finish a lesson from a purchased course and it will appear here.'}
+        </p>
+      </div>
+      <Link className="review-text-link" to={isBooking ? '/bookings' : '/courses'}>
+        {isBooking ? 'View bookings' : 'Browse courses'}
+      </Link>
+    </div>
+  )
+}
+
+function ReviewHistoryCard({ item, kind }) {
+  const isBooking = kind === 'bookings'
+  return (
+    <article className="review-history-card">
+      <div className="review-score" aria-label={`${item.rating} out of 5`}>
+        <strong>{item.rating}</strong>
+        <span>/ 5</span>
+      </div>
+      <div className="review-history-copy">
+        <span>{isBooking ? 'Tutoring session' : 'Course lesson'}</span>
+        <h3>{isBooking ? item.tutor_name : item.lesson_title}</h3>
+        <p>{item.comment || 'No written comment was added.'}</p>
+      </div>
+      <time dateTime={item.created_at || undefined}>{formatDate(item.created_at)}</time>
+    </article>
   )
 }
 
 export function ReviewsPage() {
   const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
-  const [activeTab, setActiveTab] = useState('bookings')
-  const [bookingForm, setBookingForm] = useState({ booking_id: '', rating: 5, comment: '' })
-  const [lessonForm, setLessonForm] = useState({ lesson_id: '', rating: 5, comment: '' })
+  const [searchParams] = useSearchParams()
+  const requestedBooking = searchParams.get('booking') || ''
+  const requestedLesson = searchParams.get('lesson') || ''
+  const [activeKind, setActiveKind] = useState(requestedLesson ? 'lessons' : 'bookings')
+  const [selectedId, setSelectedId] = useState(requestedLesson || requestedBooking)
+  const [rating, setRating] = useState(5)
+  const [comment, setComment] = useState('')
+  const canReview = user?.role === 'STUDENT'
 
+  const eligibleQuery = useQuery({
+    queryKey: queryKeys.reviews.eligible,
+    queryFn: listEligibleReviews,
+    enabled: isAuthenticated && canReview,
+  })
   const bookingReviewsQuery = useQuery({
-    queryKey: ['booking-reviews'],
+    queryKey: queryKeys.reviews.bookings,
     queryFn: () => listBookingReviews().then((response) => response.data),
     enabled: isAuthenticated,
   })
-
   const lessonReviewsQuery = useQuery({
-    queryKey: ['lesson-reviews'],
+    queryKey: queryKeys.reviews.lessons,
     queryFn: () => listLessonReviews().then((response) => response.data),
     enabled: isAuthenticated,
   })
 
-  const bookingCreateMutation = useMutation({
-    mutationFn: createBookingReview,
-    onSuccess: async () => {
-      setBookingForm({ booking_id: '', rating: 5, comment: '' })
-      await queryClient.invalidateQueries({ queryKey: ['booking-reviews'] })
+  const reviewMutation = useMutation({
+    mutationFn: ({ kind, payload }) => (
+      kind === 'bookings' ? createBookingReview(payload) : createLessonReview(payload)
+    ),
+    onSuccess: async (_, variables) => {
+      toast.success('Your review has been published.')
+      setSelectedId('')
+      setRating(5)
+      setComment('')
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.reviews.eligible }),
+        queryClient.invalidateQueries({
+          queryKey: variables.kind === 'bookings' ? queryKeys.reviews.bookings : queryKeys.reviews.lessons,
+        }),
+      ])
     },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not publish your review.')),
   })
-
-  const lessonCreateMutation = useMutation({
-    mutationFn: createLessonReview,
-    onSuccess: async () => {
-      setLessonForm({ lesson_id: '', rating: 5, comment: '' })
-      await queryClient.invalidateQueries({ queryKey: ['lesson-reviews'] })
-    },
-  })
-
-  const canReview = user?.role === 'STUDENT'
-  const bookingReviews = bookingReviewsQuery.data || []
-  const lessonReviews = lessonReviewsQuery.data || []
-
-  const reviewStats = useMemo(() => ({
-    bookingCount: bookingReviews.length,
-    lessonCount: lessonReviews.length,
-  }), [bookingReviews.length, lessonReviews.length])
 
   if (!isAuthenticated) {
     return (
-      <section className="page-card card">
+      <section className="review-signin">
         <p className="eyebrow">Reviews</p>
-        <h1>Sign in to see and write reviews</h1>
-        <p className="supporting-text">Booking and lesson feedback is available to signed-in users.</p>
-        <div className="hero-actions">
+        <h1>Your feedback starts after the lesson</h1>
+        <p>Sign in to review completed tutoring sessions and course lessons.</p>
+        <div>
           <Link className="primary-button" to="/sign-in">Sign in</Link>
-          <Link className="secondary-button" to="/join">Join now</Link>
+          <Link className="secondary-button" to="/join">Create account</Link>
         </div>
       </section>
     )
   }
 
-  function handleBookingSubmit(event) {
-    event.preventDefault()
-    bookingCreateMutation.mutate({
-      booking_id: Number(bookingForm.booking_id),
-      rating: Number(bookingForm.rating),
-      comment: bookingForm.comment,
-    })
+  const eligible = eligibleQuery.data || { bookings: [], lessons: [] }
+  const options = eligible[activeKind] || []
+  const selectedItem = options.find((item) => String(item.id) === String(selectedId))
+  const history = activeKind === 'bookings'
+    ? (bookingReviewsQuery.data || [])
+    : (lessonReviewsQuery.data || [])
+  const historyQuery = activeKind === 'bookings' ? bookingReviewsQuery : lessonReviewsQuery
+  const bookingCount = bookingReviewsQuery.data?.length || 0
+  const lessonCount = lessonReviewsQuery.data?.length || 0
+
+  function changeKind(kind) {
+    setActiveKind(kind)
+    setSelectedId('')
+    setRating(5)
+    setComment('')
   }
 
-  function handleLessonSubmit(event) {
+  function submitReview(event) {
     event.preventDefault()
-    lessonCreateMutation.mutate({
-      lesson_id: Number(lessonForm.lesson_id),
-      rating: Number(lessonForm.rating),
-      comment: lessonForm.comment,
+    if (!selectedItem) {
+      toast.error(`Choose a completed ${activeKind === 'bookings' ? 'session' : 'lesson'} first.`)
+      return
+    }
+
+    reviewMutation.mutate({
+      kind: activeKind,
+      payload: {
+        [activeKind === 'bookings' ? 'booking_id' : 'lesson_id']: selectedItem.id,
+        rating,
+        comment: comment.trim(),
+      },
     })
   }
 
   return (
-    <section className="reviews-page">
-      <section className="page-card card reviews-hero">
+    <section className="review-workflow">
+      <header className="review-page-header">
         <div>
-          <p className="eyebrow">Reviews</p>
-          <h1>Share and read lesson feedback</h1>
-          <p className="supporting-text">
-            Keep booking reviews and lesson reviews in one place so students can learn from each completed session.
-          </p>
+          <p className="eyebrow">Student feedback</p>
+          <h1>Review your learning experience</h1>
+          <p>Only completed sessions and lessons are available, keeping every review useful and trustworthy.</p>
         </div>
+        <dl className="review-totals">
+          <div><dt>Session reviews</dt><dd>{bookingCount}</dd></div>
+          <div><dt>Lesson reviews</dt><dd>{lessonCount}</dd></div>
+        </dl>
+      </header>
 
-        <div className="reviews-summary">
-          <article className="stat-card">
-            <strong>{reviewStats.bookingCount}</strong>
-            <span>Booking reviews</span>
-          </article>
-          <article className="stat-card">
-            <strong>{reviewStats.lessonCount}</strong>
-            <span>Lesson reviews</span>
-          </article>
-        </div>
-      </section>
-
-      <div className="reviews-tabs">
-        <button className={`tab-button ${activeTab === 'bookings' ? 'is-active' : ''}`} type="button" onClick={() => setActiveTab('bookings')}>Booking reviews</button>
-        <button className={`tab-button ${activeTab === 'lessons' ? 'is-active' : ''}`} type="button" onClick={() => setActiveTab('lessons')}>Lesson reviews</button>
-      </div>
+      <nav className="review-kind-switch" aria-label="Review type">
+        <button
+          type="button"
+          className={activeKind === 'bookings' ? 'is-active' : ''}
+          onClick={() => changeKind('bookings')}
+        >
+          Sessions
+          {canReview && <span>{eligible.bookings.length} ready</span>}
+        </button>
+        <button
+          type="button"
+          className={activeKind === 'lessons' ? 'is-active' : ''}
+          onClick={() => changeKind('lessons')}
+        >
+          Course lessons
+          {canReview && <span>{eligible.lessons.length} ready</span>}
+        </button>
+      </nav>
 
       {canReview ? (
-        <section className="reviews-forms-grid">
-          <ReviewForm
-            title="Add booking review"
-            cta="Save booking review"
-            busy={bookingCreateMutation.isPending}
-            onSubmit={handleBookingSubmit}
-            fields={(
-              <>
-                <label className="account-field">
-                  <span>Booking ID</span>
-                  <input type="number" value={bookingForm.booking_id} onChange={(event) => setBookingForm((current) => ({ ...current, booking_id: event.target.value }))} required />
-                </label>
-                <label className="account-field">
-                  <span>Rating</span>
-                  <input type="number" min="1" max="5" value={bookingForm.rating} onChange={(event) => setBookingForm((current) => ({ ...current, rating: event.target.value }))} required />
-                </label>
-                <label className="account-field account-field-wide">
-                  <span>Comment</span>
-                  <textarea rows="4" value={bookingForm.comment} onChange={(event) => setBookingForm((current) => ({ ...current, comment: event.target.value }))} />
-                </label>
-              </>
-            )}
-          />
+        <section className="review-compose-section" aria-labelledby="compose-review-title">
+          <div className="review-section-heading">
+            <div>
+              <span>01</span>
+              <div>
+                <h2 id="compose-review-title">Write a review</h2>
+                <p>Select one completed item, rate it, and share what helped.</p>
+              </div>
+            </div>
+            <p>Reviews are public on the tutor's profile.</p>
+          </div>
 
-          <ReviewForm
-            title="Add lesson review"
-            cta="Save lesson review"
-            busy={lessonCreateMutation.isPending}
-            onSubmit={handleLessonSubmit}
-            fields={(
-              <>
-                <label className="account-field">
-                  <span>Lesson ID</span>
-                  <input type="number" value={lessonForm.lesson_id} onChange={(event) => setLessonForm((current) => ({ ...current, lesson_id: event.target.value }))} required />
+          {eligibleQuery.isLoading ? (
+            <ReviewSkeleton />
+          ) : eligibleQuery.isError ? (
+            <div className="review-query-error" role="alert">
+              <div>
+                <h3>We could not load review options</h3>
+                <p>{getApiErrorMessage(eligibleQuery.error)}</p>
+              </div>
+              <button type="button" onClick={() => eligibleQuery.refetch()}>Try again</button>
+            </div>
+          ) : options.length === 0 ? (
+            <EmptyState kind={activeKind} />
+          ) : (
+            <form className="review-compose" onSubmit={submitReview}>
+              <div className="review-compose-main">
+                <label className="review-field" htmlFor="review-item">
+                  <span>{activeKind === 'bookings' ? 'Completed session' : 'Completed lesson'}</span>
+                  <select
+                    id="review-item"
+                    value={selectedItem ? selectedId : ''}
+                    onChange={(event) => setSelectedId(event.target.value)}
+                    required
+                  >
+                    <option value="">Choose one</option>
+                    {options.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {activeKind === 'bookings'
+                          ? `${item.subject_name} with ${item.tutor_name} - ${formatDate(item.end_datetime)}`
+                          : `${item.lesson_title} - ${item.course_title}`}
+                      </option>
+                    ))}
+                  </select>
                 </label>
-                <label className="account-field">
-                  <span>Rating</span>
-                  <input type="number" min="1" max="5" value={lessonForm.rating} onChange={(event) => setLessonForm((current) => ({ ...current, rating: event.target.value }))} required />
+
+                {selectedItem && (
+                  <div className="review-selection-summary">
+                    <span>{activeKind === 'bookings' ? selectedItem.mode.replace('_', ' ') : selectedItem.topic || 'Course lesson'}</span>
+                    <strong>{activeKind === 'bookings' ? selectedItem.subject_name : selectedItem.lesson_title}</strong>
+                    <p>
+                      {selectedItem.tutor_name} / {activeKind === 'bookings'
+                        ? formatDate(selectedItem.end_datetime)
+                        : selectedItem.course_title}
+                    </p>
+                  </div>
+                )}
+
+                <fieldset className="review-rating-field">
+                  <legend>Your rating</legend>
+                  <div className="review-rating-options">
+                    {RATING_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={rating === option.value ? 'is-selected' : ''}
+                        aria-pressed={rating === option.value}
+                        onClick={() => setRating(option.value)}
+                      >
+                        <strong>{option.value}</strong>
+                        <span>{option.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              </div>
+
+              <div className="review-comment-panel">
+                <label htmlFor="review-comment">
+                  <span>Comment <small>Optional</small></span>
+                  <textarea
+                    id="review-comment"
+                    rows="7"
+                    maxLength="600"
+                    value={comment}
+                    onChange={(event) => setComment(event.target.value)}
+                    placeholder="What worked well? What should another student know?"
+                  />
                 </label>
-                <label className="account-field account-field-wide">
-                  <span>Comment</span>
-                  <textarea rows="4" value={lessonForm.comment} onChange={(event) => setLessonForm((current) => ({ ...current, comment: event.target.value }))} />
-                </label>
-              </>
-            )}
-          />
+                <div className="review-submit-row">
+                  <span>{comment.length}/600</span>
+                  <button type="submit" disabled={!selectedItem || reviewMutation.isPending}>
+                    {reviewMutation.isPending ? 'Publishing...' : 'Publish review'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          )}
         </section>
       ) : (
-        <section className="page-card card">
-          <p className="eyebrow">Reviews</p>
-          <h2>Students can create reviews after completed sessions</h2>
-          <p className="supporting-text">
-            You can still read existing reviews, but only student accounts can post new ones.
-          </p>
+        <section className="review-role-note">
+          <span>01</span>
+          <div>
+            <h2>Student reviews build trust</h2>
+            <p>Your account can read feedback below. Only students can review completed learning experiences.</p>
+          </div>
         </section>
       )}
 
-      <section className="reviews-list-grid">
-        {activeTab === 'bookings' ? (
-          bookingReviewsQuery.isLoading ? (
-            <article className="page-card card"><p className="supporting-text">Loading booking reviews...</p></article>
-          ) : bookingReviews.length ? bookingReviews.map((item) => <ReviewCard key={item.id} item={item} kind="Booking review" />) : (
-            <article className="page-card card"><p className="supporting-text">No booking reviews yet.</p></article>
-          )
-        ) : lessonReviewsQuery.isLoading ? (
-          <article className="page-card card"><p className="supporting-text">Loading lesson reviews...</p></article>
-        ) : lessonReviews.length ? lessonReviews.map((item) => <ReviewCard key={item.id} item={item} kind="Lesson review" />) : (
-          <article className="page-card card"><p className="supporting-text">No lesson reviews yet.</p></article>
+      <section className="review-history-section" aria-labelledby="review-history-title">
+        <div className="review-section-heading">
+          <div>
+            <span>02</span>
+            <div>
+              <h2 id="review-history-title">{canReview ? 'Your published reviews' : 'Published reviews'}</h2>
+              <p>{history.length} {activeKind === 'bookings' ? 'session' : 'lesson'} review{history.length === 1 ? '' : 's'}</p>
+            </div>
+          </div>
+        </div>
+
+        {historyQuery.isLoading ? (
+          <div className="review-history-list"><ReviewSkeleton /><ReviewSkeleton /></div>
+        ) : historyQuery.isError ? (
+          <div className="review-query-error" role="alert">
+            <div><h3>Review history is unavailable</h3><p>{getApiErrorMessage(historyQuery.error)}</p></div>
+            <button type="button" onClick={() => historyQuery.refetch()}>Try again</button>
+          </div>
+        ) : history.length ? (
+          <div className="review-history-list">
+            {history.map((item) => <ReviewHistoryCard key={item.id} item={item} kind={activeKind} />)}
+          </div>
+        ) : (
+          <div className="review-history-empty">No published {activeKind === 'bookings' ? 'session' : 'lesson'} reviews yet.</div>
         )}
       </section>
     </section>

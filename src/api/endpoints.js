@@ -1,4 +1,4 @@
-export const API_ENDPOINTS = {
+﻿export const API_ENDPOINTS = {
   health: '/health/',
   auth: {
     login: '/auth/login/',
@@ -10,17 +10,15 @@ export const API_ENDPOINTS = {
   tutors: {
     list: '/tutors/',
     detail: (id) => `/tutors/${id}/`,
-    search: '/tutors/search/',
     dashboard: '/tutors/dashboard/',
     checklist: '/tutors/setup/checklist/',
     completion: '/tutors/me/completion/',
     agreement: '/tutors/agreement/',
     agreementDownload: '/tutors/agreement/download/',
     documents: '/tutors/documents/',
+    documentReview: (id) => `/tutors/verifications/documents/${id}/review/`,
     verifications: '/tutors/verifications/',
     verificationDecision: (id) => `/tutors/verifications/${id}/decide/`,
-    lessons: '/tutors/lessons/',
-    ratings: '/tutors/ratings/',
   },
   students: {
     list: '/students/',
@@ -45,23 +43,37 @@ export const API_ENDPOINTS = {
     markRead: (bookingId) => `/chats/bookings/${bookingId}/messages/read/`,
   },
   reviews: {
+    eligible: '/reviews/eligible/',
     bookingList: '/reviews/',
     bookingCreate: '/reviews/create/',
     lessonList: '/reviews/lesson/',
     lessonCreate: '/reviews/lesson/create/',
   },
-  bookings: {
+  assessments: {
+    list: '/assessments/assessments/',
+    create: '/assessments/assessments/create/',
+    questionCreate: '/assessments/assessments/questions/create/',
+    questions: (id) => `/assessments/assessments/${id}/questions/`,
+    attempts: '/assessments/attempts/',
+    attemptCreate: '/assessments/attempts/create/',
+    confirmations: '/assessments/confirmations/',
+    confirmationCreate: '/assessments/confirmations/create/',
+    impact: '/assessments/impact/',
+  },  bookings: {
     list: '/bookings/',
     create: '/bookings/create/',
     action: (id) => `/bookings/${id}/action/`,
     disputes: '/bookings/disputes/',
     disputeCreate: '/bookings/disputes/create/',
+    disputeDecision: (id) => `/bookings/disputes/${id}/decide/`,
   },
   payments: {
     list: '/payments/bookings/',
     coursePurchases: '/payments/course-purchases/',
     coursePurchaseCreate: '/payments/course-purchases/create/',
+    learningLibrary: '/payments/learning-library/',
     lessonProgress: '/payments/lesson-progress/',
+    lessonProgressUpdate: '/payments/lesson-progress/update/',
     payouts: '/payments/payouts/',
     payoutRequest: '/payments/payouts/request/',
     payoutDecision: (id) => `/payments/payouts/${id}/decide/`,
@@ -81,9 +93,8 @@ export const API_ENDPOINTS = {
     lessonDetail: (id) => `/catalog/lessons/${id}/`,
   },
   reports: {
+    dashboard: '/analytics/dashboard/',
     admin: '/analytics/report/',
     mine: '/analytics/my-report/',
   },
 }
-
-

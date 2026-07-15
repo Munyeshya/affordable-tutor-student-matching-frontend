@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 import { listParentLinks } from '../api/services/parents'
 import { apiClient } from '../api/client'
 import { API_ENDPOINTS } from '../api/endpoints'
 import { useAuth } from '../context/AuthContext.jsx'
+import { getApiErrorMessage } from '../api/errors'
+import { queryKeys } from '../api/queryKeys'
+import { StatusBadge } from '../components/ui/StatusBadge.jsx'
 
 function StudentLinkCard({ link }) {
   return (
@@ -15,7 +19,9 @@ function StudentLinkCard({ link }) {
           <h3>{link.student_name || 'Student'}</h3>
           <p className="supporting-text">{link.student_email}</p>
         </div>
-        <span className="status-pill">{link.is_primary ? 'Primary' : 'Linked'}</span>
+        <StatusBadge className="status-pill" tone={link.is_primary ? 'warning' : 'neutral'}>
+          {link.is_primary ? 'Primary' : 'Linked'}
+        </StatusBadge>
       </div>
 
       <div className="parent-link-meta">
@@ -35,7 +41,7 @@ export function ParentStudentsPage() {
   const [message, setMessage] = useState('')
 
   const linksQuery = useQuery({
-    queryKey: ['parent-links'],
+    queryKey: queryKeys.parents.links,
     queryFn: () => listParentLinks().then((response) => response.data),
     enabled: isAuthenticated && user?.role === 'PARENT',
   })
@@ -47,11 +53,14 @@ export function ParentStudentsPage() {
       setLabel('')
       setIsPrimary(false)
       setMessage('Student linked successfully.')
-      await queryClient.invalidateQueries({ queryKey: ['parent-links'] })
-      await queryClient.invalidateQueries({ queryKey: ['parent-dashboard'] })
+      toast.success('Student linked successfully.')
+      await queryClient.invalidateQueries({ queryKey: queryKeys.parents.links })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard })
     },
     onError: (error) => {
-      setMessage(error?.response?.data?.detail || error?.response?.data?.student_email || 'Could not link the student.')
+      const errorMessage = getApiErrorMessage(error, 'Could not link the student.')
+      setMessage(errorMessage)
+      toast.error(errorMessage)
     },
   })
 

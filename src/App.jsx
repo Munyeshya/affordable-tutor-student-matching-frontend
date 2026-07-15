@@ -1,139 +1,7 @@
-﻿import React from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import './App.css'
-import { useAuth } from './context/AuthContext.jsx'
-
-function ShellIcon({ name }) {
-  const paths = {
-    search:
-      'M21 21l-4.2-4.2m1.2-5.3a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z',
-    shield:
-      'M12 3l7 3v5c0 4.9-3.1 9.4-7 10.9C8.1 20.4 5 15.9 5 11V6l7-3z',
-    star:
-      'M12 17.3l-5.5 3 1.1-6.2L3 9.7l6.2-.9L12 3.2l2.8 5.6 6.2.9-4.6 4.4 1.1 6.2-5.5-3z',
-    users:
-      'M7.5 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm9 0a3 3 0 100-6 3 3 0 000 6zM3.5 19c0-2.5 2.3-4.5 5-4.5h1m2 4.5c0-2.7 2.5-4.5 5.5-4.5h1',
-    book: 'M6 4.5h11a2 2 0 012 2V19a2 2 0 01-2 2H6a2 2 0 01-2-2V6.5a2 2 0 012-2zm0 0v13m2-9h9m-9 3h9',
-    arrow:
-      'M5 12h12m0 0-5-5m5 5-5 5',
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d={paths[name]} />
-    </svg>
-  )
-}
-
-function Layout() {
-  const { user, isAuthenticated, loading, signOut } = useAuth()
-
-  return (
-    <div className="site-shell">
-      <div className="top-strip">
-        <div className="top-strip-inner">
-          <span className="top-strip-text">New tutor applications are open. Verified profiles only.</span>
-          <Link to="/join" className="top-strip-link">
-            Apply now
-          </Link>
-        </div>
-      </div>
-
-      <header className="site-header">
-        <div className="header-inner">
-          <Link to="/" className="brand-wrap" aria-label="Isomo home">
-            <img className="brand-logo brand-logo-wide" src="/logo-long-white.png" alt="Isomo" />
-          </Link>
-
-          <nav className="main-nav" aria-label="Primary">
-            <NavLink to="/" end>
-              Home
-            </NavLink>
-            <NavLink to="/about">About</NavLink>
-            <NavLink to="/tutors">Tutors</NavLink>
-            <NavLink to="/courses">Courses</NavLink>
-            <NavLink to="/how-it-works">How it works</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-            {isAuthenticated ? <NavLink to="/bookings">Bookings</NavLink> : null}
-            {isAuthenticated && user?.role === 'STUDENT' ? <NavLink to="/learning">Learning</NavLink> : null}
-            {isAuthenticated ? <NavLink to="/reports">Reports</NavLink> : null}
-            {isAuthenticated ? <NavLink to="/notifications">Notifications</NavLink> : null}
-            {isAuthenticated ? <NavLink to="/messages">Messages</NavLink> : null}
-            {isAuthenticated ? <NavLink to="/reviews">Reviews</NavLink> : null}
-            {isAuthenticated ? <NavLink to="/account">Account</NavLink> : null}
-            {isAuthenticated && user?.role === 'PARENT' ? <NavLink to="/parent-dashboard">Parent dashboard</NavLink> : null}
-            {isAuthenticated && user?.role === 'PARENT' ? <NavLink to="/parent-students">Parent students</NavLink> : null}
-            {isAuthenticated && user?.role === 'ADMIN' ? <NavLink to="/admin/tutor-reviews">Admin reviews</NavLink> : null}
-            {isAuthenticated && user?.role === 'ADMIN' ? <NavLink to="/admin/disputes">Admin disputes</NavLink> : null}
-            {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-dashboard">Tutor dashboard</NavLink> : null}
-            {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-teaching">Teaching</NavLink> : null}
-            {isAuthenticated && user?.role === 'TUTOR' ? <NavLink to="/tutor-earnings">Earnings</NavLink> : null}
-          </nav>
-
-          <div className="header-actions">
-            {loading ? <span className="top-strip-text">Loading...</span> : null}
-            {isAuthenticated ? (
-              <>
-                <span className="top-strip-text">{user?.email}</span>
-                <button className="link-button" type="button" onClick={signOut}>
-                  Sign out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link className="link-button" to="/sign-in">
-                  Sign in
-                </Link>
-                <Link className="primary-button" to="/join">
-                  Join now
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <main className="page-content">
-        <Outlet />
-      </main>
-
-      <footer className="site-footer">
-        <div className="footer-brand">
-          <img className="footer-logo" src="/logo-small-white.png" alt="Isomo" />
-          <p>Affordable learning, built for trust.</p>
-          <p>Copyright Ã‚Â© 2026 Isomo. All rights reserved.</p>
-        </div>
-
-        <div className="footer-links">
-          <div>
-            <h3>Company</h3>
-            <Link to="/about">About us</Link>
-            <Link to="/how-it-works">How it works</Link>
-            <Link to="/contact">Contact us</Link>
-          </div>
-
-          <div>
-            <h3>Support</h3>
-            <Link to="/contact">Help center</Link>
-            <Link to="/contact">Terms of service</Link>
-            <Link to="/contact">Privacy policy</Link>
-          </div>
-        </div>
-
-        <div className="footer-newsletter">
-          <h3>Stay up to date</h3>
-          <p>Get the latest tutor updates and platform news.</p>
-          <form className="footer-form">
-            <input type="email" placeholder="Your email address" aria-label="Email address" />
-            <button type="submit" aria-label="Subscribe to updates">
-              <ShellIcon name="arrow" />
-            </button>
-          </form>
-        </div>
-      </footer>
-    </div>
-  )
-}
+import { ShellIcon } from './components/layout/ShellIcon.jsx'
 
 function HomePage() {
   const platformMetrics = [
@@ -285,7 +153,7 @@ function Page({ title, text, action, secondary }) {
   )
 }
 
-export { Layout, HomePage, Page }
+export { HomePage, Page }
 
 
 

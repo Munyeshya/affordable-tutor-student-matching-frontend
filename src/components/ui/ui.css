@@ -1,0 +1,89 @@
+.ui-data-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ui-data-table-wrap:focus-visible {
+  outline: 2px solid #b45309;
+  outline-offset: 3px;
+}
+
+.ui-data-table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  color: #1a1a1a;
+  font-size: 0.72rem;
+}
+
+.ui-data-table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ui-data-table th,
+.ui-data-table td {
+  border-bottom: 1px solid #e8e1da;
+  padding: 0.65rem 0.45rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.ui-data-table th {
+  color: #69645f;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ui-status-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+}
+
+.ui-status-badge-success {
+  color: #2d6d39;
+}
+
+.ui-status-badge-warning {
+  color: #a95000;
+}
+
+.ui-status-badge-danger {
+  color: #8a2525;
+}
+
+.ui-dialog-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+}
+
+.ui-confirmation-dialog {
+  position: relative;
+}
+.ui-filter-bar,
+.ui-filter-bar > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .ui-data-table {
+    font-size: 0.68rem;
+  }
+
+  .ui-data-table th,
+  .ui-data-table td {
+    padding: 0.6rem 0.4rem;
+  }
+}

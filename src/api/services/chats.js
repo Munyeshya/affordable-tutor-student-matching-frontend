@@ -1,8 +1,9 @@
 import { apiClient } from '../client'
 import { API_ENDPOINTS } from '../endpoints'
+import { normalizeListResponse } from '../response'
 
 export function listConversationThreads() {
-  return apiClient.get(API_ENDPOINTS.chats.threads)
+  return apiClient.get(API_ENDPOINTS.chats.threads).then(normalizeListResponse)
 }
 
 export function getUnreadChatCount() {
@@ -10,7 +11,7 @@ export function getUnreadChatCount() {
 }
 
 export function listBookingMessages(bookingId) {
-  return apiClient.get(API_ENDPOINTS.chats.messages(bookingId))
+  return apiClient.get(API_ENDPOINTS.chats.messages(bookingId)).then(normalizeListResponse)
 }
 
 export function sendBookingMessage(bookingId, payload) {

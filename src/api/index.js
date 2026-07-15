@@ -1,4 +1,6 @@
 export * from './client'
 export * from './endpoints'
+export * from './queryKeys'
+export * from './response'
 export * from './services/auth'
 export * from './services/tutors'

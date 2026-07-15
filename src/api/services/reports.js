@@ -1,10 +1,25 @@
-import { getApiBaseUrl } from '../client'
+﻿import { apiClient } from '../client'
 import { API_ENDPOINTS } from '../endpoints'
 
-function openReport(path) {
-  const url = `${getApiBaseUrl()}${path}`
-  window.open(url, '_blank', 'noopener,noreferrer')
-  return url
+export function getAdminDashboard() {
+  return apiClient.get(API_ENDPOINTS.reports.dashboard)
+}
+
+async function openReport(path) {
+  const reportWindow = window.open('about:blank', '_blank')
+
+  try {
+    const response = await apiClient.get(path, { responseType: 'blob' })
+    const url = URL.createObjectURL(response.data)
+    if (reportWindow) {
+      reportWindow.location.href = url
+    }
+    window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
+    return url
+  } catch (error) {
+    reportWindow?.close()
+    throw error
+  }
 }
 
 export function openMyPrintableReport() {

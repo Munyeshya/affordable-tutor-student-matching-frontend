@@ -1,102 +1,30 @@
-import React from 'react'
+﻿import React from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
-import 'react-toastify/dist/ReactToastify.css'
-import { Layout, HomePage } from './App.jsx'
-import {
-  AboutPage,
-  AdminTutorReviewsPage,
-  BookingRequestPage,
-  BookingsPage,
-  ContactPage,
-  HowItWorksPage,
-  JoinPage,
-  SignInPage,
-  TutorsPage,
-  TutorDashboardPage,
-  TutorDocumentsPage,
-  TutorTeachingPage,
-  AdminDisputesPage,
-  ReportsPage,
-} from './pages.jsx'
-import { AccountPage } from './pages/AccountPage.jsx'
-import { ParentDashboardPage } from './pages/ParentDashboardPage.jsx'
-import { CoursesPage } from './pages/CoursesPage.jsx'
-import { LearningPage } from './pages/LearningPage.jsx'
-import { ParentStudentsPage } from './pages/ParentStudentsPage.jsx'
-import { NotificationsPage } from './pages/NotificationsPage.jsx'
-import { MessagesPage } from './pages/MessagesPage.jsx'
-import { ReviewsPage } from './pages/ReviewsPage.jsx'
-import { TutorEarningsPage } from './pages/TutorEarningsPage.jsx'
-import { queryClient } from './lib/queryClient'
 import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+import './index.css'
+import './components/ui/ui.css'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { queryClient } from './lib/queryClient.js'
+import { AppRouter } from './routes/AppRouter.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            newestOnTop
-            closeOnClick
-            pauseOnHover
-            theme="colored"
-          />
-          <Routes>
-            <Route element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/tutors" element={<TutorsPage />} />
-              <Route path="/courses" element={<CoursesPage />} />
-              <Route path="/learning" element={<LearningPage />} />
-              <Route path="/how-it-works" element={<HowItWorksPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
-              <Route path="/tutor-documents" element={<TutorDocumentsPage />} />
-              <Route path="/tutor-teaching" element={<TutorTeachingPage />} />
-              <Route path="/tutor-earnings" element={<TutorEarningsPage />} />
-              <Route path="/book" element={<BookingRequestPage />} />
-              <Route path="/bookings" element={<BookingsPage />} />
-              <Route path="/admin/disputes" element={<AdminDisputesPage />} />
-              <Route path="/admin/tutor-reviews" element={<AdminTutorReviewsPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/account" element={<AccountPage />} />
-              <Route path="/parent-dashboard" element={<ParentDashboardPage />} />
-              <Route path="/parent-students" element={<ParentStudentsPage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/reviews" element={<ReviewsPage />} />
-              <Route path="/sign-in" element={<SignInPage />} />
-              <Route path="/join" element={<JoinPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          theme="colored"
+        />
+        <AppRouter />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

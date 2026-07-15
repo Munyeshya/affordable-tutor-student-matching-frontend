@@ -1,12 +1,13 @@
 import { apiClient } from '../client'
 import { API_ENDPOINTS } from '../endpoints'
+import { normalizeListResponse, normalizePaginatedResponse } from '../response'
 
 export function listSubjects() {
-  return apiClient.get(API_ENDPOINTS.catalog.subjects)
+  return apiClient.get(API_ENDPOINTS.catalog.subjects).then(normalizeListResponse)
 }
 
 export function listTutorSubjects() {
-  return apiClient.get(API_ENDPOINTS.catalog.tutorSubjects)
+  return apiClient.get(API_ENDPOINTS.catalog.tutorSubjects).then(normalizeListResponse)
 }
 
 export function createTutorSubject(payload) {
@@ -18,7 +19,7 @@ export function deleteTutorSubject(id) {
 }
 
 export function listMyCourses() {
-  return apiClient.get(API_ENDPOINTS.catalog.myCourses)
+  return apiClient.get(API_ENDPOINTS.catalog.myCourses).then(normalizeListResponse)
 }
 
 export function createCourse(payload) {
@@ -34,9 +35,13 @@ export function createLesson(courseId, payload) {
 }
 
 export function listLessons(courseId) {
-  return apiClient.get(API_ENDPOINTS.catalog.lessons(courseId))
+  return apiClient.get(API_ENDPOINTS.catalog.lessons(courseId)).then(normalizeListResponse)
 }
 
 export function listPublicCourses(params = {}) {
-  return apiClient.get(API_ENDPOINTS.catalog.courses, { params })
+  const queryParams = Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value !== '' && value != null),
+  )
+
+  return apiClient.get(API_ENDPOINTS.catalog.courses, { params: queryParams }).then(normalizePaginatedResponse)
 }

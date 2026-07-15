@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { getApiErrorMessage } from '../api/errors'
 import { updateCurrentUser } from '../api/services/auth'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -55,9 +57,12 @@ export function AccountPage() {
     onSuccess: async () => {
       await refreshUser()
       setStatusMessage('Your profile has been updated.')
+      toast.success('Your profile has been updated.')
     },
-    onError: () => {
-      setStatusMessage('We could not save your changes. Please try again.')
+    onError: (error) => {
+      const message = getApiErrorMessage(error, 'We could not save your changes. Please try again.')
+      setStatusMessage(message)
+      toast.error(message)
     },
   })
 

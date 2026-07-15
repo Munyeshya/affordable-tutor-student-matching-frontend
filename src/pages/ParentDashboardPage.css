@@ -1,0 +1,683 @@
+.parent-overview {
+  --parent-ink: #1a1a1a;
+  --parent-muted: #69645f;
+  --parent-line: #e8e1da;
+  --parent-orange: #b45309;
+  --parent-orange-dark: #a95000;
+  --parent-orange-soft: #fff3e7;
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  color: var(--parent-ink);
+}
+
+.parent-overview-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--parent-line);
+  padding: 0.25rem 0 1.15rem;
+}
+
+.parent-overview-eyebrow,
+.parent-panel-heading p,
+.parent-affordability-card p {
+  margin: 0 0 0.35rem;
+  color: var(--parent-orange-dark);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.parent-overview-header h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+  line-height: 1.15;
+}
+
+.parent-overview-header > div:first-child > p:last-child {
+  max-width: 640px;
+  margin: 0.45rem 0 0;
+  color: var(--parent-muted);
+  font-size: 0.92rem;
+}
+
+.parent-overview-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.6rem;
+}
+
+.parent-overview-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-left: 3px solid var(--parent-orange);
+  background: #fff8f1;
+  padding: 0.85rem 1rem;
+}
+
+.parent-overview-error div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.parent-overview-error span {
+  color: var(--parent-muted);
+  font-size: 0.82rem;
+}
+
+.parent-overview-error button {
+  border: 1px solid var(--parent-orange);
+  background: transparent;
+  color: var(--parent-orange-dark);
+  padding: 0.62rem 0.85rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.parent-overview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.parent-overview-stats article {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid var(--parent-line);
+  background: #ffffff;
+  padding: 0.9rem;
+}
+
+.parent-overview-stats article > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--parent-orange-dark);
+  background: var(--parent-orange-soft);
+}
+
+.parent-overview-stats article > div {
+  min-width: 0;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.parent-overview-stats small {
+  overflow: hidden;
+  color: var(--parent-muted);
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parent-overview-stats strong {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+}
+
+.parent-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(270px, 0.75fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.parent-overview-main,
+.parent-overview-side {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.parent-overview-panel {
+  min-width: 0;
+  border: 1px solid var(--parent-line);
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.parent-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.parent-panel-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.parent-panel-heading > a,
+.parent-panel-empty a {
+  color: var(--parent-orange-dark);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.parent-booking-list {
+  display: grid;
+}
+
+.parent-booking-list article {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid var(--parent-line);
+  padding: 0.8rem 0;
+}
+
+.parent-booking-list article:last-child {
+  padding-bottom: 0;
+}
+
+.parent-booking-list time {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid var(--parent-line);
+  color: var(--parent-orange-dark);
+}
+
+.parent-booking-list time strong {
+  font-size: 1rem;
+}
+
+.parent-booking-list time span {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.parent-booking-list article > div {
+  min-width: 0;
+}
+
+.parent-booking-list h3 {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.parent-booking-list p {
+  margin: 0.15rem 0;
+  color: var(--parent-muted);
+  font-size: 0.72rem;
+}
+
+.parent-booking-list small {
+  color: var(--parent-muted);
+  font-size: 0.67rem;
+}
+
+.parent-booking-list article > a {
+  color: var(--parent-orange-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.parent-booking-status {
+  padding: 0.28rem 0.45rem;
+  background: #f2efec;
+  color: #625d58;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.parent-booking-status.is-confirmed {
+  background: #edf7ef;
+  color: #2d6d39;
+}
+
+.parent-booking-status.is-pending {
+  background: var(--parent-orange-soft);
+  color: var(--parent-orange-dark);
+}
+
+.parent-student-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.parent-student-overview-card {
+  min-width: 0;
+  border: 1px solid var(--parent-line);
+  padding: 0.9rem;
+}
+
+.parent-student-overview-card > header {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.parent-student-avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--parent-orange-soft);
+  color: var(--parent-orange-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.parent-student-overview-card > header > div {
+  min-width: 0;
+}
+
+.parent-student-overview-card header small {
+  color: var(--parent-orange-dark);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.parent-student-overview-card h3 {
+  overflow: hidden;
+  margin: 0.12rem 0;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parent-student-overview-card header p {
+  overflow: hidden;
+  margin: 0;
+  color: var(--parent-muted);
+  font-size: 0.67rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parent-link-status {
+  background: #f2efec;
+  color: var(--parent-muted);
+  padding: 0.25rem 0.4rem;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.parent-link-status.is-primary {
+  background: var(--parent-orange-soft);
+  color: var(--parent-orange-dark);
+}
+
+.parent-student-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0.9rem 0;
+  border-top: 1px solid var(--parent-line);
+  border-bottom: 1px solid var(--parent-line);
+  padding: 0.7rem 0;
+}
+
+.parent-student-metrics div {
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+  border-right: 1px solid var(--parent-line);
+  padding: 0 0.45rem;
+  text-align: center;
+}
+
+.parent-student-metrics div:first-child {
+  padding-left: 0;
+}
+
+.parent-student-metrics div:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.parent-student-metrics dt {
+  overflow: hidden;
+  color: var(--parent-muted);
+  font-size: 0.58rem;
+  text-overflow: ellipsis;
+}
+
+.parent-student-metrics dd {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.parent-student-progress > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.65rem;
+}
+
+.parent-student-progress > div:last-child {
+  height: 5px;
+  background: #eee7e0;
+}
+
+.parent-student-progress > div:last-child span {
+  height: 100%;
+  display: block;
+  background: var(--parent-orange);
+}
+
+.parent-student-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+
+.parent-student-details div {
+  min-width: 0;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.parent-student-details span {
+  color: var(--parent-muted);
+  font-size: 0.6rem;
+}
+
+.parent-student-details strong {
+  overflow: hidden;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parent-student-next {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  background: var(--parent-orange-soft);
+  padding: 0.65rem;
+}
+
+.parent-student-next > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--parent-orange-dark);
+  background: #ffffff;
+}
+
+.parent-student-next div {
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.parent-student-next small {
+  color: var(--parent-muted);
+  font-size: 0.58rem;
+}
+
+.parent-student-next strong {
+  overflow: hidden;
+  font-size: 0.67rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parent-student-next a {
+  color: var(--parent-orange-dark);
+  font-size: 0.67rem;
+  font-weight: 800;
+}
+
+.parent-outcome-total {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid var(--parent-line);
+  padding-top: 0.85rem;
+}
+
+.parent-outcome-total strong {
+  color: var(--parent-orange-dark);
+  font-size: 1.8rem;
+}
+
+.parent-outcome-total span {
+  max-width: 130px;
+  color: var(--parent-muted);
+  font-size: 0.72rem;
+}
+
+.parent-outcomes-panel dl {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+}
+
+.parent-outcomes-panel dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.72rem;
+}
+
+.parent-outcomes-panel dt {
+  color: var(--parent-muted);
+}
+
+.parent-outcomes-panel dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.parent-quick-links {
+  display: grid;
+}
+
+.parent-quick-links > a {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  border-top: 1px solid var(--parent-line);
+  color: var(--parent-orange-dark);
+  padding: 0.75rem 0;
+}
+
+.parent-quick-links > a > span {
+  min-width: 0;
+  display: grid;
+  gap: 0.12rem;
+  color: var(--parent-ink);
+}
+
+.parent-quick-links strong {
+  font-size: 0.76rem;
+}
+
+.parent-quick-links small {
+  color: var(--parent-muted);
+  font-size: 0.66rem;
+}
+
+.parent-affordability-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 0.8rem;
+  border: 1px solid #efc69f;
+  background: var(--parent-orange-soft);
+  padding: 1rem;
+}
+
+.parent-affordability-card > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--parent-orange-dark);
+  background: #ffffff;
+}
+
+.parent-affordability-card h2 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.parent-affordability-card div > span {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--parent-muted);
+  font-size: 0.7rem;
+}
+
+.parent-affordability-card > a {
+  grid-column: 2;
+  color: var(--parent-orange-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.parent-panel-empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  border-top: 1px solid var(--parent-line);
+  padding: 1.4rem 0 0.5rem;
+  text-align: center;
+}
+
+.parent-panel-empty svg {
+  color: var(--parent-orange-dark);
+}
+
+.parent-panel-empty h3 {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.parent-panel-empty p {
+  max-width: 430px;
+  margin: 0;
+  color: var(--parent-muted);
+  font-size: 0.75rem;
+}
+
+.parent-dashboard-skeleton {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.parent-dashboard-skeleton span {
+  height: 42px;
+  background: #f3efeb;
+  animation: parent-dashboard-loading 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes parent-dashboard-loading {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 1200px) {
+  .parent-student-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1100px) {
+  .parent-overview-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .parent-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-overview-side {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 760px) {
+  .parent-overview-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .parent-overview-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .parent-overview-actions {
+    width: 100%;
+  }
+
+  .parent-overview-actions a {
+    flex: 1;
+    text-align: center;
+  }
+
+  .parent-overview-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-overview-error {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .parent-booking-list article {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+  }
+
+  .parent-booking-list article > a {
+    grid-column: 2 / -1;
+  }
+
+  .parent-student-overview-card > header {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .parent-link-status {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .parent-student-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 0.65rem;
+  }
+
+  .parent-student-metrics div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .parent-student-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parent-dashboard-skeleton span {
+    animation: none;
+  }
+}

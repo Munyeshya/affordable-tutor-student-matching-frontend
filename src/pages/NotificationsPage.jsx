@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { getApiErrorMessage } from '../api/errors'
 import { getUnreadNotificationCount, listNotifications, markAllNotificationsRead, markNotificationRead } from '../api/services/notifications'
 import { useAuth } from '../context/AuthContext.jsx'
+import { queryKeys } from '../api/queryKeys'
+import { StatusBadge } from '../components/ui/StatusBadge.jsx'
 
 function NotificationCard({ item, onRead, busy }) {
   return (
@@ -13,7 +17,9 @@ function NotificationCard({ item, onRead, busy }) {
           <h3>{item.title}</h3>
           <p className="supporting-text">{item.body}</p>
         </div>
-        <span className="status-pill">{item.is_read ? 'Read' : 'Unread'}</span>
+        <StatusBadge className="status-pill" tone={item.is_read ? 'neutral' : 'warning'}>
+          {item.is_read ? 'Read' : 'Unread'}
+        </StatusBadge>
       </div>
 
       <div className="notification-meta">
@@ -42,13 +48,13 @@ export function NotificationsPage() {
   const [showUnreadOnly, setShowUnreadOnly] = useState(false)
 
   const notificationsQuery = useQuery({
-    queryKey: ['notifications', showUnreadOnly],
+    queryKey: queryKeys.notifications.list({ unread: showUnreadOnly }),
     queryFn: () => listNotifications(showUnreadOnly ? { unread: true } : {}).then((response) => response.data),
     enabled: isAuthenticated,
   })
 
   const unreadQuery = useQuery({
-    queryKey: ['notifications-unread-count'],
+    queryKey: queryKeys.notifications.unread,
     queryFn: () => getUnreadNotificationCount().then((response) => response.data),
     enabled: isAuthenticated,
   })
@@ -56,17 +62,21 @@ export function NotificationsPage() {
   const markOneMutation = useMutation({
     mutationFn: markNotificationRead,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['notifications'] })
-      await queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] })
+      toast.success('Notification marked as read.')
+      await queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unread })
     },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not mark this notification as read.')),
   })
 
   const markAllMutation = useMutation({
     mutationFn: markAllNotificationsRead,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['notifications'] })
-      await queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] })
+      toast.success('All notifications marked as read.')
+      await queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unread })
     },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not update notifications.')),
   })
 
   if (!isAuthenticated) {

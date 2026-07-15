@@ -1,19 +1,15 @@
 import { apiClient } from '../client'
 import { API_ENDPOINTS } from '../endpoints'
+import { normalizeListResponse, normalizePaginatedResponse } from '../response'
 
 export function listTutors(params = {}) {
-  return apiClient.get(API_ENDPOINTS.tutors.list, { params })
+  return apiClient.get(API_ENDPOINTS.tutors.list, { params }).then(normalizePaginatedResponse)
 }
 
 export function getTutor(id) {
   return apiClient.get(API_ENDPOINTS.tutors.detail(id))
 }
 
-export function searchTutors(query) {
-  return apiClient.get(API_ENDPOINTS.tutors.search, {
-    params: { q: query },
-  })
-}
 
 export function getTutorDashboard() {
   return apiClient.get(API_ENDPOINTS.tutors.dashboard)
@@ -38,13 +34,17 @@ export function downloadTutorAgreement() {
 }
 
 export function getTutorDocuments() {
-  return apiClient.get(API_ENDPOINTS.tutors.documents)
+  return apiClient.get(API_ENDPOINTS.tutors.documents).then(normalizeListResponse)
 }
 
 export function uploadTutorDocument(payload) {
   return apiClient.post(API_ENDPOINTS.tutors.documents, payload, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
+}
+
+export function reviewTutorDocument(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.tutors.documentReview(id), payload)
 }
 
 export function getTutorAgreementDetails() {
@@ -58,18 +58,9 @@ export function uploadTutorAgreement(payload) {
 }
 
 export function listTutorVerifications(params = {}) {
-  return apiClient.get(API_ENDPOINTS.tutors.verifications, { params })
+  return apiClient.get(API_ENDPOINTS.tutors.verifications, { params }).then(normalizeListResponse)
 }
 
 export function decideTutorVerification(id, payload) {
   return apiClient.patch(API_ENDPOINTS.tutors.verificationDecision(id), payload)
 }
-
-export function getTutorLessons() {
-  return apiClient.get(API_ENDPOINTS.tutors.lessons)
-}
-
-export function rateTutorLesson(payload) {
-  return apiClient.post(API_ENDPOINTS.tutors.ratings, payload)
-}
-

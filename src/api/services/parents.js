@@ -1,5 +1,6 @@
 import { apiClient } from '../client'
 import { API_ENDPOINTS } from '../endpoints'
+import { normalizeListResponse } from '../response'
 
 export function getParentDashboard() {
   return apiClient.get(API_ENDPOINTS.parents.dashboard)
@@ -14,5 +15,5 @@ export function updateParentProfile(data) {
 }
 
 export function listParentLinks() {
-  return apiClient.get(API_ENDPOINTS.parents.links)
+  return apiClient.get(API_ENDPOINTS.parents.links).then(normalizeListResponse)
 }
