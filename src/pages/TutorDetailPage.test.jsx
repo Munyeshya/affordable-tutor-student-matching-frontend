@@ -55,6 +55,30 @@ describe('TutorDetailPage', () => {
             mode: 'IN_PERSON',
           },
           {
+            id: 34,
+            start_datetime: '2030-01-10T15:00:00Z',
+            end_datetime: '2030-01-10T16:00:00Z',
+            mode: 'ONLINE',
+          },
+          {
+            id: 35,
+            start_datetime: '2030-01-10T16:00:00Z',
+            end_datetime: '2030-01-10T17:00:00Z',
+            mode: 'ONLINE',
+          },
+          {
+            id: 36,
+            start_datetime: '2030-01-10T17:00:00Z',
+            end_datetime: '2030-01-10T18:00:00Z',
+            mode: 'ONLINE',
+          },
+          {
+            id: 37,
+            start_datetime: '2030-01-10T18:00:00Z',
+            end_datetime: '2030-01-10T19:00:00Z',
+            mode: 'IN_PERSON',
+          },
+          {
             id: 33,
             start_datetime: '2030-01-11T10:00:00Z',
             end_datetime: '2030-01-11T11:00:00Z',
@@ -106,13 +130,25 @@ describe('TutorDetailPage', () => {
       'tutor-course-overview-no-image',
     )
     expect(screen.getAllByLabelText('4.8 out of 5').length).toBeGreaterThan(0)
-    expect(screen.getByText('3 open across 2 days')).toBeInTheDocument()
-    expect(screen.getByText('2 open')).toBeInTheDocument()
+    expect(screen.getByText('7 open across 2 days')).toBeInTheDocument()
+    expect(screen.getByText('6 open')).toBeInTheDocument()
     expect(screen.getByText('Times are shown in your local timezone.')).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Tutor availability calendar' })).toBeInTheDocument()
+    expect(screen.getAllByText('Choose')).toHaveLength(4)
+    expect(screen.getByText('1-4 of 6')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
     expect(screen.getAllByRole('link', { name: /choose .*online/i })[0]).toHaveAttribute(
       'href',
       '/book?tutor=7&profile=1&slot=31&mode=ONLINE',
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    expect(screen.getAllByText('Choose')).toHaveLength(2)
+    expect(screen.getByText('5-6 of 6')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: /choose .*in person/i })).toHaveAttribute(
+      'href',
+      '/book?tutor=7&profile=1&slot=37&mode=IN_PERSON',
     )
 
     const unavailableDate = screen.getByRole('button', {
@@ -123,10 +159,11 @@ describe('TutorDetailPage', () => {
     expect(screen.getByText(/has not published an open slot for this date/i)).toBeInTheDocument()
 
     const availableDate = screen.getByRole('button', {
-      name: /10 January 2030, 2 available lesson times/i,
+      name: /10 January 2030, 6 available lesson times/i,
     })
     await user.click(availableDate)
     expect(screen.queryByRole('heading', { name: 'No available lesson times' })).not.toBeInTheDocument()
-    expect(screen.getByText('2 open')).toBeInTheDocument()
+    expect(screen.getByText('6 open')).toBeInTheDocument()
+    expect(screen.getByText('1-4 of 6')).toBeInTheDocument()
   })
 })

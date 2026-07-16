@@ -7,6 +7,8 @@ import { getTutor } from '../api/services/tutors'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
+const AVAILABILITY_SLOTS_PER_PAGE = 4
+
 function formatMoney(value, currency = 'RWF', suffix = '') {
   const amount = Number(value)
 
@@ -208,6 +210,7 @@ export function TutorDetailPage() {
   const { user, isAuthenticated } = useAuth()
   const [selectedAvailabilityDate, setSelectedAvailabilityDate] = useState('')
   const [visibleCalendarMonth, setVisibleCalendarMonth] = useState('')
+  const [availabilitySlotPage, setAvailabilitySlotPage] = useState(1)
   const marketplaceReturnPath = getMarketplaceReturnPath(location.state?.fromMarketplace)
 
   const tutorQuery = useQuery({
@@ -247,6 +250,23 @@ export function TutorDetailPage() {
   const defaultAvailabilityDate = availabilityDays[0]?.key || getDateKey(new Date())
   const activeAvailabilityDate = selectedAvailabilityDate || defaultAvailabilityDate
   const activeAvailabilityDay = availabilityByDate.get(activeAvailabilityDate)
+  const activeAvailabilitySlots = activeAvailabilityDay?.slots || []
+  const availabilitySlotPageCount = Math.max(
+    1,
+    Math.ceil(activeAvailabilitySlots.length / AVAILABILITY_SLOTS_PER_PAGE),
+  )
+  const activeAvailabilitySlotPage = Math.min(availabilitySlotPage, availabilitySlotPageCount)
+  const visibleAvailabilitySlots = activeAvailabilitySlots.slice(
+    (activeAvailabilitySlotPage - 1) * AVAILABILITY_SLOTS_PER_PAGE,
+    activeAvailabilitySlotPage * AVAILABILITY_SLOTS_PER_PAGE,
+  )
+  const firstVisibleSlotNumber = activeAvailabilitySlots.length
+    ? ((activeAvailabilitySlotPage - 1) * AVAILABILITY_SLOTS_PER_PAGE) + 1
+    : 0
+  const lastVisibleSlotNumber = Math.min(
+    activeAvailabilitySlotPage * AVAILABILITY_SLOTS_PER_PAGE,
+    activeAvailabilitySlots.length,
+  )
   const defaultCalendarMonth = getMonthKey(availability[0]?.start_datetime || new Date())
   const activeCalendarMonth = visibleCalendarMonth || defaultCalendarMonth
   const activeCalendarMonthDate = getMonthDate(activeCalendarMonth)
@@ -271,10 +291,12 @@ export function TutorDetailPage() {
     )
     setVisibleCalendarMonth(getMonthKey(nextMonth))
     setSelectedAvailabilityDate(getDateKey(nextMonth))
+    setAvailabilitySlotPage(1)
   }
 
   function selectCalendarDate(date) {
     setSelectedAvailabilityDate(getDateKey(date))
+    setAvailabilitySlotPage(1)
   }
 
   return (
@@ -456,32 +478,58 @@ export function TutorDetailPage() {
                     </div>
 
                     {activeAvailabilityDay ? (
-                      <div className="tutor-calendar-slots">
-                        {activeAvailabilityDay.slots.map((slot) => {
-                          const slotContent = (
-                            <>
-                              <span className="tutor-calendar-time">
-                                <InlineIcon name="clock" />
-                                <strong>{formatTime(slot.start_datetime)} - {formatTime(slot.end_datetime)}</strong>
-                              </span>
-                              <span className="tutor-calendar-mode">{formatLabel(slot.mode)}</span>
-                              {canBook ? <span className="tutor-calendar-choose">Choose</span> : null}
-                            </>
-                          )
+                      <div>
+                        <div className="tutor-calendar-slots">
+                          {visibleAvailabilitySlots.map((slot) => {
+                            const slotContent = (
+                              <>
+                                <span className="tutor-calendar-time">
+                                  <InlineIcon name="clock" />
+                                  <strong>{formatTime(slot.start_datetime)} - {formatTime(slot.end_datetime)}</strong>
+                                </span>
+                                <span className="tutor-calendar-mode">{formatLabel(slot.mode)}</span>
+                                {canBook ? <span className="tutor-calendar-choose">Choose</span> : null}
+                              </>
+                            )
 
-                          return canBook ? (
-                            <Link
-                              className="tutor-calendar-slot"
-                              key={slot.id}
-                              to={`${baseBookingPath}&slot=${slot.id}&mode=${slot.mode}`}
-                              aria-label={`Choose ${formatSelectedDate(activeAvailabilityDate)} from ${formatTime(slot.start_datetime)} to ${formatTime(slot.end_datetime)}, ${formatLabel(slot.mode)}`}
+                            return canBook ? (
+                              <Link
+                                className="tutor-calendar-slot"
+                                key={slot.id}
+                                to={`${baseBookingPath}&slot=${slot.id}&mode=${slot.mode}`}
+                                aria-label={`Choose ${formatSelectedDate(activeAvailabilityDate)} from ${formatTime(slot.start_datetime)} to ${formatTime(slot.end_datetime)}, ${formatLabel(slot.mode)}`}
+                              >
+                                {slotContent}
+                              </Link>
+                            ) : (
+                              <div className="tutor-calendar-slot" key={slot.id}>{slotContent}</div>
+                            )
+                          })}
+                        </div>
+
+                        {availabilitySlotPageCount > 1 ? (
+                          <nav className="tutor-slot-pagination" aria-label="Available lesson time pages">
+                            <button
+                              type="button"
+                              disabled={activeAvailabilitySlotPage === 1}
+                              onClick={() => setAvailabilitySlotPage((page) => Math.max(1, page - 1))}
                             >
-                              {slotContent}
-                            </Link>
-                          ) : (
-                            <div className="tutor-calendar-slot" key={slot.id}>{slotContent}</div>
-                          )
-                        })}
+                              <InlineIcon name="arrow" className="is-reversed" />
+                              Previous
+                            </button>
+                            <span>
+                              {firstVisibleSlotNumber}-{lastVisibleSlotNumber} of {activeAvailabilitySlots.length}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={activeAvailabilitySlotPage === availabilitySlotPageCount}
+                              onClick={() => setAvailabilitySlotPage((page) => Math.min(availabilitySlotPageCount, page + 1))}
+                            >
+                              Next
+                              <InlineIcon name="arrow" />
+                            </button>
+                          </nav>
+                        ) : null}
                       </div>
                     ) : (
                       <div className="tutor-calendar-empty">

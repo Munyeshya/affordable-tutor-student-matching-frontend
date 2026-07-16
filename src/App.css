@@ -3154,6 +3154,47 @@
   gap: 0.5rem;
 }
 
+.tutor-slot-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eadfd7;
+}
+
+.tutor-slot-pagination button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #d9c8bc;
+  background: #fff;
+  padding: 0.45rem 0.6rem;
+  color: #3a302a;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tutor-slot-pagination button:hover:not(:disabled) {
+  border-color: #b45309;
+  background: #fff7ef;
+  color: #8b4600;
+}
+
+.tutor-slot-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tutor-slot-pagination span {
+  color: #746a64;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
 .tutor-calendar-slot {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
