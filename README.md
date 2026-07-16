@@ -32,6 +32,23 @@ Students who need academic support often face high tutoring costs, difficulty fi
 
 Run `npm test` for the automated frontend suite, `npm run test:coverage` for the HTML coverage report, and `npm run test:watch` during development. See `FRONTEND_TESTING.md` for the covered workflows, mock strategy, and contribution rules.
 
+## Production Build
+
+The frontend Dockerfile builds the Vite application and serves it with Nginx.
+Nginx proxies API, admin, static-file, and WebSocket traffic to the Django ASGI
+service so the browser uses one origin.
+
+Production build values:
+
+```dotenv
+VITE_API_BASE_URL=/api
+VITE_WS_BASE_URL=
+```
+
+Leaving `VITE_WS_BASE_URL` empty makes chat derive `ws://` or `wss://` from the
+current frontend origin. The complete staging and production procedure is in the
+backend repository's `PRODUCTION_DEPLOYMENT.md`.
+
 ## Payment Experience
 
 Course enrollment and confirmed student bookings share one secure checkout component. The component loads enabled methods from the backend, collects the mobile-money network and phone number when required, submits an idempotency key, and displays pending, paid, failed, expired, or refunded states.
