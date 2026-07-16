@@ -50,6 +50,7 @@ function getInitialForm(searchParams) {
     start_datetime: '',
     end_datetime: '',
     mode: searchParams.get('mode') || 'ONLINE',
+    location: '',
     notes: '',
   }
 }
@@ -100,6 +101,9 @@ function BookingSummary({ form, selectedTutor, selectedSubject, selectedStudent,
       <div><span>Starts</span><strong>{formatDateTime(session.start)}</strong></div>
       <div><span>Ends</span><strong>{formatDateTime(session.end)}</strong></div>
       <div><span>Teaching mode</span><strong>{formatMode(form.mode)}</strong></div>
+      {form.mode === 'IN_PERSON' ? (
+        <div><span>Location</span><strong>{form.location || 'Not provided'}</strong></div>
+      ) : null}
       <div><span>Estimated lesson cost</span><strong>{formatMoney(estimatedTotal, selectedTutor?.currency)}</strong></div>
     </div>
   )
@@ -160,6 +164,7 @@ export function BookingRequestPage() {
         tutor_id: Number(effectiveTutorUserId),
         subject_id: Number(form.subject_id),
         mode: form.mode,
+        location: form.mode === 'IN_PERSON' ? form.location.trim() : '',
         notes: form.notes.trim(),
       }
       if (user?.role === 'PARENT') payload.student_id = Number(effectiveStudentId)
@@ -208,6 +213,7 @@ export function BookingRequestPage() {
       start_datetime: '',
       end_datetime: '',
       mode: tutor?.teaches_online ? 'ONLINE' : 'IN_PERSON',
+      location: '',
     }))
   }
 
@@ -219,6 +225,16 @@ export function BookingRequestPage() {
       start_datetime: '',
       end_datetime: '',
       mode: slot.mode,
+      location: slot.mode === 'ONLINE' ? '' : current.location,
+    }))
+  }
+
+  function selectMode(mode) {
+    setErrors((current) => ({ ...current, mode: '', location: '' }))
+    setForm((current) => ({
+      ...current,
+      mode,
+      location: mode === 'ONLINE' ? '' : current.location,
     }))
   }
 
@@ -229,6 +245,7 @@ export function BookingRequestPage() {
     if (!form.subject_id) nextErrors.subject_id = 'Choose a subject taught by this tutor.'
     if (form.mode === 'ONLINE' && selectedTutor && !selectedTutor.teaches_online) nextErrors.mode = 'This tutor does not teach online.'
     if (form.mode === 'IN_PERSON' && selectedTutor && !selectedTutor.teaches_in_person) nextErrors.mode = 'This tutor does not teach in person.'
+    if (form.mode === 'IN_PERSON' && !form.location.trim()) nextErrors.location = 'Enter where the in-person lesson will take place.'
 
     if (form.availability_slot_id) {
       if (!selectedSlot) nextErrors.availability_slot_id = 'This time is no longer available. Choose another slot.'
@@ -411,7 +428,7 @@ export function BookingRequestPage() {
                   <div className="booking-custom-time">
                     <label className="booking-field">
                       <span>Teaching mode</span>
-                      <select value={form.mode} onChange={(event) => updateForm('mode', event.target.value)}>
+                      <select value={form.mode} onChange={(event) => selectMode(event.target.value)}>
                         {selectedTutor?.teaches_online ? <option value="ONLINE">Online</option> : null}
                         {selectedTutor?.teaches_in_person ? <option value="IN_PERSON">In person</option> : null}
                       </select>
@@ -428,6 +445,20 @@ export function BookingRequestPage() {
                       {errors.end_datetime ? <small className="booking-field-error">{errors.end_datetime}</small> : null}
                     </label>
                   </div>
+                ) : null}
+
+                {form.mode === 'IN_PERSON' ? (
+                  <label className="booking-field booking-location-field">
+                    <span>Lesson location</span>
+                    <input
+                      type="text"
+                      maxLength="255"
+                      value={form.location}
+                      onChange={(event) => updateForm('location', event.target.value)}
+                      placeholder="For example: Kigali Learning Centre, Room 4"
+                    />
+                    {errors.location ? <small className="booking-field-error">{errors.location}</small> : null}
+                  </label>
                 ) : null}
               </>
             )}

@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
 import { updateCurrentUser } from '../api/services/auth'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useSubjectsQuery } from '../hooks/useCommonQueries.js'
 
 function toInputValue(value) {
   return value ?? ''
@@ -30,12 +31,19 @@ function getProfileDefaults(user) {
     phone_number: profile.phone_number ?? '',
     notes: profile.notes ?? '',
     level: profile.level ?? '',
+    school_name: profile.school_name ?? '',
+    subjects_needing_help: Array.isArray(profile.subjects_needing_help)
+      ? profile.subjects_needing_help.map(String)
+      : [],
+    learning_goals: profile.learning_goals ?? '',
     budget_min: profile.budget_min ?? '',
     budget_max: profile.budget_max ?? '',
     prefers_online: Boolean(profile.prefers_online),
     prefers_in_person: Boolean(profile.prefers_in_person),
     headline: profile.headline ?? '',
     bio: profile.bio ?? '',
+    education_level: profile.education_level ?? '',
+    teaching_experience: profile.teaching_experience ?? '',
     hourly_rate: profile.hourly_rate ?? '',
     currency: profile.currency ?? '',
     teaches_online: Boolean(profile.teaches_online),
@@ -45,6 +53,7 @@ function getProfileDefaults(user) {
 
 export function AccountPage() {
   const { user, loading, refreshUser } = useAuth()
+  const subjectsQuery = useSubjectsQuery({ enabled: user?.role === 'STUDENT' })
   const [form, setForm] = useState(() => getProfileDefaults(user))
   const [statusMessage, setStatusMessage] = useState('')
 
@@ -127,8 +136,12 @@ export function AccountPage() {
 
     if (role === 'STUDENT') {
       payload.full_name = form.full_name.trim()
+      payload.phone_number = form.phone_number.trim()
       payload.level = form.level.trim()
+      payload.school_name = form.school_name.trim()
       payload.location = form.location.trim()
+      payload.subjects_needing_help = form.subjects_needing_help.map(Number)
+      payload.learning_goals = form.learning_goals.trim()
       payload.budget_min = toNullableNumber(form.budget_min)
       payload.budget_max = toNullableNumber(form.budget_max)
       payload.prefers_online = form.prefers_online
@@ -137,8 +150,11 @@ export function AccountPage() {
 
     if (role === 'TUTOR') {
       payload.full_name = form.full_name.trim()
+      payload.phone_number = form.phone_number.trim()
       payload.headline = form.headline.trim()
       payload.bio = form.bio.trim()
+      payload.education_level = form.education_level.trim()
+      payload.teaching_experience = form.teaching_experience.trim()
       payload.hourly_rate = toNullableNumber(form.hourly_rate)
       payload.currency = form.currency.trim()
       payload.location = form.location.trim()
@@ -214,6 +230,17 @@ export function AccountPage() {
 
           {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? (
             <label className="account-field account-field-wide">
+              <span>Phone number</span>
+              <input
+                type="tel"
+                value={toInputValue(form.phone_number)}
+                onChange={(event) => updateField('phone_number', event.target.value)}
+              />
+            </label>
+          ) : null}
+
+          {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? (
+            <label className="account-field account-field-wide">
               <span>Location</span>
               <input
                 type="text"
@@ -231,6 +258,46 @@ export function AccountPage() {
                   type="text"
                   value={toInputValue(form.level)}
                   onChange={(event) => updateField('level', event.target.value)}
+                />
+              </label>
+
+              <label className="account-field">
+                <span>School name</span>
+                <input
+                  type="text"
+                  value={toInputValue(form.school_name)}
+                  onChange={(event) => updateField('school_name', event.target.value)}
+                />
+              </label>
+
+              <label className="account-field account-field-wide">
+                <span>Subjects needing help</span>
+                <select
+                  multiple
+                  value={form.subjects_needing_help}
+                  onChange={(event) => updateField(
+                    'subjects_needing_help',
+                    Array.from(event.target.selectedOptions, (option) => option.value),
+                  )}
+                  disabled={subjectsQuery.isLoading || subjectsQuery.isError}
+                >
+                  {(subjectsQuery.data || []).map((subject) => (
+                    <option key={subject.id} value={String(subject.id)}>{subject.name}</option>
+                  ))}
+                </select>
+                <small>
+                  {subjectsQuery.isError
+                    ? 'Subjects could not be loaded. Try refreshing the page.'
+                    : 'Select every subject where you would like tutor support.'}
+                </small>
+              </label>
+
+              <label className="account-field account-field-wide">
+                <span>Learning goals</span>
+                <textarea
+                  rows="4"
+                  value={toInputValue(form.learning_goals)}
+                  onChange={(event) => updateField('learning_goals', event.target.value)}
                 />
               </label>
 
@@ -294,6 +361,24 @@ export function AccountPage() {
                 />
               </label>
 
+              <label className="account-field account-field-wide">
+                <span>Education level</span>
+                <input
+                  type="text"
+                  value={toInputValue(form.education_level)}
+                  onChange={(event) => updateField('education_level', event.target.value)}
+                />
+              </label>
+
+              <label className="account-field account-field-wide">
+                <span>Teaching experience</span>
+                <textarea
+                  rows="4"
+                  value={toInputValue(form.teaching_experience)}
+                  onChange={(event) => updateField('teaching_experience', event.target.value)}
+                />
+              </label>
+
               <label className="account-field">
                 <span>Hourly rate</span>
                 <input
@@ -335,15 +420,6 @@ export function AccountPage() {
 
           {role === 'PARENT' ? (
             <>
-              <label className="account-field account-field-wide">
-                <span>Phone number</span>
-                <input
-                  type="text"
-                  value={toInputValue(form.phone_number)}
-                  onChange={(event) => updateField('phone_number', event.target.value)}
-                />
-              </label>
-
               <label className="account-field account-field-wide">
                 <span>Notes</span>
                 <textarea

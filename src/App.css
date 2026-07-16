@@ -1681,7 +1681,8 @@
 }
 
 .account-field input,
-.account-field textarea {
+.account-field textarea,
+.account-field select {
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.12);
   background: #ffffff;
@@ -1691,7 +1692,8 @@
 }
 
 .account-field input:focus,
-.account-field textarea:focus {
+.account-field textarea:focus,
+.account-field select:focus {
   outline: 2px solid rgba(255, 140, 0, 0.35);
   outline-offset: 1px;
   border-color: rgba(255, 140, 0, 0.6);
@@ -2830,6 +2832,33 @@
   white-space: pre-line;
 }
 
+.tutor-credentials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.15rem;
+}
+
+.tutor-credentials-grid > div {
+  display: grid;
+  gap: 0.45rem;
+  border-left: 2px solid #d96b00;
+  padding-left: 1rem;
+}
+
+.tutor-credentials-grid span {
+  color: #765f50;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tutor-credentials-grid p,
+.tutor-credentials-grid strong {
+  margin: 0;
+}
+
 .tutor-course-list,
 .tutor-slot-list {
   display: grid;
@@ -3141,6 +3170,10 @@
     grid-template-columns: 1fr;
   }
 
+  .tutor-credentials-grid {
+    grid-template-columns: 1fr;
+  }
+
   .tutor-lesson-row,
   .tutor-slot-row {
     align-items: stretch;
@@ -3286,6 +3319,10 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.booking-location-field {
+  margin-top: 1rem;
 }
 
 .booking-custom-time {

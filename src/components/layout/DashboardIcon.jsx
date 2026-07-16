@@ -3,6 +3,7 @@
 const iconPaths = {
   account: 'M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0',
   assessments: 'M7 4h10v17H7zM9 4V2h6v2m-5 6h4m-4 4h4',
+  audit: 'M6 3h12v18H6zM9 7h6M9 11h6m-6 4h3m5.5 1.5l1.5 1.5 3-3',
   bell: 'M18 8a6 6 0 10-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',
   bookings: 'M5 5h14v16H5zM8 3v4m8-4v4M5 10h14',
   close: 'M6 6l12 12M18 6L6 18',

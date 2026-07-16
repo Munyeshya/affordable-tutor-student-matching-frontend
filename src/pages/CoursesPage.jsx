@@ -1,12 +1,11 @@
 import React, { useDeferredValue, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'react-toastify'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getApiErrorMessage } from '../api/errors'
 import { queryKeys } from '../api/queryKeys'
+import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { FilterBar } from '../components/ui/FilterBar.jsx'
-import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
-import { createCoursePurchase, listCoursePurchases } from '../api/services/payments'
+import { listCoursePurchases } from '../api/services/payments'
 import { useAuth } from '../context/AuthContext.jsx'
 import { usePublicCoursesQuery } from '../hooks/useCommonQueries'
 import './CoursesPage.css'
@@ -96,53 +95,6 @@ function CourseCard({ course, isOwned, canPurchase, isAuthenticated, accessLoadi
   )
 }
 
-function PurchaseDialog({ course, busy, onClose, onConfirm }) {
-  if (!course) return null
-
-  return (
-    <ConfirmationDialog
-      open={Boolean(course)}
-      onClose={onClose}
-      labelledBy="purchase-dialog-title"
-      backdropClassName="market-dialog-backdrop"
-      dialogClassName="market-purchase-dialog"
-    >
-        <div className="market-dialog-head">
-          <div>
-            <span>Enrollment confirmation</span>
-            <h2 id="purchase-dialog-title">Review your course</h2>
-          </div>
-          <button type="button" onClick={onClose} aria-label="Close purchase dialog">Close</button>
-        </div>
-
-        <div className="market-dialog-course">
-          <span>{course.subject_name || 'Course'}</span>
-          <div>
-            <h3>{course.title}</h3>
-            <p>By {course.tutor_name || 'Isomo tutor'} / {course.academic_level || 'All levels'}</p>
-          </div>
-        </div>
-
-        <dl className="market-order-summary">
-          <div><dt>Course access</dt><dd>{formatMoney(course.price)}</dd></div>
-          <div><dt>Platform fee</dt><dd>0 RWF</dd></div>
-          <div><dt>Total</dt><dd>{formatMoney(course.price)}</dd></div>
-        </dl>
-
-        <p className="market-demo-note">
-          Development checkout uses the simulated payment provider. No real payment will be charged.
-        </p>
-
-        <div className="market-dialog-actions">
-          <button type="button" className="market-dialog-cancel" onClick={onClose} disabled={busy}>Not now</button>
-          <button type="button" className="market-dialog-confirm" onClick={onConfirm} disabled={busy}>
-            {busy ? 'Confirming...' : Number(course.price) === 0 ? 'Confirm enrollment' : 'Confirm purchase'}
-          </button>
-        </div>
-    </ConfirmationDialog>
-  )
-}
-
 export function CoursesPage() {
   const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
@@ -159,25 +111,6 @@ export function CoursesPage() {
     queryFn: () => listCoursePurchases().then((response) => response.data),
     enabled: canPurchase,
   })
-  const purchaseMutation = useMutation({
-    mutationFn: (course) => createCoursePurchase({
-      course_id: course.id,
-      provider: 'SIMULATED',
-      transaction_reference: '',
-    }),
-    onSuccess: async (_, course) => {
-      toast.success(`${course.title} is now in your learning library.`)
-      setSelectedCourse(null)
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.payments.coursePurchases }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.learning.library }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.catalog.publicCoursesRoot }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
-      ])
-    },
-    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not complete this enrollment.')),
-  })
-
   const courseData = coursesQuery.data
   const courses = Array.isArray(courseData)
     ? courseData
@@ -260,7 +193,7 @@ export function CoursesPage() {
               canPurchase={canPurchase}
               isAuthenticated={isAuthenticated}
               accessLoading={canPurchase && purchasesQuery.isLoading}
-              busy={purchaseMutation.isPending && selectedCourse?.id === course.id}
+              busy={selectedCourse?.id === course.id}
               onPurchase={setSelectedCourse}
             />
           ))}
@@ -273,11 +206,24 @@ export function CoursesPage() {
         </section>
       )}
 
-      <PurchaseDialog
-        course={selectedCourse}
-        busy={purchaseMutation.isPending}
-        onClose={() => !purchaseMutation.isPending && setSelectedCourse(null)}
-        onConfirm={() => selectedCourse && purchaseMutation.mutate(selectedCourse)}
+      <PaymentCheckoutDialog
+        key={selectedCourse?.id || 'course-payment'}
+        open={Boolean(selectedCourse)}
+        kind="course"
+        itemId={selectedCourse?.id}
+        title={selectedCourse?.title || 'Course enrollment'}
+        amount={selectedCourse?.price}
+        currency="RWF"
+        initialPhone={user?.profile?.data?.phone_number || ''}
+        onClose={() => setSelectedCourse(null)}
+        onSettled={async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: queryKeys.payments.coursePurchases }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.learning.library }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.catalog.publicCoursesRoot }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+          ])
+        }}
       />
     </section>
   )

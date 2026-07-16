@@ -301,6 +301,8 @@
 
 .student-booking-status.is-confirmed { background: #edf7ef; color: #2d6d39; }
 .student-booking-status.is-pending { background: var(--student-orange-soft); color: var(--student-orange-dark); }
+.student-booking-status.is-rejected,
+.student-booking-status.is-cancelled { background: #fff0ee; color: #8d2f25; }
 
 .student-course-list > a {
   min-width: 0;

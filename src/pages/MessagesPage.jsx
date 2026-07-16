@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useBookingChatSocket } from '../hooks/useBookingChatSocket.js'
 import {
   getUnreadChatCount,
   listBookingMessages,
@@ -15,6 +16,15 @@ import {
 import './MessagesPage.css'
 
 const EMPTY_LIST = []
+
+const CONNECTION_COPY = {
+  connected: 'Live updates',
+  connecting: 'Connecting',
+  reconnecting: 'Reconnecting',
+  offline: 'Offline fallback',
+  unavailable: 'REST fallback',
+  disconnected: 'REST fallback',
+}
 
 function formatDateTime(value) {
   if (!value) return ''
@@ -27,6 +37,13 @@ function formatDateTime(value) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
+}
+
+function createClientMessageId() {
+  const randomPart = globalThis.crypto?.randomUUID?.()
+    ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`
+
+  return `chat_${randomPart.replaceAll('-', '_')}`
 }
 
 function ThreadItem({ thread, isActive, onClick }) {
@@ -111,8 +128,49 @@ export function MessagesPage() {
 
   const messages = messagesQuery.data
 
+  function handleRealtimeEvent(event) {
+    if (Number.isFinite(Number(event.unread_count))) {
+      queryClient.setQueryData(queryKeys.chats.unread, { unread_count: Number(event.unread_count) })
+    }
+
+    if (event.type === 'message.created' && event.message) {
+      const eventBookingId = String(event.message.booking)
+      queryClient.setQueryData(queryKeys.chats.messages(eventBookingId), (current = EMPTY_LIST) => {
+        if (current.some((message) => message.id === event.message.id)) return current
+        return [...current, event.message]
+      })
+    }
+
+    if (event.type === 'messages.read' && event.booking_id) {
+      const eventBookingId = String(event.booking_id)
+      const readIds = new Set(event.message_ids || [])
+      queryClient.setQueryData(queryKeys.chats.messages(eventBookingId), (current = EMPTY_LIST) => (
+        current.map((message) => (
+          readIds.has(message.id) ? { ...message, is_read: true } : message
+        ))
+      ))
+    }
+
+    if (['message.created', 'messages.read', 'thread.updated'].includes(event.type)) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.chats.threads })
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
+    }
+  }
+
+  const { status: connectionStatus, sendMessage: sendRealtimeMessage } = useBookingChatSocket({
+    bookingId: selectedBookingId,
+    enabled: Boolean(user?.id),
+    onEvent: handleRealtimeEvent,
+  })
+
   const sendMutation = useMutation({
-    mutationFn: (payload) => sendBookingMessage(selectedBookingId, payload),
+    mutationFn: async (payload) => {
+      try {
+        return await sendRealtimeMessage(payload)
+      } catch {
+        return (await sendBookingMessage(selectedBookingId, payload)).data
+      }
+    },
     onSuccess: async () => {
       setDraft('')
       toast.success('Message sent.')
@@ -162,7 +220,8 @@ export function MessagesPage() {
       toast.error('Write a message before sending.')
       return
     }
-    sendMutation.mutate({ message })
+    const clientId = createClientMessageId()
+    sendMutation.mutate({ message, client_id: clientId })
   }
 
   return (
@@ -254,6 +313,9 @@ export function MessagesPage() {
                 <div className="messages-conversation-context">
                   <strong>{activeThread?.subject_name || 'Lesson'}</strong>
                   <span> / {activeThread?.booking_status || 'Active'}</span>
+                  <span className={`messages-live-status is-${connectionStatus}`}>
+                    {CONNECTION_COPY[connectionStatus] || 'REST fallback'}
+                  </span>
                 </div>
               </header>
 
@@ -286,6 +348,11 @@ export function MessagesPage() {
                 </div>
               ) : (
                 <form className="messages-composer" onSubmit={submitMessage}>
+                  {connectionStatus !== 'connected' ? (
+                    <p className="messages-connection-note">
+                      Live updates are {connectionStatus === 'offline' ? 'offline' : 'reconnecting'}. Messages still use the secure REST fallback.
+                    </p>
+                  ) : null}
                   <textarea
                     aria-label="Message"
                     rows="3"

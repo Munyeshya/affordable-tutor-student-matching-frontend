@@ -7,10 +7,12 @@ import { getApiErrorMessage } from '../api/errors'
 import {
   createBookingReview,
   createLessonReview,
+  createReviewReport,
   listBookingReviews,
   listEligibleReviews,
   listLessonReviews,
 } from '../api/services/reviews'
+import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import './ReviewsPage.css'
 
@@ -61,7 +63,7 @@ function EmptyState({ kind }) {
   )
 }
 
-function ReviewHistoryCard({ item, kind }) {
+function ReviewHistoryCard({ item, kind, canReport, onReport }) {
   const isBooking = kind === 'bookings'
   return (
     <article className="review-history-card">
@@ -74,7 +76,11 @@ function ReviewHistoryCard({ item, kind }) {
         <h3>{isBooking ? item.tutor_name : item.lesson_title}</h3>
         <p>{item.comment || 'No written comment was added.'}</p>
       </div>
-      <time dateTime={item.created_at || undefined}>{formatDate(item.created_at)}</time>
+      <div className="review-history-meta">
+        <time dateTime={item.created_at || undefined}>{formatDate(item.created_at)}</time>
+        {item.visibility_status === 'HIDDEN' ? <span className="review-visibility-note">Hidden by moderation</span> : null}
+        {item.my_report ? <span className={`review-report-state is-${item.my_report.status.toLowerCase()}`}>Report {item.my_report.status.toLowerCase()}</span> : canReport ? <button type="button" onClick={() => onReport(item, kind)}>Report review</button> : null}
+      </div>
     </article>
   )
 }
@@ -89,7 +95,11 @@ export function ReviewsPage() {
   const [selectedId, setSelectedId] = useState(requestedLesson || requestedBooking)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
+  const [reportTarget, setReportTarget] = useState(null)
+  const [reportCategory, setReportCategory] = useState('INAPPROPRIATE')
+  const [reportDetails, setReportDetails] = useState('')
   const canReview = user?.role === 'STUDENT'
+  const canReport = ['STUDENT', 'TUTOR'].includes(user?.role)
 
   const eligibleQuery = useQuery({
     queryKey: queryKeys.reviews.eligible,
@@ -124,6 +134,21 @@ export function ReviewsPage() {
       ])
     },
     onError: (error) => toast.error(getApiErrorMessage(error, 'Could not publish your review.')),
+  })
+
+  const reportMutation = useMutation({
+    mutationFn: (payload) => createReviewReport(payload),
+    onSuccess: async () => {
+      toast.success('The review was reported for administrator review.')
+      const kind = reportTarget?.kind
+      setReportTarget(null)
+      setReportCategory('INAPPROPRIATE')
+      setReportDetails('')
+      await queryClient.invalidateQueries({
+        queryKey: kind === 'bookings' ? queryKeys.reviews.bookings : queryKeys.reviews.lessons,
+      })
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'The review could not be reported.')),
   })
 
   if (!isAuthenticated) {
@@ -171,6 +196,32 @@ export function ReviewsPage() {
         rating,
         comment: comment.trim(),
       },
+    })
+  }
+
+  function openReport(item, kind) {
+    setReportTarget({ item, kind })
+    setReportCategory('INAPPROPRIATE')
+    setReportDetails('')
+  }
+
+  function closeReport() {
+    if (reportMutation.isPending) return
+    setReportTarget(null)
+    setReportDetails('')
+  }
+
+  function submitReport(event) {
+    event.preventDefault()
+    if (reportDetails.trim().length < 10) {
+      toast.error('Explain the concern using at least 10 characters.')
+      return
+    }
+    reportMutation.mutate({
+      review_type: reportTarget.kind === 'bookings' ? 'BOOKING' : 'LESSON',
+      review_id: reportTarget.item.id,
+      category: reportCategory,
+      details: reportDetails.trim(),
     })
   }
 
@@ -337,12 +388,31 @@ export function ReviewsPage() {
           </div>
         ) : history.length ? (
           <div className="review-history-list">
-            {history.map((item) => <ReviewHistoryCard key={item.id} item={item} kind={activeKind} />)}
+            {history.map((item) => <ReviewHistoryCard key={item.id} item={item} kind={activeKind} canReport={canReport} onReport={openReport} />)}
           </div>
         ) : (
           <div className="review-history-empty">No published {activeKind === 'bookings' ? 'session' : 'lesson'} reviews yet.</div>
         )}
       </section>
+
+      <ConfirmationDialog open={Boolean(reportTarget)} onClose={closeReport} labelledBy="review-report-dialog-title" describedBy="review-report-dialog-description" dialogClassName="review-report-dialog">
+        <header>
+          <div><span>Quality and safety</span><h2 id="review-report-dialog-title">Report this review</h2></div>
+          <button type="button" onClick={closeReport} disabled={reportMutation.isPending}>Close</button>
+        </header>
+        {reportTarget ? (
+          <form onSubmit={submitReport}>
+            <blockquote id="review-report-dialog-description">
+              <strong>{reportTarget.item.rating} / 5</strong>
+              <p>{reportTarget.item.comment || 'No written comment was added.'}</p>
+            </blockquote>
+            <label><span>Reason category</span><select value={reportCategory} onChange={(event) => setReportCategory(event.target.value)}><option value="INAPPROPRIATE">Inappropriate content</option><option value="HARASSMENT">Harassment or abuse</option><option value="SPAM">Spam or advertising</option><option value="FALSE_INFORMATION">False or misleading information</option><option value="PRIVACY">Privacy concern</option><option value="OTHER">Other</option></select></label>
+            <label><span>Explain the concern</span><textarea rows="5" maxLength="1000" value={reportDetails} onChange={(event) => setReportDetails(event.target.value)} placeholder="Give the administrator enough context to review this fairly." /></label>
+            <small>{reportDetails.trim().length}/10 minimum characters</small>
+            <div><button className="secondary-button" type="button" onClick={closeReport} disabled={reportMutation.isPending}>Cancel</button><button type="submit" disabled={reportMutation.isPending || reportDetails.trim().length < 10}>{reportMutation.isPending ? 'Submitting...' : 'Submit report'}</button></div>
+          </form>
+        ) : null}
+      </ConfirmationDialog>
     </section>
   )
 }

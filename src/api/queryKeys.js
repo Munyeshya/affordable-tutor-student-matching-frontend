@@ -3,6 +3,13 @@ export const queryKeys = {
     all: ['admin'],
     dashboard: ['admin', 'dashboard'],
     disputes: ['admin', 'disputes'],
+    auditEvents: (params = {}) => ['admin', 'audit-events', params],
+    users: (params = {}) => ['admin', 'users', params],
+    user: (id) => ['admin', 'users', 'detail', id],
+    courses: (params = {}) => ['admin', 'course-moderation', params],
+    course: (id) => ['admin', 'course-moderation', 'detail', id],
+    reviewReports: (params = {}) => ['admin', 'review-moderation', params],
+    reviewReport: (id) => ['admin', 'review-moderation', 'detail', id],
     tutorVerifications: (status) => (
       status ? ['admin', 'tutor-verifications', { status }] : ['admin', 'tutor-verifications']
     ),
@@ -51,7 +58,10 @@ export const queryKeys = {
   },
   payments: {
     all: ['payments'],
+    providers: ['payments', 'providers'],
+    bookings: ['payments', 'booking-payments'],
     coursePurchases: ['payments', 'course-purchases'],
+    transaction: (kind, id) => ['payments', 'transaction', kind, id],
     tutorEarnings: ['payments', 'tutor-earnings'],
     tutorPayouts: ['payments', 'tutor-payouts'],
   },

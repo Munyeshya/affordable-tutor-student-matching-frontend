@@ -9,10 +9,14 @@ const navigationByRole = {
     {
       label: 'Management',
       items: [
+        { label: 'User management', to: '/admin/users', icon: 'students' },
         { label: 'Tutor verification', to: '/admin/tutor-reviews', icon: 'verification' },
+        { label: 'Course moderation', to: '/admin/courses', icon: 'courses' },
+        { label: 'Review moderation', to: '/admin/reviews', icon: 'reviews' },
         { label: 'Disputes', to: '/admin/disputes', icon: 'disputes' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Reports', to: '/reports', icon: 'reports' },
+        { label: 'Audit trail', to: '/admin/audit', icon: 'audit' },
       ],
     },
     {

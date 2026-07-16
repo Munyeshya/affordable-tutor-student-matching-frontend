@@ -258,7 +258,11 @@ export function TutorDashboardPage() {
                       <h3>{booking.subject_name || 'Tutoring session'}</h3>
                       <p>{booking.student_name || 'Student'} / {booking.mode === 'IN_PERSON' ? 'In person' : 'Online'}</p>
                     </div>
-                    <StatusBadge tone={booking.status === 'CONFIRMED' ? 'success' : 'warning'}>
+                    <StatusBadge
+                      tone={['CONFIRMED', 'COMPLETED'].includes(booking.status)
+                        ? 'success'
+                        : ['REJECTED', 'CANCELLED'].includes(booking.status) ? 'danger' : 'warning'}
+                    >
                       {formatStatus(booking.status)}
                     </StatusBadge>
                     <Link to={`/messages?booking=${booking.id}`} aria-label={`Message ${booking.student_name || 'student'}`}>

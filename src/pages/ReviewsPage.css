@@ -463,6 +463,80 @@
   white-space: nowrap;
 }
 
+.review-history-meta {
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+}
+
+.review-history-meta button {
+  border: 0;
+  border-bottom: 1px solid #b45309;
+  background: transparent;
+  padding: 2px 0;
+  color: #9d4900;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.review-visibility-note,
+.review-report-state {
+  font-size: 0.64rem;
+  font-weight: 750;
+}
+
+.review-visibility-note { color: #98331f; }
+.review-report-state { color: #875600; }
+.review-report-state.is-resolved { color: #176540; }
+.review-report-state.is-dismissed { color: #65605b; }
+
+.ui-dialog-backdrop:has(.review-report-dialog) {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(17, 16, 15, 0.68);
+}
+
+.review-report-dialog {
+  width: min(590px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid #ded6ce;
+  border-top: 4px solid #b45309;
+  border-radius: 6px;
+  background: #fff;
+  padding: 24px;
+}
+
+.review-report-dialog > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid #e9e3dc;
+  padding-bottom: 15px;
+}
+
+.review-report-dialog > header span { color: #b45309; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.review-report-dialog > header h2 { margin: 4px 0 0; font-size: 1.3rem; }
+.review-report-dialog > header button { border: 0; background: transparent; color: #6f6861; font: inherit; font-size: 0.75rem; font-weight: 750; cursor: pointer; }
+.review-report-dialog form { display: grid; gap: 14px; padding-top: 16px; }
+.review-report-dialog blockquote { margin: 0; border-left: 3px solid #d86a09; background: #faf7f3; padding: 12px 14px; }
+.review-report-dialog blockquote strong { color: #9d4900; font-size: 0.74rem; }
+.review-report-dialog blockquote p { margin: 5px 0 0; color: #55504b; font-size: 0.78rem; line-height: 1.5; }
+.review-report-dialog label { display: grid; gap: 7px; color: #45413d; font-size: 0.75rem; font-weight: 800; }
+.review-report-dialog select,
+.review-report-dialog textarea { width: 100%; border: 1px solid #cbc4bd; border-radius: 3px; background: #fff; padding: 10px 11px; color: #1e1c1a; font: inherit; }
+.review-report-dialog textarea { resize: vertical; }
+.review-report-dialog select:focus,
+.review-report-dialog textarea:focus { border-color: #b45309; outline: 2px solid rgba(180, 83, 9, 0.15); outline-offset: 1px; }
+.review-report-dialog form > small { margin-top: -9px; color: #77706a; font-size: 0.66rem; }
+.review-report-dialog form > div { display: flex; justify-content: flex-end; gap: 9px; }
+.review-report-dialog form > div > button:last-child { border: 1px solid #a64c00; border-radius: 3px; background: #a64c00; padding: 9px 13px; color: #fff; font: inherit; font-size: 0.76rem; font-weight: 800; cursor: pointer; }
+.review-report-dialog form > div > button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .review-history-empty {
   justify-content: center;
   color: #6b6b6b;
@@ -631,6 +705,26 @@
 
   .review-history-card time {
     grid-column: 2;
+  }
+
+  .review-history-meta {
+    grid-column: 2;
+    justify-items: start;
+  }
+
+  .ui-dialog-backdrop:has(.review-report-dialog) {
+    align-items: end;
+    padding: 0;
+  }
+
+  .review-report-dialog {
+    width: 100%;
+    max-height: 92vh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 7px 7px 0 0;
+    padding: 20px 18px;
   }
 
   .review-signin {

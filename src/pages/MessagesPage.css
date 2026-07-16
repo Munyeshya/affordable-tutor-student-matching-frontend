@@ -211,6 +211,44 @@
   text-align: right;
 }
 
+.messages-live-status {
+  display: block;
+  margin-top: 0.35rem;
+  color: #776d67;
+  font-size: 0.67rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.messages-live-status::before {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  background: #8a817b;
+  content: '';
+}
+
+.messages-live-status.is-connected {
+  color: #2d6d39;
+}
+
+.messages-live-status.is-connected::before {
+  background: #3f8b4d;
+}
+
+.messages-live-status.is-reconnecting,
+.messages-live-status.is-connecting {
+  color: #9b4d00;
+}
+
+.messages-live-status.is-reconnecting::before,
+.messages-live-status.is-connecting::before {
+  background: #d96b00;
+  animation: message-status-pulse 1.2s ease-in-out infinite;
+}
+
 .messages-feed {
   display: flex;
   flex-direction: column;
@@ -258,6 +296,19 @@
   border-top: 1px solid #eadfd7;
   background: #fff;
   padding: 1rem 1.2rem;
+}
+
+.messages-connection-note {
+  margin: 0;
+  border-left: 2px solid #d96b00;
+  background: #fff8f1;
+  padding: 0.5rem 0.65rem;
+  color: #6b625d;
+  font-size: 0.72rem;
+}
+
+@keyframes message-status-pulse {
+  50% { opacity: 0.35; }
 }
 
 .messages-composer textarea {
@@ -369,5 +420,11 @@
   .messages-composer-actions .primary-button {
     justify-content: center;
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messages-live-status::before {
+    animation: none;
   }
 }

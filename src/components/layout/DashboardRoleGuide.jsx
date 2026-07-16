@@ -54,7 +54,10 @@ const guides = {
     name: 'Administrator',
     summary: 'Protect platform trust, oversee affordable learning operations, and make auditable moderation decisions.',
     actions: [
+      ['Manage user access', 'Search users and apply reasoned, audited activation, deactivation, suspension, or restoration actions.', '/admin/users'],
       ['Verify tutors', 'Review identity, qualifications, signed agreements, teaching subjects, and requested education levels.', '/admin/tutor-reviews'],
+      ['Moderate courses', 'Preview submitted course and lesson content, then publish it, request changes, or reject it with an auditable decision.', '/admin/courses'],
+      ['Moderate reviews', 'Investigate reported feedback, hide policy violations, restore safe reviews, or dismiss unsupported reports without editing the original review.', '/admin/reviews'],
       ['Monitor operations', 'View platform bookings, users, learning impact, course activity, and financial summaries.', '/reports'],
       ['Resolve safety issues', 'Investigate disputes and record clear decisions and comments.', '/admin/disputes'],
       ['Produce reports', 'Generate printable operational and role-based reports without exposing unnecessary private data.', '/reports'],
@@ -63,6 +66,7 @@ const guides = {
       'Approval decisions must be based on submitted evidence and should include a clear reason when changes are required or rejected.',
       'Administrative access must not be used to disclose private documents, messages, or payment information without an operational need.',
       'Admins oversee records but should not impersonate users or silently alter the history of bookings, reviews, and decisions.',
+      'Account deletion is not available; deactivation and suspension preserve records and must only be used for their documented purposes.',
     ],
   },
 }

@@ -119,6 +119,10 @@ export function getStoredRefreshToken() {
   return localStorage.getItem(AUTH_REFRESH_TOKEN_KEY)
 }
 
+export function getStoredAccessToken() {
+  return localStorage.getItem(AUTH_ACCESS_TOKEN_KEY)
+}
+
 export function hasStoredAccessToken() {
   return Boolean(localStorage.getItem(AUTH_ACCESS_TOKEN_KEY))
 }

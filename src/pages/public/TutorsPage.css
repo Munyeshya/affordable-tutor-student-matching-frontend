@@ -110,6 +110,12 @@
   font-weight: 700;
 }
 
+.marketplace-field-note {
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
 .marketplace-search label,
 .marketplace-sort {
   display: grid;
@@ -322,6 +328,51 @@
   font-size: 0.74rem;
 }
 
+.market-tutor-match {
+  display: grid;
+  gap: 8px;
+  border-left: 3px solid var(--brand-soft);
+  background: #fffaf5;
+  padding: 10px 12px;
+}
+
+.market-tutor-match > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.market-tutor-match span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.market-tutor-match strong {
+  color: var(--brand);
+  font-size: 0.82rem;
+}
+
+.market-tutor-match ul {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.market-tutor-match li {
+  border: 1px solid rgba(217, 107, 0, 0.22);
+  background: #ffffff;
+  padding: 0.3rem 0.42rem;
+  color: #4d3b2c;
+  font-size: 0.69rem;
+}
+
 .market-tutor-offer {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -343,6 +394,18 @@
 
 .market-tutor-offer > div:first-child strong {
   color: var(--brand);
+}
+
+.market-tutor-offer .market-tutor-budget-match {
+  background: #fff0df;
+}
+
+.market-tutor-budget-match small {
+  color: #8a4300;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .market-tutor-actions {

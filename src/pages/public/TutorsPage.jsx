@@ -8,7 +8,22 @@ import { Pagination } from '../../components/ui/Pagination.jsx'
 import './TutorsPage.css'
 
 const PAGE_SIZE = 9
-
+const filterParamKeys = [
+  'q',
+  'subject',
+  'lesson',
+  'topic',
+  'level',
+  'location',
+  'mode',
+  'available_date',
+  'available_from',
+  'available_to',
+  'min_rate',
+  'max_rate',
+  'budget',
+  'min_rating',
+]
 
 const levelOptions = [
   { value: '', label: 'Any level' },
@@ -19,6 +34,7 @@ const levelOptions = [
 ]
 
 const sortOptions = [
+  { value: 'best_match', label: 'Best match' },
   { value: 'price_low', label: 'Lowest price' },
   { value: 'price_high', label: 'Highest price' },
   { value: 'rating', label: 'Highest rated' },
@@ -58,7 +74,7 @@ function readFilters(searchParams) {
   const level = searchParams.get('level') || ''
   const mode = searchParams.get('mode') || ''
   const minRating = searchParams.get('min_rating') || ''
-  const sort = searchParams.get('sort') || 'price_low'
+  const sort = searchParams.get('sort') || 'best_match'
 
   return {
     q: searchParams.get('q') || '',
@@ -68,10 +84,14 @@ function readFilters(searchParams) {
     level: validLevels.has(level) ? level : '',
     location: searchParams.get('location') || '',
     mode: validModes.has(mode) ? mode : '',
+    available_date: searchParams.get('available_date') || '',
+    available_from: searchParams.get('available_from') || '',
+    available_to: searchParams.get('available_to') || '',
     min_rate: readNumberFilter(searchParams, 'min_rate'),
     max_rate: readNumberFilter(searchParams, 'max_rate'),
+    budget: readNumberFilter(searchParams, 'budget'),
     min_rating: validRatings.has(minRating) ? minRating : '',
-    sort: validSorts.has(sort) ? sort : 'price_low',
+    sort: validSorts.has(sort) ? sort : 'best_match',
   }
 }
 
@@ -83,11 +103,11 @@ function readPage(searchParams) {
 function buildSearchParams(filters, page = 1) {
   const params = new URLSearchParams()
 
-  for (const key of ['q', 'subject', 'lesson', 'topic', 'level', 'location', 'mode', 'min_rate', 'max_rate', 'min_rating']) {
+  for (const key of filterParamKeys) {
     if (filters[key]) params.set(key, filters[key])
   }
 
-  if (filters.sort && filters.sort !== 'price_low') params.set('sort', filters.sort)
+  if (filters.sort && filters.sort !== 'best_match') params.set('sort', filters.sort)
   if (page > 1) params.set('page', String(page))
   return params
 }
@@ -100,17 +120,21 @@ function normalizeFilters(filters) {
     level: filters.level,
     location: filters.location.trim(),
     mode: filters.mode,
+    available_date: filters.available_date,
+    available_from: filters.available_from,
+    available_to: filters.available_to,
     min_rate: String(filters.min_rate || '').trim(),
     max_rate: String(filters.max_rate || '').trim(),
+    budget: String(filters.budget || '').trim(),
     min_rating: filters.min_rating,
-    sort: filters.sort || 'price_low',
+    sort: filters.sort || 'best_match',
   }
 }
 
 function buildTutorParams(filters, page) {
   const params = { page, page_size: PAGE_SIZE, sort: filters.sort }
 
-  for (const key of ['q', 'subject', 'lesson', 'topic', 'level', 'location', 'mode', 'min_rate', 'max_rate', 'min_rating']) {
+  for (const key of filterParamKeys) {
     if (filters[key]) params[key] = filters[key]
   }
 
@@ -171,6 +195,23 @@ function formatAvailability(value) {
   }).format(new Date(value))
 }
 
+function getTodayDate() {
+  const now = new Date()
+  const offset = now.getTimezoneOffset() * 60 * 1000
+  return new Date(now.getTime() - offset).toISOString().slice(0, 10)
+}
+
+function formatFilterDate(value) {
+  if (!value) return ''
+  const date = new Date(`${value}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat('en-RW', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
+
 function TutorCard({ tutor, marketplacePath }) {
   const subjectLevels = Array.isArray(tutor.subject_levels) ? tutor.subject_levels : []
   const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : []
@@ -178,6 +219,7 @@ function TutorCard({ tutor, marketplacePath }) {
     .filter(Boolean)
     .join(' and ') || 'Arrange with tutor'
   const availability = tutor.availability_summary || {}
+  const matchReasons = Array.isArray(tutor.match_reasons) ? tutor.match_reasons : []
 
   return (
     <article className="market-tutor-card">
@@ -215,10 +257,21 @@ function TutorCard({ tutor, marketplacePath }) {
         {subjectLevels.length === 0 ? <span>Subjects available on profile</span> : null}
       </div>
 
-      <div className="market-tutor-offer">
+      <div className="market-tutor-match" aria-label={`Match score ${tutor.match_score || 0} out of 100`}>
         <div>
+          <span>Best match score</span>
+          <strong>{tutor.match_score || 0}/100</strong>
+        </div>
+        <ul>
+          {matchReasons.slice(0, 3).map((reason) => <li key={reason}>{reason}</li>)}
+        </ul>
+      </div>
+
+      <div className="market-tutor-offer">
+        <div className={tutor.within_budget === true ? 'market-tutor-budget-match' : ''}>
           <span>Hourly rate</span>
           <strong>{formatTutorRate(tutor.hourly_rate, tutor.currency)}</strong>
+          {tutor.within_budget === true ? <small>Within budget</small> : null}
         </div>
         <div>
           <span>
@@ -268,6 +321,30 @@ function MarketplaceFilterForm({ filters, onApply, onClear, subjects, subjectsLo
       && minimumRate > maximumRate
     ) {
       setValidationError('Maximum rate must be greater than or equal to minimum rate.')
+      return
+    }
+
+    if ((normalized.available_from || normalized.available_to) && !normalized.available_date) {
+      setValidationError('Choose an availability date before selecting a time.')
+      return
+    }
+
+    if (Boolean(normalized.available_from) !== Boolean(normalized.available_to)) {
+      setValidationError('Choose both a start time and an end time.')
+      return
+    }
+
+    if (
+      normalized.available_from
+      && normalized.available_to
+      && normalized.available_from >= normalized.available_to
+    ) {
+      setValidationError('Availability end time must be after the start time.')
+      return
+    }
+
+    if (normalized.available_date && normalized.available_date < getTodayDate()) {
+      setValidationError('Availability date cannot be in the past.')
       return
     }
 
@@ -323,12 +400,42 @@ function MarketplaceFilterForm({ filters, onApply, onClear, subjects, subjectsLo
         </select>
       </label>
       <label>
+        <span>Available date</span>
+        <input
+          type="date"
+          min={getTodayDate()}
+          value={draftFilters.available_date}
+          onChange={(event) => updateDraft('available_date', event.target.value)}
+        />
+      </label>
+      <label>
+        <span>Available from</span>
+        <input
+          type="time"
+          value={draftFilters.available_from}
+          onChange={(event) => updateDraft('available_from', event.target.value)}
+        />
+      </label>
+      <label>
+        <span>Available to</span>
+        <input
+          type="time"
+          value={draftFilters.available_to}
+          onChange={(event) => updateDraft('available_to', event.target.value)}
+        />
+      </label>
+      <label>
         <span>Minimum rate</span>
         <input type="number" min="0" step="1" inputMode="decimal" value={draftFilters.min_rate} onChange={(event) => updateDraft('min_rate', event.target.value)} placeholder="RWF" />
       </label>
       <label>
         <span>Maximum rate</span>
         <input type="number" min="0" step="1" inputMode="decimal" value={draftFilters.max_rate} onChange={(event) => updateDraft('max_rate', event.target.value)} placeholder="RWF" />
+      </label>
+      <label>
+        <span>Preferred hourly budget</span>
+        <input type="number" min="0" step="1" inputMode="decimal" value={draftFilters.budget} onChange={(event) => updateDraft('budget', event.target.value)} placeholder="RWF" />
+        <small className="marketplace-field-note">Improves ranking without hiding tutors above this amount.</small>
       </label>
       <label>
         <span>Minimum rating</span>
@@ -375,10 +482,19 @@ export function TutorsPage() {
     appliedFilters.level ? { key: 'level', label: `Level: ${formatLevel(appliedFilters.level)}` } : null,
     appliedFilters.location ? { key: 'location', label: `Location: ${appliedFilters.location}` } : null,
     appliedFilters.mode ? { key: 'mode', label: teachingModeOptions.find((option) => option.value === appliedFilters.mode)?.label } : null,
+    appliedFilters.available_date ? {
+      key: 'availability',
+      label: `Available: ${formatFilterDate(appliedFilters.available_date)}${
+        appliedFilters.available_from && appliedFilters.available_to
+          ? `, ${appliedFilters.available_from}-${appliedFilters.available_to}`
+          : ''
+      }`,
+    } : null,
     appliedFilters.min_rate ? { key: 'min_rate', label: `From RWF ${appliedFilters.min_rate}` } : null,
     appliedFilters.max_rate ? { key: 'max_rate', label: `Up to RWF ${appliedFilters.max_rate}` } : null,
+    appliedFilters.budget ? { key: 'budget', label: `Budget: RWF ${appliedFilters.budget}` } : null,
     appliedFilters.min_rating ? { key: 'min_rating', label: `${appliedFilters.min_rating}+ stars` } : null,
-    appliedFilters.sort !== 'price_low'
+    appliedFilters.sort !== 'best_match'
       ? { key: 'sort', label: sortOptions.find((option) => option.value === appliedFilters.sort)?.label }
       : null,
   ].filter(Boolean)
@@ -443,7 +559,19 @@ export function TutorsPage() {
   }
 
   function removeFilter(key) {
-    const fallback = key === 'sort' ? 'price_low' : ''
+    if (key === 'availability') {
+      setSearchParams(
+        buildSearchParams(normalizeFilters({
+          ...appliedFilters,
+          available_date: '',
+          available_from: '',
+          available_to: '',
+        })),
+        { replace: false },
+      )
+      return
+    }
+    const fallback = key === 'sort' ? 'best_match' : ''
     setSearchParams(
       buildSearchParams(normalizeFilters({ ...appliedFilters, [key]: fallback })),
       { replace: false },
@@ -465,7 +593,7 @@ export function TutorsPage() {
           <p className="eyebrow">Tutor marketplace</p>
           <h1>Find trusted tutoring at a price that works.</h1>
           <p className="supporting-text">
-            Search approved tutors by name, lesson, topic, or education level.
+            Search approved tutors by subject, price, level, location, and a time that works for you.
           </p>
         </div>
         <Link className="secondary-button" to="/join">Become a tutor</Link>
@@ -570,7 +698,11 @@ export function TutorsPage() {
       {!tutorsQuery.isLoading && !tutorsQuery.isError && tutorPage.results.length === 0 ? (
         <section className="marketplace-state card">
           <h2>No tutors match these filters.</h2>
-          <p className="supporting-text">Try a broader lesson, topic, or education level.</p>
+          <p className="supporting-text">
+            {appliedFilters.available_date
+              ? 'No approved tutor has an open slot during this period. Try another date, remove the exact times, or choose a different teaching mode.'
+              : 'Try a broader lesson, topic, education level, location, or price range.'}
+          </p>
           <button className="secondary-button" type="button" onClick={clearFilters}>Clear filters</button>
         </section>
       ) : null}

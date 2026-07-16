@@ -190,8 +190,12 @@ export function DashboardLayout() {
             <button
               className="dashboard-guide-trigger"
               type="button"
+              aria-label="Role guide"
               aria-haspopup="dialog"
-              onClick={() => setGuideOpen(true)}
+              onClick={(event) => {
+                event.currentTarget.focus()
+                setGuideOpen(true)
+              }}
             >
               <DashboardIcon name="help" />
               <span>Role guide</span>

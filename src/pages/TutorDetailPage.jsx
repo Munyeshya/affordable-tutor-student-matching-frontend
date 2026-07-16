@@ -213,6 +213,23 @@ export function TutorDetailPage() {
             </p>
           </article>
 
+          {(tutor.education_level || tutor.teaching_experience) ? (
+            <article className="tutor-detail-section">
+              <p className="eyebrow">Qualifications</p>
+              <h2>Education and teaching experience.</h2>
+              <div className="tutor-credentials-grid">
+                <div>
+                  <span>Education</span>
+                  <strong>{tutor.education_level || 'Verified qualification documents supplied'}</strong>
+                </div>
+                <div>
+                  <span>Experience</span>
+                  <p>{tutor.teaching_experience || 'Experience details available from the tutor.'}</p>
+                </div>
+              </div>
+            </article>
+          ) : null}
+
           <article className="tutor-detail-section">
             <div className="tutor-detail-section-heading">
               <div>

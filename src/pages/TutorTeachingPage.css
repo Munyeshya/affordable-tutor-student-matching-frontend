@@ -1,0 +1,38 @@
+.tutor-course-review-feedback {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+  border-left: 3px solid #d86400;
+  background: #fff8f1;
+  padding: 9px 11px;
+  color: #665b51;
+}
+
+.tutor-course-review-feedback strong {
+  color: #9d4900;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tutor-course-review-feedback span {
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.tutor-course-review-feedback.is-rejected {
+  border-left-color: #9b321c;
+  background: #fff3ef;
+}
+
+.tutor-course-review-feedback.is-rejected strong { color: #8d2d1b; }
+
+.tutor-course-edit-lock {
+  margin: 0;
+  border: 1px solid #ead7c6;
+  background: #fff8f1;
+  padding: 12px 14px;
+  color: #704c2d;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}

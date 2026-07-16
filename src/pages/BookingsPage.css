@@ -126,7 +126,8 @@
   color: #2c567d;
 }
 
-.booking-status-cancelled {
+.booking-status-cancelled,
+.booking-status-rejected {
   border-color: #d6aaa2;
   background: #fff4f1;
   color: #8d3022;
@@ -134,7 +135,7 @@
 
 .booking-lifecycle-facts {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 0;
   margin: 1.15rem 0;
   border-top: 1px solid #eadfd7;

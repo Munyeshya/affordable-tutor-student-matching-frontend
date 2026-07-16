@@ -1,21 +1,24 @@
 import React, { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { queryKeys } from '../api/queryKeys'
+import { listPayments } from '../api/services/payments'
+import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { updateBookingAction } from '../api/services/bookings'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery } from '../hooks/useCommonQueries'
 import './BookingsPage.css'
 
-const STATUS_FILTERS = ['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED']
+const STATUS_FILTERS = ['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'REJECTED', 'CANCELLED']
 
 const STATUS_COPY = {
   PENDING: { label: 'Pending', detail: 'Waiting for the tutor to respond.' },
   CONFIRMED: { label: 'Confirmed', detail: 'The lesson is scheduled.' },
   COMPLETED: { label: 'Completed', detail: 'The tutor marked this lesson complete.' },
+  REJECTED: { label: 'Rejected', detail: 'The tutor declined this lesson request.' },
   CANCELLED: { label: 'Cancelled', detail: 'This lesson will not take place.' },
 }
 
@@ -24,6 +27,13 @@ const ACTION_COPY = {
   REJECT: { label: 'Reject request', title: 'Reject this lesson request?', tone: 'danger' },
   COMPLETE: { label: 'Mark complete', title: 'Mark this lesson as completed?', tone: 'primary' },
   CANCEL: { label: 'Cancel booking', title: 'Cancel this booking?', tone: 'danger' },
+}
+
+const ACTION_RESULT_COPY = {
+  ACCEPT: 'accepted',
+  REJECT: 'rejected',
+  COMPLETE: 'completed',
+  CANCEL: 'cancelled',
 }
 
 function formatDateTime(value) {
@@ -86,7 +96,7 @@ function BookingTimeline({ booking }) {
   )
 }
 
-function BookingCard({ booking, user, onAction, busyAction }) {
+function BookingCard({ booking, payment, user, onAction, onPay, busyAction }) {
   const role = user?.role
   const status = STATUS_COPY[booking.status] || { label: booking.status, detail: 'Booking status updated.' }
   const actions = getBookingActions(booking, role)
@@ -96,6 +106,9 @@ function BookingCard({ booking, user, onAction, busyAction }) {
     String(requesterId) === String(user?.id)
   )
   const canReview = role === 'STUDENT' && booking.status === 'COMPLETED'
+  const canPay = role === 'STUDENT' &&
+    ['CONFIRMED', 'COMPLETED'].includes(booking.status) &&
+    !['PAID', 'REFUNDED'].includes(payment?.status)
 
   return (
     <article className="booking-lifecycle-card">
@@ -111,7 +124,11 @@ function BookingCard({ booking, user, onAction, busyAction }) {
       <div className="booking-lifecycle-facts">
         <div><span>Starts</span><strong>{formatDateTime(booking.start_datetime)}</strong></div>
         <div><span>Mode</span><strong>{booking.mode === 'IN_PERSON' ? 'In person' : 'Online'}</strong></div>
+        {booking.mode === 'IN_PERSON' ? <div><span>Location</span><strong>{booking.location || 'Not provided'}</strong></div> : null}
         <div><span>Total</span><strong>{formatMoney(booking.total_amount, booking.currency)}</strong></div>
+        {role === 'STUDENT' ? (
+          <div><span>Payment</span><strong>{payment?.status || 'Not started'}</strong></div>
+        ) : null}
         {role === 'PARENT' ? <div><span>Student</span><strong>{booking.student_name}</strong></div> : null}
       </div>
 
@@ -137,6 +154,7 @@ function BookingCard({ booking, user, onAction, busyAction }) {
         ))}
         {canMessage ? <Link className="secondary-button" to={'/messages?booking=' + booking.id}>Message</Link> : null}
         {canReview ? <Link className="secondary-button" to={'/reviews?booking=' + booking.id}>Leave review</Link> : null}
+        {canPay ? <button className="primary-button" type="button" onClick={() => onPay(booking)}>Pay securely</button> : null}
       </footer>
     </article>
   )
@@ -145,6 +163,7 @@ function BookingCard({ booking, user, onAction, busyAction }) {
 function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, busy }) {
   if (!pendingAction) return null
   const copy = ACTION_COPY[pendingAction.action]
+  const requiresReason = ['REJECT', 'CANCEL'].includes(pendingAction.action)
 
   return (
     <ConfirmationDialog
@@ -160,14 +179,15 @@ function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, 
           {pendingAction.booking.subject_name} with {pendingAction.booking.student_name} and {pendingAction.booking.tutor_name}.
         </p>
         <label className="booking-field">
-          <span>Message <small>Optional</small></span>
+          <span>{requiresReason ? 'Reason' : 'Message'} {!requiresReason ? <small>Optional</small> : null}</span>
           <textarea
             rows="3"
             maxLength="500"
-            placeholder="Add a short explanation for the other person."
+            placeholder={requiresReason ? 'Explain why this booking cannot proceed.' : 'Add a short message for the other person.'}
             value={message}
             onChange={(event) => setMessage(event.target.value)}
           />
+          {requiresReason && !message.trim() ? <small>A reason is required to continue.</small> : null}
         </label>
         <div className="booking-review-actions">
           <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Go back</button>
@@ -175,7 +195,7 @@ function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, 
             className={copy.tone === 'danger' ? 'booking-danger-button' : 'primary-button'}
             type="button"
             onClick={onConfirm}
-            disabled={busy}
+            disabled={busy || (requiresReason && !message.trim())}
           >
             {busy ? 'Updating...' : copy.label}
           </button>
@@ -190,15 +210,21 @@ export function BookingsPage() {
   const [activeStatus, setActiveStatus] = useState('ALL')
   const [pendingAction, setPendingAction] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
+  const [paymentBooking, setPaymentBooking] = useState(null)
 
   const bookingsQuery = useBookingsQuery()
+  const paymentsQuery = useQuery({
+    queryKey: queryKeys.payments.bookings,
+    queryFn: () => listPayments().then((response) => response.data),
+    enabled: user?.role === 'STUDENT',
+  })
 
   const actionMutation = useMutation({
     mutationFn: async ({ booking, action, message }) => (
       await updateBookingAction(booking.id, { action, message })
     ).data,
     onSuccess: async (_, variables) => {
-      toast.success('Booking ' + formatAction(variables.action).toLowerCase() + ' successfully.')
+      toast.success(`Booking ${ACTION_RESULT_COPY[variables.action] || 'updated'} successfully.`)
       setPendingAction(null)
       setActionMessage('')
       await Promise.all([
@@ -211,6 +237,9 @@ export function BookingsPage() {
   })
 
   const bookings = bookingsQuery.data || []
+  const paymentsByBooking = new Map(
+    (paymentsQuery.data || []).map((payment) => [String(payment.booking_id), payment]),
+  )
   const visibleBookings = activeStatus === 'ALL'
     ? bookings
     : bookings.filter((booking) => booking.status === activeStatus)
@@ -271,9 +300,11 @@ export function BookingsPage() {
           visibleBookings.map((booking) => (
             <BookingCard
               booking={booking}
+              payment={paymentsByBooking.get(String(booking.id))}
               user={user}
               key={booking.id}
               onAction={openAction}
+              onPay={setPaymentBooking}
               busyAction={actionMutation.isPending && pendingAction?.booking.id === booking.id}
             />
           ))
@@ -299,6 +330,24 @@ export function BookingsPage() {
           message: actionMessage.trim(),
         })}
         busy={actionMutation.isPending}
+      />
+      <PaymentCheckoutDialog
+        key={paymentBooking?.id || 'booking-payment'}
+        open={Boolean(paymentBooking)}
+        kind="booking"
+        itemId={paymentBooking?.id}
+        title={`${paymentBooking?.subject_name || 'Lesson'} booking #${paymentBooking?.id || ''}`}
+        amount={paymentBooking?.total_amount}
+        currency={paymentBooking?.currency || 'RWF'}
+        initialPhone={user?.profile?.data?.phone_number || ''}
+        onClose={() => setPaymentBooking(null)}
+        onSettled={async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: queryKeys.payments.bookings }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+          ])
+        }}
       />
     </section>
   )

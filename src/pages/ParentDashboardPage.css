@@ -246,6 +246,12 @@
   color: var(--parent-orange-dark);
 }
 
+.parent-booking-status.is-rejected,
+.parent-booking-status.is-cancelled {
+  background: #fff0ee;
+  color: #8d2f25;
+}
+
 .parent-student-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

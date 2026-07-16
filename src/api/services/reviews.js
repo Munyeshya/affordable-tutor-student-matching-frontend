@@ -20,3 +20,19 @@ export function listLessonReviews() {
 export function createLessonReview(payload) {
   return apiClient.post(API_ENDPOINTS.reviews.lessonCreate, payload)
 }
+
+export function createReviewReport(payload) {
+  return apiClient.post(API_ENDPOINTS.reviews.reportCreate, payload)
+}
+
+export function listAdminReviewReports(params = {}) {
+  return apiClient.get(API_ENDPOINTS.reviews.adminReports, { params })
+}
+
+export function getAdminReviewReport(id) {
+  return apiClient.get(API_ENDPOINTS.reviews.adminReportDetail(id))
+}
+
+export function decideAdminReviewReport(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.reviews.adminReportDecision(id), payload)
+}

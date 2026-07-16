@@ -1,5 +1,19 @@
 ﻿export const API_ENDPOINTS = {
   health: '/health/',
+  audit: {
+    list: '/audit-events/',
+    export: '/audit-events/export/',
+  },
+  adminUsers: {
+    list: '/admin/users/',
+    detail: (id) => `/admin/users/${id}/`,
+    status: (id) => `/admin/users/${id}/status/`,
+  },
+  adminCourses: {
+    list: '/catalog/admin/courses/',
+    detail: (id) => `/catalog/admin/courses/${id}/`,
+    moderate: (id) => `/catalog/courses/${id}/moderate/`,
+  },
   auth: {
     login: '/auth/login/',
     logout: '/auth/logout/',
@@ -48,6 +62,10 @@
     bookingCreate: '/reviews/create/',
     lessonList: '/reviews/lesson/',
     lessonCreate: '/reviews/lesson/create/',
+    reportCreate: '/reviews/reports/',
+    adminReports: '/reviews/admin/reports/',
+    adminReportDetail: (id) => `/reviews/admin/reports/${id}/`,
+    adminReportDecision: (id) => `/reviews/admin/reports/${id}/decide/`,
   },
   assessments: {
     list: '/assessments/assessments/',
@@ -68,9 +86,14 @@
     disputeDecision: (id) => `/bookings/disputes/${id}/decide/`,
   },
   payments: {
+    providers: '/payments/providers/',
     list: '/payments/bookings/',
+    bookingPay: '/payments/bookings/pay/',
     coursePurchases: '/payments/course-purchases/',
     coursePurchaseCreate: '/payments/course-purchases/create/',
+    transactionStatus: (kind, id) => `/payments/transactions/${kind}/${id}/`,
+    receipt: (number) => `/payments/receipts/${number}/`,
+    receiptPrint: (number) => `/payments/receipts/${number}/print/`,
     learningLibrary: '/payments/learning-library/',
     lessonProgress: '/payments/lesson-progress/',
     lessonProgressUpdate: '/payments/lesson-progress/update/',

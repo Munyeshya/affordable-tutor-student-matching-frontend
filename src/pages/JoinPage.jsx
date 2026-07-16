@@ -16,6 +16,7 @@ export function JoinPage() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     full_name: '',
+    phone_number: '',
     email: '',
     password: '',
     role: 'STUDENT',
@@ -76,6 +77,14 @@ export function JoinPage() {
               <option value="TUTOR">Tutor</option>
               <option value="PARENT">Parent</option>
             </select>
+            <input
+              type="tel"
+              placeholder="Phone number"
+              aria-label="Phone number"
+              value={form.phone_number}
+              onChange={(event) => updateField('phone_number', event.target.value)}
+              required
+            />
             <input
               type="email"
               placeholder="Email address"

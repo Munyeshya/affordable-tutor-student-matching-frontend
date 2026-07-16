@@ -16,6 +16,14 @@ import {
 import { useAuth } from '../context/AuthContext.jsx'
 import { useSubjectsQuery } from '../hooks/useCommonQueries'
 import { queryKeys } from '../api/queryKeys'
+import './TutorTeachingPage.css'
+
+
+const EDITABLE_COURSE_STATUSES = new Set(['DRAFT', 'CHANGES_REQUESTED', 'REJECTED'])
+
+function formatStatus(value) {
+  return String(value || 'Unknown').toLowerCase().replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase())
+}
 
 export function TutorTeachingPage() {
   const { user, isAuthenticated } = useAuth()
@@ -51,6 +59,8 @@ export function TutorTeachingPage() {
   const subjects = Array.isArray(subjectsQuery.data) ? subjectsQuery.data : []
   const courses = Array.isArray(coursesQuery.data) ? coursesQuery.data : []
   const lessons = Array.isArray(lessonsQuery.data) ? lessonsQuery.data : []
+  const selectedCourse = courses.find((course) => String(course.id) === selectedCourseId)
+  const canEditSelectedCourse = Boolean(selectedCourse && EDITABLE_COURSE_STATUSES.has(selectedCourse.status))
 
   const createSubjectMutation = useMutation({
     mutationFn: async () => (await createTutorSubject({
@@ -123,6 +133,11 @@ export function TutorTeachingPage() {
       await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.dashboard })
     },
     onError: (error) => {
+      const missingFields = error.response?.data?.missing_fields
+      if (Array.isArray(missingFields) && missingFields.length) {
+        toast.error(`${getApiErrorMessage(error)} Missing: ${missingFields.map(formatStatus).join(', ')}.`)
+        return
+      }
       toast.error(getApiErrorMessage(error))
     },
   })
@@ -253,11 +268,17 @@ export function TutorTeachingPage() {
               {courses.map((course) => (
                 <div key={course.id}>
                   <span>{course.title}</span>
-                  <small>{course.subject_name} / {course.status}</small>
+                  <small>{course.subject_name} / {formatStatus(course.status)}</small>
+                  {course.latest_moderation?.reason ? (
+                    <p className={`tutor-course-review-feedback is-${course.status.toLowerCase().replaceAll('_', '-')}`}>
+                      <strong>Administrator feedback</strong>
+                      <span>{course.latest_moderation.reason}</span>
+                    </p>
+                  ) : null}
                   <div className="hero-actions" style={{ marginTop: '0.75rem' }}>
-                    <button className="secondary-button" type="button" onClick={() => setSelectedCourseId(String(course.id))}>Manage lessons</button>
-                    <button className="primary-button" type="button" onClick={() => submitCourseMutation.mutate(course.id)} disabled={submitCourseMutation.isPending || course.status === 'PUBLISHED' || course.status === 'PENDING_REVIEW'}>
-                      Submit
+                    <button className="secondary-button" type="button" onClick={() => setSelectedCourseId(String(course.id))}>{EDITABLE_COURSE_STATUSES.has(course.status) ? 'Manage lessons' : 'View lessons'}</button>
+                    <button className="primary-button" type="button" onClick={() => submitCourseMutation.mutate(course.id)} disabled={submitCourseMutation.isPending || !EDITABLE_COURSE_STATUSES.has(course.status)}>
+                      {course.status === 'PENDING_REVIEW' ? 'Awaiting review' : course.status === 'PUBLISHED' ? 'Published' : course.status === 'DRAFT' ? 'Submit for review' : 'Resubmit for review'}
                     </button>
                   </div>
                 </div>
@@ -268,10 +289,10 @@ export function TutorTeachingPage() {
 
         <article className="panel card">
           <p className="eyebrow">Lessons</p>
-          <h2>{selectedCourseId ? 'Add lessons to the selected course.' : 'Select a course to manage lessons.'}</h2>
+          <h2>{selectedCourseId ? canEditSelectedCourse ? 'Add lessons to the selected course.' : 'Review the submitted lesson list.' : 'Select a course to manage lessons.'}</h2>
           {selectedCourseId ? (
             <>
-              <form className="steps-list" onSubmit={(event) => {
+              {canEditSelectedCourse ? <form className="steps-list" onSubmit={(event) => {
                 event.preventDefault()
                 createLessonMutation.mutate()
               }}>
@@ -300,7 +321,7 @@ export function TutorTeachingPage() {
                   <span>Preview lesson</span>
                 </label>
                 <button className="primary-button" type="submit" disabled={createLessonMutation.isPending}>Add lesson</button>
-              </form>
+              </form> : <p className="tutor-course-edit-lock">{selectedCourse?.status === 'PUBLISHED' ? 'This course is published. Its reviewed content is locked from silent changes.' : 'This course is awaiting an administrator decision. You can review lessons now and edit them after the course is returned.'}</p>}
               <div className="mini-list" style={{ marginTop: '1rem' }}>
                 {lessonsQuery.isLoading ? (
                   <div><span>Loading lessons...</span></div>
