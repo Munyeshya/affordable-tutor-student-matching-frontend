@@ -37,8 +37,29 @@ describe('TutorDetailPage', () => {
         average_rating: '4.80',
         review_count: 12,
         subject_levels: [{ subject: 'Mathematics', level: 'SECONDARY_LOWER' }],
-        availability_summary: {},
-        upcoming_availability: [],
+        availability_summary: {
+          next_available_at: '2030-01-10T08:00:00Z',
+        },
+        upcoming_availability: [
+          {
+            id: 31,
+            start_datetime: '2030-01-10T08:00:00Z',
+            end_datetime: '2030-01-10T09:00:00Z',
+            mode: 'ONLINE',
+          },
+          {
+            id: 32,
+            start_datetime: '2030-01-10T14:00:00Z',
+            end_datetime: '2030-01-10T15:00:00Z',
+            mode: 'IN_PERSON',
+          },
+          {
+            id: 33,
+            start_datetime: '2030-01-11T10:00:00Z',
+            end_datetime: '2030-01-11T11:00:00Z',
+            mode: 'ONLINE',
+          },
+        ],
         reviews: [],
         courses: [{
           id: 11,
@@ -83,5 +104,13 @@ describe('TutorDetailPage', () => {
       'tutor-course-overview-no-image',
     )
     expect(screen.getAllByLabelText('4.8 out of 5').length).toBeGreaterThan(0)
+    expect(screen.getByText('3 open across 2 days')).toBeInTheDocument()
+    expect(screen.getByText('2 available times')).toBeInTheDocument()
+    expect(screen.getByText('1 available time')).toBeInTheDocument()
+    expect(screen.getByText('Times are shown in your local timezone.')).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: /choose .*online/i })[0]).toHaveAttribute(
+      'href',
+      '/book?tutor=7&profile=1&slot=31&mode=ONLINE',
+    )
   })
 })

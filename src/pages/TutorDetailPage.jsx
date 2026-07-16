@@ -53,6 +53,47 @@ function formatDateTime(value) {
   }).format(date)
 }
 
+function formatCalendarDate(value) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return { key: String(value), weekday: 'Date', day: '--', month: 'TBA' }
+  }
+
+  return {
+    key: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
+    weekday: new Intl.DateTimeFormat('en-RW', { weekday: 'long' }).format(date),
+    day: new Intl.DateTimeFormat('en-RW', { day: '2-digit' }).format(date),
+    month: new Intl.DateTimeFormat('en-RW', { month: 'short' }).format(date),
+  }
+}
+
+function formatTime(value) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Time to arrange'
+
+  return new Intl.DateTimeFormat('en-RW', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function groupAvailabilityByDay(slots) {
+  const groups = new Map()
+
+  slots
+    .slice()
+    .sort((first, second) => new Date(first.start_datetime) - new Date(second.start_datetime))
+    .forEach((slot) => {
+      const date = formatCalendarDate(slot.start_datetime)
+      if (!groups.has(date.key)) {
+        groups.set(date.key, { ...date, slots: [] })
+      }
+      groups.get(date.key).slots.push(slot)
+    })
+
+  return Array.from(groups.values())
+}
+
 function getInitials(name = '') {
   const initials = name
     .split(' ')
@@ -151,6 +192,7 @@ export function TutorDetailPage() {
   const availability = Array.isArray(tutor.upcoming_availability)
     ? tutor.upcoming_availability
     : []
+  const availabilityDays = groupAvailabilityByDay(availability)
   const subjectLevels = Array.isArray(tutor.subject_levels) ? tutor.subject_levels : []
   const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : []
   const lowestCoursePrice = courses.reduce((lowest, course) => {
@@ -315,29 +357,60 @@ export function TutorDetailPage() {
                 <p className="eyebrow"><InlineIcon name="calendar" /> Availability</p>
                 <h2>Upcoming lesson times.</h2>
               </div>
-              <span className="soft-chip">{availability.length} open</span>
+              <span className="soft-chip">{availability.length} open across {availabilityDays.length} day{availabilityDays.length === 1 ? '' : 's'}</span>
             </div>
 
             {availability.length === 0 ? (
               <p className="tutor-detail-empty">No open times are published. You can still request a suitable time.</p>
             ) : (
-              <div className="tutor-slot-list">
-                {availability.map((slot) => (
-                  <article className="tutor-slot-row" key={slot.id}>
-                    <div>
-                      <strong>{formatDateTime(slot.start_datetime)}</strong>
-                      <span>Until {formatDateTime(slot.end_datetime)} / {formatLabel(slot.mode)}</span>
-                    </div>
-                    {canBook ? (
-                      <Link
-                        className="secondary-button"
-                        to={`${baseBookingPath}&slot=${slot.id}&mode=${slot.mode}`}
-                      >
-                        Choose time
-                      </Link>
-                    ) : null}
-                  </article>
-                ))}
+              <div className="tutor-availability-calendar">
+                <div className="tutor-calendar-toolbar">
+                  <span><InlineIcon name="calendar" /> Next available dates</span>
+                  <small>Times are shown in your local timezone.</small>
+                </div>
+                <div className="tutor-calendar-days">
+                  {availabilityDays.map((day) => (
+                    <article className="tutor-calendar-day" key={day.key}>
+                      <header>
+                        <div className="tutor-calendar-date" aria-label={`${day.weekday}, ${day.month} ${day.day}`}>
+                          <span>{day.month}</span>
+                          <strong>{day.day}</strong>
+                        </div>
+                        <div>
+                          <h3>{day.weekday}</h3>
+                          <p>{day.slots.length} available time{day.slots.length === 1 ? '' : 's'}</p>
+                        </div>
+                      </header>
+                      <div className="tutor-calendar-slots">
+                        {day.slots.map((slot) => {
+                          const slotContent = (
+                            <>
+                              <span className="tutor-calendar-time">
+                                <InlineIcon name="clock" />
+                                <strong>{formatTime(slot.start_datetime)} - {formatTime(slot.end_datetime)}</strong>
+                              </span>
+                              <span className="tutor-calendar-mode">{formatLabel(slot.mode)}</span>
+                              {canBook ? <span className="tutor-calendar-choose">Choose</span> : null}
+                            </>
+                          )
+
+                          return canBook ? (
+                            <Link
+                              className="tutor-calendar-slot"
+                              key={slot.id}
+                              to={`${baseBookingPath}&slot=${slot.id}&mode=${slot.mode}`}
+                              aria-label={`Choose ${day.weekday} from ${formatTime(slot.start_datetime)} to ${formatTime(slot.end_datetime)}, ${formatLabel(slot.mode)}`}
+                            >
+                              {slotContent}
+                            </Link>
+                          ) : (
+                            <div className="tutor-calendar-slot" key={slot.id}>{slotContent}</div>
+                          )
+                        })}
+                      </div>
+                    </article>
+                  ))}
+                </div>
               </div>
             )}
           </article>

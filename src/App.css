@@ -3044,29 +3044,147 @@
   font-weight: 800;
 }
 
-.tutor-slot-row {
+.tutor-availability-calendar {
+  margin-top: 1rem;
+  border: 1px solid #eadfd7;
+  background: #fffbf8;
+}
+
+.tutor-calendar-toolbar {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   border-bottom: 1px solid #eadfd7;
-  padding: 0.85rem 0;
+  background: #fff3e9;
+  padding: 0.75rem 0.9rem;
 }
 
-.tutor-slot-row:first-child {
-  border-top: 1px solid #eadfd7;
+.tutor-calendar-toolbar > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #7f4000;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
-.tutor-slot-row strong,
-.tutor-slot-row span {
-  display: block;
-}
-
-.tutor-slot-row span {
-  margin-top: 0.25rem;
+.tutor-calendar-toolbar small {
   color: #746a64;
-  font-size: 0.82rem;
+  font-size: 0.68rem;
 }
 
-.tutor-slot-row .secondary-button {
-  flex: 0 0 auto;
+.tutor-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tutor-calendar-day {
+  min-width: 0;
+  padding: 1rem;
+  border-bottom: 1px solid #eadfd7;
+}
+
+.tutor-calendar-day:nth-child(odd) {
+  border-right: 1px solid #eadfd7;
+}
+
+.tutor-calendar-day > header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.tutor-calendar-date {
+  display: grid;
+  width: 52px;
+  min-height: 58px;
+  flex: 0 0 52px;
+  place-items: center;
+  border: 1px solid #d8b797;
+  background: #fff;
+  overflow: hidden;
+}
+
+.tutor-calendar-date span {
+  width: 100%;
+  background: #b45309;
+  padding: 0.2rem;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tutor-calendar-date strong {
+  color: #221d19;
+  font-size: 1.1rem;
+}
+
+.tutor-calendar-day h3,
+.tutor-calendar-day p {
+  margin: 0;
+}
+
+.tutor-calendar-day h3 {
+  font-size: 0.92rem;
+}
+
+.tutor-calendar-day p {
+  margin-top: 0.2rem;
+  color: #746a64;
+  font-size: 0.7rem;
+}
+
+.tutor-calendar-slots {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.tutor-calendar-slot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid #e1d4ca;
+  background: #fff;
+  padding: 0.6rem 0.7rem;
+  color: #2f2925;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+a.tutor-calendar-slot:hover {
+  border-color: #b45309;
+  background: #fff7ef;
+}
+
+.tutor-calendar-time {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.73rem;
+}
+
+.tutor-calendar-time strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-calendar-mode {
+  color: #746a64;
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+
+.tutor-calendar-choose {
+  color: #9b4d00;
+  font-size: 0.68rem;
+  font-weight: 900;
 }
 
 .tutor-review-grid {
@@ -3267,15 +3385,31 @@
     grid-template-columns: 1fr;
   }
 
-  .tutor-lesson-row,
-  .tutor-slot-row {
+  .tutor-lesson-row {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .tutor-slot-row .secondary-button {
-    width: 100%;
-    justify-content: center;
+  .tutor-calendar-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tutor-calendar-days {
+    grid-template-columns: 1fr;
+  }
+
+  .tutor-calendar-day:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .tutor-calendar-slot {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .tutor-calendar-choose {
+    grid-column: 1 / -1;
+    padding-left: 1.3rem;
   }
 }
 
