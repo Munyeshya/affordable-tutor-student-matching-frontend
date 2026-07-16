@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { queryKeys } from '../api/queryKeys'
 import { extractListData, normalizePaginatedData } from '../api/response'
-import { listBookings } from '../api/services/bookings'
+import { listBookings, listScheduleProposals } from '../api/services/bookings'
 import { listPublicCourses, listSubjects } from '../api/services/catalog'
 import { listLearningLibrary } from '../api/services/payments'
 import { listTutors } from '../api/services/tutors'
@@ -11,6 +11,14 @@ export function useBookingsQuery(options = {}) {
     ...options,
     queryKey: queryKeys.bookings.all,
     queryFn: async () => extractListData(await listBookings()),
+  })
+}
+
+export function useScheduleProposalsQuery(options = {}) {
+  return useQuery({
+    ...options,
+    queryKey: queryKeys.bookings.proposals,
+    queryFn: async () => extractListData(await listScheduleProposals()),
   })
 }
 

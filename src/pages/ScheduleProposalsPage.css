@@ -1,0 +1,370 @@
+.schedule-proposals-page {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 1.25rem 0 4rem;
+  color: #171717;
+}
+
+.schedule-proposals-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  border: 1px solid #eadfd7;
+  background: #fff;
+  padding: clamp(1.3rem, 4vw, 2.2rem);
+}
+
+.schedule-proposals-hero h1 {
+  margin: 0.35rem 0 0.55rem;
+  font-size: clamp(1.65rem, 3.5vw, 2.3rem);
+}
+
+.schedule-proposals-hero p:last-child {
+  max-width: 720px;
+  margin: 0;
+  color: #6b625d;
+}
+
+.schedule-proposal-tabs {
+  display: flex;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid #eadfd7;
+  background: #fff;
+}
+
+.schedule-proposal-tabs button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 0.45rem;
+  border: 0;
+  border-right: 1px solid #eadfd7;
+  background: transparent;
+  padding: 0 0.9rem;
+  color: #6b625d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.schedule-proposal-tabs button:hover,
+.schedule-proposal-tabs button.is-active {
+  background: #fff3e9;
+  color: #9b4d00;
+}
+
+.schedule-proposal-tabs span {
+  display: grid;
+  min-width: 21px;
+  height: 21px;
+  place-items: center;
+  border: 1px solid rgba(180, 83, 9, 0.25);
+  border-radius: 50%;
+  font-size: 0.66rem;
+}
+
+.schedule-proposals-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.schedule-proposal-card,
+.schedule-proposal-empty {
+  border: 1px solid #eadfd7;
+  background: #fff;
+  padding: clamp(1.15rem, 3vw, 1.7rem);
+}
+
+.schedule-proposal-card.is-highlighted {
+  border-color: #b45309;
+  outline: 3px solid rgba(180, 83, 9, 0.12);
+}
+
+.schedule-proposal-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.schedule-proposal-card h2 {
+  margin: 0.3rem 0 0.2rem;
+  font-size: 1.2rem;
+}
+
+.schedule-proposal-card header p:last-child {
+  margin: 0;
+  color: #746a64;
+  font-size: 0.78rem;
+}
+
+.schedule-proposal-status {
+  border: 1px solid #d9cec7;
+  background: #f8f5f2;
+  padding: 0.38rem 0.55rem;
+  color: #5f5650;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.schedule-proposal-status.is-pending,
+.schedule-proposal-status.is-countered {
+  border-color: #e7b868;
+  background: #fff8e8;
+  color: #875200;
+}
+
+.schedule-proposal-status.is-accepted {
+  border-color: #8ebfa2;
+  background: #eff9f3;
+  color: #23633d;
+}
+
+.schedule-proposal-status.is-rejected,
+.schedule-proposal-status.is-cancelled {
+  border-color: #d6aaa2;
+  background: #fff4f1;
+  color: #8d3022;
+}
+
+.schedule-proposal-status-copy {
+  color: #6b625d;
+  font-size: 0.8rem;
+}
+
+.schedule-proposal-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1rem 0;
+  border-top: 1px solid #eadfd7;
+  border-bottom: 1px solid #eadfd7;
+}
+
+.schedule-proposal-facts > div {
+  padding: 0.8rem;
+  border-right: 1px solid #eadfd7;
+}
+
+.schedule-proposal-facts > div:first-child {
+  padding-left: 0;
+}
+
+.schedule-proposal-facts > div:last-child {
+  border-right: 0;
+}
+
+.schedule-proposal-facts dt {
+  color: #81756e;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+}
+
+.schedule-proposal-facts dd {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.schedule-proposal-location {
+  font-size: 0.8rem;
+}
+
+.schedule-proposal-card blockquote {
+  margin: 1rem 0;
+  border-left: 3px solid #b45309;
+  background: #fff8f3;
+  padding: 0.8rem 1rem;
+  color: #554b45;
+  font-size: 0.82rem;
+}
+
+.schedule-proposal-sessions,
+.schedule-proposal-history {
+  border-top: 1px solid #eadfd7;
+  padding: 0.85rem 0;
+}
+
+.schedule-proposal-sessions summary,
+.schedule-proposal-history summary {
+  color: #9b4d00;
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.schedule-proposal-sessions ol {
+  display: grid;
+  max-height: 310px;
+  gap: 0.4rem;
+  overflow-y: auto;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.schedule-proposal-sessions li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fffbf8;
+  padding: 0.6rem;
+  font-size: 0.73rem;
+}
+
+.schedule-proposal-sessions a {
+  color: #9b4d00;
+  font-weight: 800;
+}
+
+.schedule-proposal-timeline {
+  display: grid;
+  margin-top: 0.8rem;
+}
+
+.schedule-proposal-timeline article {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+}
+
+.schedule-proposal-timeline article > span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid #b45309;
+  border-radius: 50%;
+  color: #9b4d00;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.schedule-proposal-timeline strong,
+.schedule-proposal-timeline small {
+  display: block;
+}
+
+.schedule-proposal-timeline strong {
+  font-size: 0.76rem;
+}
+
+.schedule-proposal-timeline small,
+.schedule-proposal-timeline p {
+  margin: 0.2rem 0 0;
+  color: #81756e;
+  font-size: 0.7rem;
+}
+
+.schedule-proposal-card > footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  border-top: 1px solid #eadfd7;
+  padding-top: 1rem;
+}
+
+.schedule-proposal-danger {
+  min-height: 42px;
+  border: 1px solid #b84a38;
+  background: #fff;
+  padding: 0.65rem 1rem;
+  color: #983222;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.schedule-proposal-danger:hover {
+  background: #fff4f1;
+}
+
+.schedule-counter-dialog {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  border: 1px solid #eadfd7;
+  background: #fff;
+  padding: clamp(1.2rem, 4vw, 1.8rem);
+}
+
+.schedule-counter-dialog > p:not(.eyebrow) {
+  color: #6b625d;
+}
+
+.schedule-counter-dialog > .booking-field,
+.schedule-counter-sessions {
+  margin-top: 1rem;
+}
+
+.schedule-counter-sessions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.schedule-counter-sessions > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 0.65rem;
+  border-bottom: 1px solid #eadfd7;
+  padding-bottom: 0.75rem;
+}
+
+.schedule-counter-sessions > div > button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #d9cec7;
+  background: #fff;
+  color: #983222;
+}
+
+.schedule-proposal-empty {
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .schedule-proposals-page {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .schedule-proposals-hero,
+  .schedule-proposal-card > header,
+  .schedule-proposal-card > footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .schedule-proposal-status {
+    align-self: flex-start;
+  }
+
+  .schedule-proposal-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-proposal-facts > div,
+  .schedule-proposal-facts > div:first-child {
+    border-right: 0;
+    padding: 0.7rem 0;
+  }
+
+  .schedule-counter-sessions > div {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-proposal-card > footer > * {
+    width: 100%;
+    justify-content: center;
+  }
+}

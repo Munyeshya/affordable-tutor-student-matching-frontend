@@ -8,10 +8,12 @@ import { BookingsPage } from '../pages/BookingsPage.jsx'
 import { MessagesPage } from '../pages/MessagesPage.jsx'
 import { NotificationsPage } from '../pages/NotificationsPage.jsx'
 import { ReviewsPage } from '../pages/ReviewsPage.jsx'
+import { ScheduleProposalsPage } from '../pages/ScheduleProposalsPage.jsx'
 
 export const protectedRoutes = [
   { path: '/book', element: <BookingRequestPage /> },
   { path: '/bookings', element: <BookingsPage /> },
+  { path: '/schedule-proposals', element: <ScheduleProposalsPage /> },
   { path: '/reports', element: <ReportsPage /> },
   { path: '/account', element: <AccountPage /> },
   { path: '/notifications', element: <NotificationsPage /> },

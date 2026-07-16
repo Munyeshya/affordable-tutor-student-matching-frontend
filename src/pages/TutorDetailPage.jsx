@@ -657,9 +657,14 @@ export function TutorDetailPage() {
             </div>
           </div>
           {canBook ? (
-            <Link className="primary-button tutor-booking-button" to={baseBookingPath}>
-              <InlineIcon name="calendar" /> {bookingLabel}
-            </Link>
+            <>
+              <Link className="primary-button tutor-booking-button" to={baseBookingPath}>
+                <InlineIcon name="calendar" /> {bookingLabel}
+              </Link>
+              <Link className="secondary-button tutor-booking-button" to={`/tutors/${tutor.id}/propose`}>
+                <InlineIcon name="calendar" /> Propose a custom schedule
+              </Link>
+            </>
           ) : (
             <p className="tutor-detail-role-note">Booking requests are available to students and parents.</p>
           )}

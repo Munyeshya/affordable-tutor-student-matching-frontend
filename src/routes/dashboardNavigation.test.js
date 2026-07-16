@@ -22,7 +22,9 @@ describe('role navigation', () => {
     expect(getDashboardNavigationPaths('ADMIN')).toContain('/admin/reviews')
     expect(getDashboardNavigationPaths('ADMIN')).not.toContain('/tutor-earnings')
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/tutor-earnings')
+    expect(getDashboardNavigationPaths('TUTOR')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/assessments')
+    expect(getDashboardNavigationPaths('STUDENT')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('PARENT')).toContain('/parent-students')
   })
 

@@ -28,7 +28,13 @@ function NotificationCard({ item, onRead, busy }) {
       </div>
 
       {item.link ? (
-        <Link className="secondary-button" to={item.link}>
+        <Link
+          className="secondary-button"
+          to={item.link}
+          onClick={() => {
+            if (!item.is_read) onRead(item.id)
+          }}
+        >
           Open
         </Link>
       ) : null}

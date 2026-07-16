@@ -8,6 +8,7 @@ import { CoursesPage } from '../pages/CoursesPage.jsx'
 import { CourseDetailPage } from '../pages/CourseDetailPage.jsx'
 import { TutorsPage } from '../pages/public/TutorsPage.jsx'
 import { TutorDetailPage } from '../pages/TutorDetailPage.jsx'
+import { ScheduleProposalBuilderPage } from '../pages/ScheduleProposalBuilderPage.jsx'
 import { UnauthorizedPage } from '../pages/UnauthorizedPage.jsx'
 
 export const publicRoutes = [
@@ -15,6 +16,7 @@ export const publicRoutes = [
   { path: '/about', element: <AboutPage /> },
   { path: '/tutors', element: <TutorsPage /> },
   { path: '/tutors/:id', element: <TutorDetailPage /> },
+  { path: '/tutors/:id/propose', element: <ScheduleProposalBuilderPage /> },
   { path: '/courses', element: <CoursesPage /> },
   { path: '/courses/:id', element: <CourseDetailPage /> },
   { path: '/how-it-works', element: <HowItWorksPage /> },

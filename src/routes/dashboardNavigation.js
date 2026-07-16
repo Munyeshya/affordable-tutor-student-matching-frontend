@@ -14,6 +14,7 @@ const navigationByRole = {
         { label: 'Course moderation', to: '/admin/courses', icon: 'courses' },
         { label: 'Review moderation', to: '/admin/reviews', icon: 'reviews' },
         { label: 'Disputes', to: '/admin/disputes', icon: 'disputes' },
+        { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Reports', to: '/reports', icon: 'reports' },
         { label: 'Audit trail', to: '/admin/audit', icon: 'audit' },
@@ -44,6 +45,7 @@ const navigationByRole = {
       items: [
         { label: 'Verification documents', to: '/tutor-documents', icon: 'documents' },
         { label: 'Courses and lessons', to: '/tutor-teaching', icon: 'courses' },
+        { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Earnings', to: '/tutor-earnings', icon: 'earnings' },
         { label: 'Reviews', to: '/reviews', icon: 'reviews' },
@@ -74,6 +76,7 @@ const navigationByRole = {
       items: [
         { label: 'Find tutors', to: '/tutors', icon: 'search' },
         { label: 'Request a tutor', to: '/book', icon: 'courses' },
+        { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Assessments', to: '/assessments', icon: 'assessments' },
         { label: 'Reviews', to: '/reviews', icon: 'reviews' },
@@ -105,6 +108,7 @@ const navigationByRole = {
         { label: 'Find tutors', to: '/tutors', icon: 'search' },
         { label: 'Request a tutor', to: '/book', icon: 'courses' },
         { label: 'Linked students', to: '/parent-students', icon: 'students' },
+        { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Reports', to: '/reports', icon: 'reports' },
       ],

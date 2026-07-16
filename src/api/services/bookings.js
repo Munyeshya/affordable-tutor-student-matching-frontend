@@ -14,6 +14,18 @@ export function updateBookingAction(id, payload) {
   return apiClient.patch(API_ENDPOINTS.bookings.action(id), payload)
 }
 
+export function createScheduleProposal(payload) {
+  return apiClient.post(API_ENDPOINTS.bookings.proposalCreate, payload)
+}
+
+export function listScheduleProposals() {
+  return apiClient.get(API_ENDPOINTS.bookings.proposals).then(normalizeListResponse)
+}
+
+export function updateScheduleProposal(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.bookings.proposalAction(id), payload)
+}
+
 export function listDisputes() {
   return apiClient.get(API_ENDPOINTS.bookings.disputes).then(normalizeListResponse)
 }

@@ -1,0 +1,257 @@
+.schedule-builder-page {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 1.25rem 0 4rem;
+  color: #171717;
+}
+
+.schedule-builder-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  border: 1px solid #eadfd7;
+  background: #fff;
+  padding: clamp(1.3rem, 4vw, 2.2rem);
+}
+
+.schedule-builder-hero > div {
+  max-width: 760px;
+}
+
+.schedule-builder-hero h1 {
+  margin: 0.35rem 0 0.6rem;
+  font-size: clamp(1.65rem, 3.4vw, 2.25rem);
+}
+
+.schedule-builder-hero p:last-child {
+  margin: 0;
+  color: #6b625d;
+  line-height: 1.65;
+}
+
+.schedule-builder-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.schedule-builder-main {
+  display: grid;
+  gap: 1rem;
+}
+
+.schedule-builder-card,
+.schedule-builder-summary,
+.schedule-builder-state {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid #eadfd7;
+  background: #fff;
+  padding: clamp(1.15rem, 3vw, 1.7rem);
+}
+
+.schedule-builder-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.schedule-builder-card legend {
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.schedule-type-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.schedule-type-options button {
+  display: grid;
+  gap: 0.3rem;
+  border: 1px solid #ded2ca;
+  background: #fffdfb;
+  padding: 1rem;
+  color: #2f2925;
+  cursor: pointer;
+  text-align: left;
+}
+
+.schedule-type-options button:hover,
+.schedule-type-options button.is-active {
+  border-color: #b45309;
+  background: #fff3e9;
+}
+
+.schedule-type-options strong {
+  font-size: 0.86rem;
+}
+
+.schedule-type-options span {
+  color: #746a64;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.schedule-recurring-fields,
+.schedule-custom-sessions {
+  display: grid;
+  gap: 1rem;
+}
+
+.schedule-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.schedule-weekdays button {
+  min-height: 40px;
+  border: 1px solid #ded2ca;
+  background: #fff;
+  color: #5e554f;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.schedule-weekdays button:hover,
+.schedule-weekdays button.is-selected {
+  border-color: #b45309;
+  background: #b45309;
+  color: #fff;
+}
+
+.schedule-custom-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 0.75rem;
+  border-bottom: 1px solid #eadfd7;
+  padding-bottom: 1rem;
+}
+
+.schedule-remove-session {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #d9cec7;
+  background: #fff;
+  color: #8d3022;
+  cursor: pointer;
+}
+
+.schedule-remove-session:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.schedule-builder-summary {
+  position: sticky;
+  top: 104px;
+}
+
+.schedule-builder-summary h2 {
+  margin: 0.35rem 0 1rem;
+}
+
+.schedule-builder-summary dl {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  border-top: 1px solid #eadfd7;
+  border-bottom: 1px solid #eadfd7;
+  padding: 1rem 0;
+}
+
+.schedule-builder-summary dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.schedule-builder-summary dt,
+.schedule-builder-summary dd {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.schedule-builder-summary dt {
+  color: #81756e;
+}
+
+.schedule-builder-summary dd {
+  max-width: 60%;
+  font-weight: 800;
+  text-align: right;
+}
+
+.schedule-preview-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.schedule-preview-list time {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #514842;
+  font-size: 0.72rem;
+}
+
+.schedule-preview-list small {
+  color: #9b4d00;
+  font-weight: 800;
+}
+
+.schedule-builder-summary > .primary-button {
+  width: 100%;
+  justify-content: center;
+}
+
+.schedule-builder-summary > small {
+  display: block;
+  margin-top: 0.8rem;
+  color: #81756e;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 880px) {
+  .schedule-builder-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-builder-summary {
+    position: static;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 650px) {
+  .schedule-builder-page {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .schedule-builder-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .schedule-type-options,
+  .schedule-custom-row {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-weekdays {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

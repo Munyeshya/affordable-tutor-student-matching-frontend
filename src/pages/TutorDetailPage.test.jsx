@@ -134,6 +134,10 @@ describe('TutorDetailPage', () => {
     expect(screen.getByText('6 open')).toBeInTheDocument()
     expect(screen.getByText('Times are shown in your local timezone.')).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Tutor availability calendar' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Propose a custom schedule/i })).toHaveAttribute(
+      'href',
+      '/tutors/1/propose',
+    )
     expect(screen.getAllByText('Choose')).toHaveLength(4)
     expect(screen.getByText('1-4 of 6')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()

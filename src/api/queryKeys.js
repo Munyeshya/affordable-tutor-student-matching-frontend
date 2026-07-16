@@ -24,6 +24,7 @@ export const queryKeys = {
     all: ['bookings'],
     tutors: ['bookings', 'tutors'],
     tutorDetail: (id) => ['bookings', 'tutors', id],
+    proposals: ['bookings', 'schedule-proposals'],
   },
   catalog: {
     all: ['catalog'],
