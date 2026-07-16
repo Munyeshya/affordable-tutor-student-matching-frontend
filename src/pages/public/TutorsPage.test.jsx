@@ -51,7 +51,7 @@ describe('TutorsPage', () => {
     renderWithProviders(<TutorsPage />, { route: '/tutors?q=Alice&budget=9000' })
 
     expect(screen.getByRole('heading', { name: 'Alice Uwase' })).toBeInTheDocument()
-    expect(screen.getByText('RWF 8,000 / hour')).toBeInTheDocument()
+    expect(screen.getByText('8,000 RWF / hour')).toBeInTheDocument()
     expect(screen.getByText('Within budget')).toBeInTheDocument()
     expect(screen.getByLabelText('Match score 94 out of 100')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'View profile' })).toHaveAttribute('href', '/tutors/10')

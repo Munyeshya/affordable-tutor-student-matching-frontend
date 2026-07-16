@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { getTutor } from '../api/services/tutors'
+import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 function formatMoney(value, currency = 'RWF', suffix = '') {
@@ -12,10 +13,11 @@ function formatMoney(value, currency = 'RWF', suffix = '') {
   if (!Number.isFinite(amount)) {
     return 'Price on request'
   }
+  const currencyCode = currency || 'RWF'
 
-  return `${currency} ${new Intl.NumberFormat('en-US', {
+  return `${new Intl.NumberFormat('en-RW', {
     maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
-  }).format(amount)}${suffix}`
+  }).format(amount)} ${currencyCode}${suffix}`
 }
 
 function formatLabel(value) {
@@ -92,9 +94,19 @@ function ProfileSkeleton() {
 }
 
 function Rating({ value, count, compact = false, showCount = true }) {
+  const rating = Number(value)
+  const roundedRating = Number.isFinite(rating) ? Math.round(rating) : 0
+
   return (
-    <span className={compact ? 'tutor-rating tutor-rating-compact' : 'tutor-rating'}>
-      <span aria-hidden="true">Rating</span>
+    <span
+      className={compact ? 'tutor-rating tutor-rating-compact' : 'tutor-rating'}
+      aria-label={Number.isFinite(rating) ? `${rating.toFixed(1)} out of 5` : 'No ratings yet'}
+    >
+      <span className="tutor-rating-stars" aria-hidden="true">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <InlineIcon key={star} name="star" className={star <= roundedRating ? 'is-active' : ''} />
+        ))}
+      </span>
       <strong>{formatRating(value)}</strong>
       {showCount ? <span>{count ? `(${count})` : 'No reviews yet'}</span> : null}
     </span>
@@ -173,15 +185,16 @@ export function TutorDetailPage() {
               <p className="eyebrow">Verified tutor</p>
               <h1>{tutor.full_name}</h1>
             </div>
-            <span className="tutor-verified-badge">Document verified</span>
+            <span className="tutor-verified-badge"><InlineIcon name="verified" /> Document verified</span>
           </div>
           <p className="tutor-detail-headline">
             {tutor.headline || 'Committed to clear, supportive, and affordable learning.'}
           </p>
           <div className="tutor-detail-meta">
             <Rating value={tutor.average_rating} count={tutor.review_count} />
-            <span>{tutor.location || 'Location flexible'}</span>
+            <span><InlineIcon name="location" /> {tutor.location || 'Location flexible'}</span>
             <span>
+              <InlineIcon name="teaching" />{' '}
               {[tutor.teaches_online && 'Online', tutor.teaches_in_person && 'In person']
                 .filter(Boolean)
                 .join(' and ') || 'Teaching mode arranged with tutor'}
@@ -230,10 +243,10 @@ export function TutorDetailPage() {
             </article>
           ) : null}
 
-          <article className="tutor-detail-section">
+          <article className="tutor-detail-section tutor-courses-section">
             <div className="tutor-detail-section-heading">
               <div>
-                <p className="eyebrow">Courses and lessons</p>
+                <p className="eyebrow"><InlineIcon name="book" /> Courses and lessons</p>
                 <h2>Choose the learning focus that fits.</h2>
               </div>
               <span className="soft-chip">{courses.length} course{courses.length === 1 ? '' : 's'}</span>
@@ -246,11 +259,12 @@ export function TutorDetailPage() {
                 {courses.map((course) => {
                   const lessons = Array.isArray(course.lessons) ? course.lessons : []
                   const courseBookingPath = `${baseBookingPath}&subject=${course.subject}`
+                  const hasThumbnail = Boolean(course.thumbnail_url)
 
                   return (
                     <article className="tutor-course-card" key={course.id}>
-                      <div className="tutor-course-overview">
-                        {course.thumbnail_url ? (
+                      <div className={`tutor-course-overview${hasThumbnail ? '' : ' tutor-course-overview-no-image'}`}>
+                        {hasThumbnail ? (
                           <img className="tutor-course-thumbnail" loading="lazy" src={course.thumbnail_url} alt="" />
                         ) : null}
                         <div className="tutor-course-content">
@@ -260,12 +274,12 @@ export function TutorDetailPage() {
                               <h3>{course.title}</h3>
                               <p>{formatLabel(course.academic_level)}</p>
                             </div>
-                            <strong>{formatMoney(course.price, course.currency, ' / course')}</strong>
+                            <strong className="tutor-course-price">{formatMoney(course.price, course.currency, ' / course')}</strong>
                           </div>
                           {course.description ? <p className="supporting-text">{course.description}</p> : null}
                           {canBook ? (
                             <Link className="link-button tutor-course-action" to={courseBookingPath}>
-                              Request a lesson in {course.subject_name}
+                              <InlineIcon name="calendar" /> Request lesson
                             </Link>
                           ) : null}
                         </div>
@@ -298,7 +312,7 @@ export function TutorDetailPage() {
           <article className="tutor-detail-section">
             <div className="tutor-detail-section-heading">
               <div>
-                <p className="eyebrow">Availability</p>
+                <p className="eyebrow"><InlineIcon name="calendar" /> Availability</p>
                 <h2>Upcoming lesson times.</h2>
               </div>
               <span className="soft-chip">{availability.length} open</span>
@@ -331,7 +345,7 @@ export function TutorDetailPage() {
           <article className="tutor-detail-section">
             <div className="tutor-detail-section-heading">
               <div>
-                <p className="eyebrow">Student feedback</p>
+                <p className="eyebrow"><InlineIcon name="star" /> Student feedback</p>
                 <h2>Recent lesson experiences.</h2>
               </div>
               <Rating value={tutor.average_rating} count={tutor.review_count} compact />
@@ -384,13 +398,13 @@ export function TutorDetailPage() {
           </div>
           {canBook ? (
             <Link className="primary-button tutor-booking-button" to={baseBookingPath}>
-              {bookingLabel}
+              <InlineIcon name="calendar" /> {bookingLabel}
             </Link>
           ) : (
             <p className="tutor-detail-role-note">Booking requests are available to students and parents.</p>
           )}
           <Link className="secondary-button tutor-booking-button" to={marketplaceReturnPath}>
-            Compare tutors
+            <InlineIcon name="arrow" className="is-reversed" /> Compare tutors
           </Link>
           <small>No payment is taken when you send a request.</small>
         </aside>

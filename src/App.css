@@ -468,6 +468,10 @@
 .primary-button,
 .secondary-button,
 .link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.48rem;
   border-radius: 0;
   padding: 0.78rem 1.02rem;
   font: inherit;
@@ -2748,6 +2752,9 @@
 }
 
 .tutor-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   border: 1px solid rgba(217, 107, 0, 0.35);
   background: #fff3e9;
   padding: 0.45rem 0.65rem;
@@ -2779,6 +2786,12 @@
   font-size: 0.88rem;
 }
 
+.tutor-detail-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
 .tutor-detail-chips {
   margin-top: 1rem;
 }
@@ -2791,7 +2804,22 @@
   white-space: nowrap;
 }
 
-.tutor-rating > span:first-child,
+.tutor-rating-stars {
+  display: inline-flex;
+  gap: 0.08rem;
+  color: #c9bcb2;
+}
+
+.tutor-rating-stars .inline-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.tutor-rating-stars .inline-icon.is-active {
+  color: #b85600;
+  fill: #b85600;
+}
+
 .tutor-rating strong {
   color: #b85600;
 }
@@ -2832,6 +2860,16 @@
   white-space: pre-line;
 }
 
+.inline-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  vertical-align: -0.14em;
+}
+
+.inline-icon.is-reversed {
+  transform: rotate(180deg);
+}
+
 .tutor-credentials-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2863,7 +2901,25 @@
 .tutor-slot-list {
   display: grid;
   gap: 1rem;
-  margin-top: 1.2rem;
+  margin-top: 1rem;
+}
+
+.tutor-courses-section > .tutor-detail-section-heading {
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eadfd7;
+}
+
+.tutor-courses-section .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tutor-detail-section-heading .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .tutor-course-card {
@@ -2876,6 +2932,10 @@
   display: grid;
   grid-template-columns: 132px minmax(0, 1fr);
   gap: 1rem;
+}
+
+.tutor-course-overview-no-image {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .tutor-course-thumbnail {
@@ -2895,7 +2955,17 @@
 
 .tutor-course-action {
   display: inline-flex;
-  margin-top: 0.75rem;
+  width: fit-content;
+  min-height: 36px;
+  margin-top: 0.85rem;
+  padding: 0.52rem 0.72rem;
+  font-size: 0.75rem;
+}
+
+.tutor-course-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
 }
 
 .tutor-course-heading h3 {
@@ -2914,6 +2984,14 @@
 .tutor-course-heading p,
 .tutor-course-heading > strong {
   margin: 0;
+}
+
+.tutor-course-price {
+  min-width: max-content;
+  padding-left: 1rem;
+  color: #171717 !important;
+  font-size: 0.86rem !important;
+  white-space: nowrap;
 }
 
 .tutor-course-subject {
@@ -3053,6 +3131,8 @@
 .tutor-booking-button {
   display: flex;
   width: 100%;
+  align-items: center;
+  gap: 0.5rem;
   justify-content: center;
   margin-top: 0.7rem;
 }
@@ -3155,6 +3235,19 @@
   .tutor-detail-section-heading,
   .tutor-course-heading {
     text-align: center;
+  }
+
+  .tutor-course-heading {
+    display: flex;
+  }
+
+  .tutor-course-price {
+    padding-left: 0;
+  }
+
+  .tutor-course-action {
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .tutor-course-overview {

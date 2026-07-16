@@ -2,6 +2,7 @@ import React, { useDeferredValue, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { FilterBar } from '../components/ui/FilterBar.jsx'
+import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { usePublicCoursesQuery } from '../hooks/useCommonQueries'
 import './CoursesPage.css'
 
@@ -72,7 +73,7 @@ function CourseCard({ course }) {
         <div className="market-course-actions">
           <Link to={`/tutors/${course.tutor}`}>View tutor</Link>
           <Link className="market-primary-action" to={`/courses/${course.id}`}>
-            View course details
+            <InlineIcon name="book" /> View course details
           </Link>
         </div>
       </div>
@@ -142,7 +143,9 @@ export function CoursesPage() {
             <label><span>Maximum</span><input type="number" min="0" value={filters.max_price} onChange={(event) => updateFilter('max_price', event.target.value)} /></label>
           </div>
         </details>
-        <button className="market-reset" type="button" onClick={resetFilters}>Reset</button>
+        <button className="market-reset" type="button" onClick={resetFilters}>
+          <InlineIcon name="trash" /> Reset
+        </button>
       </FilterBar>
 
       {coursesQuery.isLoading ? (
@@ -168,7 +171,9 @@ export function CoursesPage() {
         <section className="market-state">
           <h2>No courses match these filters</h2>
           <p>Clear the filters or try a broader course or topic name.</p>
-          <button type="button" onClick={resetFilters}>Clear filters</button>
+          <button type="button" onClick={resetFilters}>
+            <InlineIcon name="trash" /> Clear filters
+          </button>
         </section>
       )}
 

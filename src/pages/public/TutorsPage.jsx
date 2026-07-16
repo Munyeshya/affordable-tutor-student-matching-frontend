@@ -4,6 +4,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../../api/errors.js'
 import { EMPTY_PAGE } from '../../api/response.js'
 import { usePublicTutorsQuery, useSubjectsQuery } from '../../hooks/useCommonQueries.js'
+import { InlineIcon } from '../../components/ui/InlineIcon.jsx'
 import { Pagination } from '../../components/ui/Pagination.jsx'
 import './TutorsPage.css'
 
@@ -144,10 +145,11 @@ function buildTutorParams(filters, page) {
 function formatTutorRate(rate, currency = 'RWF') {
   const numericRate = Number(rate)
   if (!Number.isFinite(numericRate)) return 'Price on request'
+  const currencyCode = currency || 'RWF'
 
-  return `${currency} ${new Intl.NumberFormat('en-US', {
+  return `${new Intl.NumberFormat('en-RW', {
     maximumFractionDigits: numericRate % 1 === 0 ? 0 : 2,
-  }).format(numericRate)} / hour`
+  }).format(numericRate)} ${currencyCode} / hour`
 }
 
 function formatLevel(value) {
@@ -179,10 +181,16 @@ function getInitials(name = '') {
     .join('') || 'IT'
 }
 
-function formatRating(value, reviewCount) {
+function TutorRating({ value, reviewCount }) {
   const rating = Number(value)
-  if (!Number.isFinite(rating)) return 'New tutor'
-  return `${rating.toFixed(1)} (${reviewCount || 0})`
+  const label = Number.isFinite(rating) ? `${rating.toFixed(1)} (${reviewCount || 0})` : 'New tutor'
+
+  return (
+    <span className="market-rating-value" aria-label={Number.isFinite(rating) ? `${rating.toFixed(1)} out of 5 from ${reviewCount || 0} reviews` : 'New tutor with no ratings'}>
+      <InlineIcon name="star" />
+      {label}
+    </span>
+  )
 }
 
 function formatAvailability(value) {
@@ -233,7 +241,7 @@ function TutorCard({ tutor, marketplacePath }) {
         </div>
         <div className="market-tutor-identity">
           <span className="market-verified-badge">
-            <span aria-hidden="true" />
+            <InlineIcon name="verified" />
             Verified
           </span>
           <h2>{tutor.full_name}</h2>
@@ -242,9 +250,9 @@ function TutorCard({ tutor, marketplacePath }) {
       </div>
 
       <div className="market-tutor-facts">
-        <div><span>Rating</span><strong>{formatRating(tutor.average_rating, tutor.review_count)}</strong></div>
-        <div><span>Location</span><strong>{tutor.location || 'Flexible'}</strong></div>
-        <div><span>Teaching</span><strong>{modes}</strong></div>
+        <div><span><InlineIcon name="star" />Rating</span><strong><TutorRating value={tutor.average_rating} reviewCount={tutor.review_count} /></strong></div>
+        <div><span><InlineIcon name="location" />Location</span><strong>{tutor.location || 'Flexible'}</strong></div>
+        <div><span><InlineIcon name="teaching" />Teaching</span><strong>{modes}</strong></div>
       </div>
 
       <div className="market-tutor-tags" aria-label="Subjects and education levels">
@@ -269,12 +277,13 @@ function TutorCard({ tutor, marketplacePath }) {
 
       <div className="market-tutor-offer">
         <div className={tutor.within_budget === true ? 'market-tutor-budget-match' : ''}>
-          <span>Hourly rate</span>
+          <span><InlineIcon name="money" />Hourly rate</span>
           <strong>{formatTutorRate(tutor.hourly_rate, tutor.currency)}</strong>
           {tutor.within_budget === true ? <small>Within budget</small> : null}
         </div>
         <div>
           <span>
+            <InlineIcon name="calendar" />
             {availability.has_availability
               ? `${availability.available_slot_count} open time${availability.available_slot_count === 1 ? '' : 's'}`
               : 'Availability'}
@@ -289,10 +298,10 @@ function TutorCard({ tutor, marketplacePath }) {
           to={`/tutors/${tutor.id}`}
           state={{ fromMarketplace: marketplacePath }}
         >
-          View profile
+          View profile <InlineIcon name="arrow" />
         </Link>
         <Link className="secondary-button" to={`/book?tutor=${tutor.user_id}&profile=${tutor.id}`}>
-          Request tutor
+          <InlineIcon name="calendar" /> Request tutor
         </Link>
       </div>
     </article>
@@ -448,7 +457,9 @@ function MarketplaceFilterForm({ filters, onApply, onClear, subjects, subjectsLo
       {validationError ? <p className="marketplace-filter-error" role="alert">{validationError}</p> : null}
       <div className="marketplace-filter-actions">
         <button className="primary-button marketplace-submit" type="submit">Show tutors</button>
-        <button className="link-button" type="button" onClick={onClear}>Clear filters</button>
+        <button className="link-button" type="button" onClick={onClear}>
+          <InlineIcon name="trash" /> Clear filters
+        </button>
       </div>
     </form>
   )
@@ -608,7 +619,7 @@ export function TutorsPage() {
           aria-expanded={filtersOpen}
           onClick={() => setFiltersOpen(true)}
         >
-          Filters{activeFilters.length ? ` (${activeFilters.length})` : ''}
+          <InlineIcon name="filter" /> Filters{activeFilters.length ? ` (${activeFilters.length})` : ''}
         </button>
         <span>{tutorPage.count} tutor{tutorPage.count === 1 ? '' : 's'}</span>
       </div>
@@ -669,11 +680,13 @@ export function TutorsPage() {
         <div className="marketplace-active-filters" aria-label="Active tutor filters">
           {activeFilters.map((filter) => (
             <button key={filter.key} type="button" onClick={() => removeFilter(filter.key)}>
-              {filter.label}<span aria-hidden="true">X</span>
+              {filter.label}<InlineIcon name="close" />
               <span className="sr-only">Remove filter</span>
             </button>
           ))}
-          <button className="marketplace-clear" type="button" onClick={clearFilters}>Clear all</button>
+          <button className="marketplace-clear" type="button" onClick={clearFilters}>
+            <InlineIcon name="trash" /> Clear all
+          </button>
         </div>
       ) : null}
 
@@ -703,7 +716,9 @@ export function TutorsPage() {
               ? 'No approved tutor has an open slot during this period. Try another date, remove the exact times, or choose a different teaching mode.'
               : 'Try a broader lesson, topic, education level, location, or price range.'}
           </p>
-          <button className="secondary-button" type="button" onClick={clearFilters}>Clear filters</button>
+          <button className="secondary-button" type="button" onClick={clearFilters}>
+            <InlineIcon name="trash" /> Clear filters
+          </button>
         </section>
       ) : null}
 
