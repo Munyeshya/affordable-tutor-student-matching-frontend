@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { queryKeys } from '../api/queryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation, useParams } from 'react-router-dom'
@@ -60,11 +60,59 @@ function formatCalendarDate(value) {
   }
 
   return {
-    key: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
+    key: getDateKey(date),
     weekday: new Intl.DateTimeFormat('en-RW', { weekday: 'long' }).format(date),
     day: new Intl.DateTimeFormat('en-RW', { day: '2-digit' }).format(date),
     month: new Intl.DateTimeFormat('en-RW', { month: 'short' }).format(date),
   }
+}
+
+function getDateKey(value) {
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function getMonthKey(value) {
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+}
+
+function getMonthDate(monthKey) {
+  const [year, month] = String(monthKey).split('-').map(Number)
+  if (!year || !month) return new Date()
+  return new Date(year, month - 1, 1)
+}
+
+function getCalendarDays(monthDate) {
+  const year = monthDate.getFullYear()
+  const month = monthDate.getMonth()
+  const firstWeekday = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const cells = Array.from({ length: firstWeekday }, () => null)
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    cells.push(new Date(year, month, day))
+  }
+  while (cells.length % 7 !== 0) cells.push(null)
+  return cells
+}
+
+function formatSelectedDate(dateKey) {
+  if (!dateKey) return 'Select a date'
+  const [year, month, day] = dateKey.split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  return new Intl.DateTimeFormat('en-RW', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
 }
 
 function formatTime(value) {
@@ -158,6 +206,8 @@ export function TutorDetailPage() {
   const { id } = useParams()
   const location = useLocation()
   const { user, isAuthenticated } = useAuth()
+  const [selectedAvailabilityDate, setSelectedAvailabilityDate] = useState('')
+  const [visibleCalendarMonth, setVisibleCalendarMonth] = useState('')
   const marketplaceReturnPath = getMarketplaceReturnPath(location.state?.fromMarketplace)
 
   const tutorQuery = useQuery({
@@ -193,6 +243,15 @@ export function TutorDetailPage() {
     ? tutor.upcoming_availability
     : []
   const availabilityDays = groupAvailabilityByDay(availability)
+  const availabilityByDate = new Map(availabilityDays.map((day) => [day.key, day]))
+  const defaultAvailabilityDate = availabilityDays[0]?.key || getDateKey(new Date())
+  const activeAvailabilityDate = selectedAvailabilityDate || defaultAvailabilityDate
+  const activeAvailabilityDay = availabilityByDate.get(activeAvailabilityDate)
+  const defaultCalendarMonth = getMonthKey(availability[0]?.start_datetime || new Date())
+  const activeCalendarMonth = visibleCalendarMonth || defaultCalendarMonth
+  const activeCalendarMonthDate = getMonthDate(activeCalendarMonth)
+  const calendarDays = getCalendarDays(activeCalendarMonthDate)
+  const todayKey = getDateKey(new Date())
   const subjectLevels = Array.isArray(tutor.subject_levels) ? tutor.subject_levels : []
   const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : []
   const lowestCoursePrice = courses.reduce((lowest, course) => {
@@ -203,6 +262,20 @@ export function TutorDetailPage() {
   const canBook = !isAuthenticated || user?.role === 'STUDENT' || user?.role === 'PARENT'
   const baseBookingPath = `/book?tutor=${tutor.user_id}&profile=${tutor.id}`
   const bookingLabel = isAuthenticated ? 'Request a lesson' : 'Sign in to request'
+
+  function changeCalendarMonth(offset) {
+    const nextMonth = new Date(
+      activeCalendarMonthDate.getFullYear(),
+      activeCalendarMonthDate.getMonth() + offset,
+      1,
+    )
+    setVisibleCalendarMonth(getMonthKey(nextMonth))
+    setSelectedAvailabilityDate(getDateKey(nextMonth))
+  }
+
+  function selectCalendarDate(date) {
+    setSelectedAvailabilityDate(getDateKey(date))
+  }
 
   return (
     <div className="tutor-detail-page">
@@ -365,24 +438,26 @@ export function TutorDetailPage() {
             ) : (
               <div className="tutor-availability-calendar">
                 <div className="tutor-calendar-toolbar">
-                  <span><InlineIcon name="calendar" /> Next available dates</span>
+                  <span><InlineIcon name="calendar" /> Select a date and time</span>
                   <small>Times are shown in your local timezone.</small>
                 </div>
-                <div className="tutor-calendar-days">
-                  {availabilityDays.map((day) => (
-                    <article className="tutor-calendar-day" key={day.key}>
-                      <header>
-                        <div className="tutor-calendar-date" aria-label={`${day.weekday}, ${day.month} ${day.day}`}>
-                          <span>{day.month}</span>
-                          <strong>{day.day}</strong>
-                        </div>
-                        <div>
-                          <h3>{day.weekday}</h3>
-                          <p>{day.slots.length} available time{day.slots.length === 1 ? '' : 's'}</p>
-                        </div>
-                      </header>
+                <div className="tutor-availability-layout">
+                  <section className="tutor-selected-day" aria-live="polite">
+                    <div className="tutor-selected-day-heading">
+                      <div>
+                        <p className="eyebrow">Selected date</p>
+                        <h3>{formatSelectedDate(activeAvailabilityDate)}</h3>
+                      </div>
+                      <span>
+                        {activeAvailabilityDay
+                          ? `${activeAvailabilityDay.slots.length} open`
+                          : 'No openings'}
+                      </span>
+                    </div>
+
+                    {activeAvailabilityDay ? (
                       <div className="tutor-calendar-slots">
-                        {day.slots.map((slot) => {
+                        {activeAvailabilityDay.slots.map((slot) => {
                           const slotContent = (
                             <>
                               <span className="tutor-calendar-time">
@@ -399,7 +474,7 @@ export function TutorDetailPage() {
                               className="tutor-calendar-slot"
                               key={slot.id}
                               to={`${baseBookingPath}&slot=${slot.id}&mode=${slot.mode}`}
-                              aria-label={`Choose ${day.weekday} from ${formatTime(slot.start_datetime)} to ${formatTime(slot.end_datetime)}, ${formatLabel(slot.mode)}`}
+                              aria-label={`Choose ${formatSelectedDate(activeAvailabilityDate)} from ${formatTime(slot.start_datetime)} to ${formatTime(slot.end_datetime)}, ${formatLabel(slot.mode)}`}
                             >
                               {slotContent}
                             </Link>
@@ -408,8 +483,72 @@ export function TutorDetailPage() {
                           )
                         })}
                       </div>
-                    </article>
-                  ))}
+                    ) : (
+                      <div className="tutor-calendar-empty">
+                        <InlineIcon name="calendar" size={24} />
+                        <h4>No available lesson times</h4>
+                        <p>This tutor has not published an open slot for this date. Choose a highlighted date or send a general lesson request.</p>
+                        {canBook ? <Link to={baseBookingPath}>Request another time</Link> : null}
+                      </div>
+                    )}
+                  </section>
+
+                  <section className="tutor-month-calendar" aria-label="Tutor availability calendar">
+                    <header>
+                      <button type="button" onClick={() => changeCalendarMonth(-1)} aria-label="Previous month">
+                        <InlineIcon name="arrow" className="is-reversed" />
+                      </button>
+                      <h3>{new Intl.DateTimeFormat('en-RW', { month: 'long', year: 'numeric' }).format(activeCalendarMonthDate)}</h3>
+                      <button type="button" onClick={() => changeCalendarMonth(1)} aria-label="Next month">
+                        <InlineIcon name="arrow" />
+                      </button>
+                    </header>
+                    <div className="tutor-calendar-weekdays" aria-hidden="true">
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((weekday) => <span key={weekday}>{weekday}</span>)}
+                    </div>
+                    <div className="tutor-calendar-grid">
+                      {calendarDays.map((date, index) => {
+                        if (!date) return <span className="tutor-calendar-blank" key={`blank-${index}`} />
+
+                        const dateKey = getDateKey(date)
+                        const availableDay = availabilityByDate.get(dateKey)
+                        const isSelected = dateKey === activeAvailabilityDate
+                        const isToday = dateKey === todayKey
+                        const dateLabel = new Intl.DateTimeFormat('en-RW', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        }).format(date)
+                        const availabilityLabel = availableDay
+                          ? `${availableDay.slots.length} available lesson time${availableDay.slots.length === 1 ? '' : 's'}`
+                          : 'no available lesson times'
+
+                        return (
+                          <button
+                            className={[
+                              'tutor-calendar-cell',
+                              availableDay ? 'has-availability' : '',
+                              isSelected ? 'is-selected' : '',
+                              isToday ? 'is-today' : '',
+                            ].filter(Boolean).join(' ')}
+                            type="button"
+                            key={dateKey}
+                            aria-pressed={isSelected}
+                            aria-label={`${dateLabel}, ${availabilityLabel}`}
+                            onClick={() => selectCalendarDate(date)}
+                          >
+                            <span>{date.getDate()}</span>
+                            {availableDay ? <i aria-hidden="true">{availableDay.slots.length}</i> : null}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <footer>
+                      <span><i className="is-available" /> Available date</span>
+                      <span><i className="is-selected" /> Selected date</span>
+                    </footer>
+                  </section>
                 </div>
               </div>
             )}

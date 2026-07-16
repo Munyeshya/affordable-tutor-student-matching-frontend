@@ -1,5 +1,6 @@
 import React from 'react'
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -85,7 +86,8 @@ describe('TutorDetailPage', () => {
     })
   })
 
-  it('keeps course content full width and formats prices clearly', async () => {
+  it('keeps course content full width and presents interactive calendar availability', async () => {
+    const user = userEvent.setup()
     renderWithProviders(
       <Routes>
         <Route path="/tutors/:id" element={<TutorDetailPage />} />
@@ -105,12 +107,26 @@ describe('TutorDetailPage', () => {
     )
     expect(screen.getAllByLabelText('4.8 out of 5').length).toBeGreaterThan(0)
     expect(screen.getByText('3 open across 2 days')).toBeInTheDocument()
-    expect(screen.getByText('2 available times')).toBeInTheDocument()
-    expect(screen.getByText('1 available time')).toBeInTheDocument()
+    expect(screen.getByText('2 open')).toBeInTheDocument()
     expect(screen.getByText('Times are shown in your local timezone.')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Tutor availability calendar' })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: /choose .*online/i })[0]).toHaveAttribute(
       'href',
       '/book?tutor=7&profile=1&slot=31&mode=ONLINE',
     )
+
+    const unavailableDate = screen.getByRole('button', {
+      name: /12 January 2030, no available lesson times/i,
+    })
+    await user.click(unavailableDate)
+    expect(screen.getByRole('heading', { name: 'No available lesson times' })).toBeInTheDocument()
+    expect(screen.getByText(/has not published an open slot for this date/i)).toBeInTheDocument()
+
+    const availableDate = screen.getByRole('button', {
+      name: /10 January 2030, 2 available lesson times/i,
+    })
+    await user.click(availableDate)
+    expect(screen.queryByRole('heading', { name: 'No available lesson times' })).not.toBeInTheDocument()
+    expect(screen.getByText('2 open')).toBeInTheDocument()
   })
 })
