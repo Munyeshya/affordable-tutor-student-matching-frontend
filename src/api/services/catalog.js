@@ -45,3 +45,7 @@ export function listPublicCourses(params = {}) {
 
   return apiClient.get(API_ENDPOINTS.catalog.courses, { params: queryParams }).then(normalizePaginatedResponse)
 }
+
+export function getPublicCourse(id) {
+  return apiClient.get(API_ENDPOINTS.catalog.publicCourseDetail(id))
+}

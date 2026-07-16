@@ -1,12 +1,7 @@
 import React, { useDeferredValue, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getApiErrorMessage } from '../api/errors'
-import { queryKeys } from '../api/queryKeys'
-import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { FilterBar } from '../components/ui/FilterBar.jsx'
-import { listCoursePurchases } from '../api/services/payments'
-import { useAuth } from '../context/AuthContext.jsx'
 import { usePublicCoursesQuery } from '../hooks/useCommonQueries'
 import './CoursesPage.css'
 
@@ -22,7 +17,7 @@ function CourseSkeleton() {
   )
 }
 
-function CourseCard({ course, isOwned, canPurchase, isAuthenticated, accessLoading, busy, onPurchase }) {
+function CourseCard({ course }) {
   const previews = Array.isArray(course.lessons) ? course.lessons : []
 
   return (
@@ -76,19 +71,9 @@ function CourseCard({ course, isOwned, canPurchase, isAuthenticated, accessLoadi
 
         <div className="market-course-actions">
           <Link to={`/tutors/${course.tutor}`}>View tutor</Link>
-          {accessLoading ? (
-            <button type="button" disabled>Checking access...</button>
-          ) : isOwned ? (
-            <Link className="market-primary-action" to={`/learning?course=${course.id}`}>Continue learning</Link>
-          ) : canPurchase ? (
-            <button type="button" onClick={() => onPurchase(course)} disabled={busy}>
-              {busy ? 'Processing...' : Number(course.price) === 0 ? 'Enroll free' : 'Buy course'}
-            </button>
-          ) : !isAuthenticated ? (
-            <Link className="market-primary-action" to="/sign-in">Sign in to buy</Link>
-          ) : (
-            <span className="market-role-note">Student accounts can enroll</span>
-          )}
+          <Link className="market-primary-action" to={`/courses/${course.id}`}>
+            View course details
+          </Link>
         </div>
       </div>
     </article>
@@ -96,29 +81,16 @@ function CourseCard({ course, isOwned, canPurchase, isAuthenticated, accessLoadi
 }
 
 export function CoursesPage() {
-  const { user, isAuthenticated } = useAuth()
-  const queryClient = useQueryClient()
   const [filters, setFilters] = useState({
     q: '', subject: '', topic: '', min_price: '', max_price: '', sort: 'price_low',
   })
   const deferredFilters = useDeferredValue(filters)
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const canPurchase = isAuthenticated && user?.role === 'STUDENT'
 
   const coursesQuery = usePublicCoursesQuery(deferredFilters)
-  const purchasesQuery = useQuery({
-    queryKey: queryKeys.payments.coursePurchases,
-    queryFn: () => listCoursePurchases().then((response) => response.data),
-    enabled: canPurchase,
-  })
   const courseData = coursesQuery.data
   const courses = Array.isArray(courseData)
     ? courseData
     : Array.isArray(courseData?.results) ? courseData.results : []
-  const purchases = Array.isArray(purchasesQuery.data) ? purchasesQuery.data : []
-  const ownedCourseIds = new Set(
-    purchases.filter((purchase) => purchase.status === 'PAID').map((purchase) => purchase.course),
-  )
   const visibleCount = Number.isFinite(courseData?.count) ? courseData.count : courses.length
 
   function updateFilter(name, value) {
@@ -189,12 +161,6 @@ export function CoursesPage() {
             <CourseCard
               key={course.id}
               course={course}
-              isOwned={ownedCourseIds.has(course.id)}
-              canPurchase={canPurchase}
-              isAuthenticated={isAuthenticated}
-              accessLoading={canPurchase && purchasesQuery.isLoading}
-              busy={selectedCourse?.id === course.id}
-              onPurchase={setSelectedCourse}
             />
           ))}
         </section>
@@ -206,25 +172,6 @@ export function CoursesPage() {
         </section>
       )}
 
-      <PaymentCheckoutDialog
-        key={selectedCourse?.id || 'course-payment'}
-        open={Boolean(selectedCourse)}
-        kind="course"
-        itemId={selectedCourse?.id}
-        title={selectedCourse?.title || 'Course enrollment'}
-        amount={selectedCourse?.price}
-        currency="RWF"
-        initialPhone={user?.profile?.data?.phone_number || ''}
-        onClose={() => setSelectedCourse(null)}
-        onSettled={async () => {
-          await Promise.all([
-            queryClient.invalidateQueries({ queryKey: queryKeys.payments.coursePurchases }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.learning.library }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.catalog.publicCoursesRoot }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
-          ])
-        }}
-      />
     </section>
   )
 }

@@ -33,6 +33,7 @@ export const queryKeys = {
     courseLessons: (courseId) => ['catalog', 'tutor-courses', courseId, 'lessons'],
     publicCourses: (filters = {}) => ['catalog', 'public-courses', filters],
     publicCoursesRoot: ['catalog', 'public-courses'],
+    publicCourse: (id) => ['catalog', 'public-courses', 'detail', id],
   },
   chats: {
     all: ['chats'],

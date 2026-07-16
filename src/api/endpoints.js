@@ -112,6 +112,7 @@
     courseSubmit: (id) => `/catalog/courses/${id}/submit/`,
     courses: '/catalog/courses/',
     courseDetail: (id) => `/catalog/courses/${id}/`,
+    publicCourseDetail: (id) => `/catalog/courses/${id}/public/`,
     lessons: (courseId) => `/catalog/courses/${courseId}/lessons/`,
     lessonDetail: (id) => `/catalog/lessons/${id}/`,
   },
