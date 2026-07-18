@@ -156,14 +156,16 @@ export function TutorDocumentsPage() {
     setDownloadingAgreement(true)
     try {
       const response = await downloadTutorAgreement()
-      const blob = new Blob([response.data], { type: 'text/plain;charset=utf-8' })
+      const blob = new Blob([response.data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const anchor = document.createElement('a')
+      const disposition = response.headers?.['content-disposition'] || ''
+      const filenameMatch = disposition.match(/filename="?([^";]+)"?/i)
       anchor.href = url
-      anchor.download = 'tutor-agreement-template.txt'
+      anchor.download = filenameMatch?.[1] || 'isomo-tutor-agreement.pdf'
       anchor.click()
       window.URL.revokeObjectURL(url)
-      toast.success('Agreement template downloaded.')
+      toast.success('Personalized PDF agreement downloaded.')
     } catch {
       setNotice('Could not download the agreement template.')
       toast.error('Could not download the agreement template.')
