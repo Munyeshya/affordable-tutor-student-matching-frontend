@@ -6,6 +6,7 @@ import { getApiErrorMessage } from '../api/errors'
 import { queryKeys } from '../api/queryKeys'
 import { getPublicCourse } from '../api/services/catalog'
 import { listCoursePurchases } from '../api/services/payments'
+import { listParentLinks } from '../api/services/parents'
 import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -68,6 +69,8 @@ export function CourseDetailPage() {
   const { user, isAuthenticated } = useAuth()
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const isStudent = isAuthenticated && user?.role === 'STUDENT'
+  const isParent = isAuthenticated && user?.role === 'PARENT'
+  const canPurchase = isStudent || isParent
 
   const courseQuery = useQuery({
     queryKey: queryKeys.catalog.publicCourse(id),
@@ -77,7 +80,12 @@ export function CourseDetailPage() {
   const purchasesQuery = useQuery({
     queryKey: queryKeys.payments.coursePurchases,
     queryFn: () => listCoursePurchases().then((response) => response.data),
-    enabled: isStudent,
+    enabled: canPurchase,
+  })
+  const parentLinksQuery = useQuery({
+    queryKey: queryKeys.parents.links,
+    queryFn: () => listParentLinks().then((response) => response.data),
+    enabled: isParent,
   })
 
   if (courseQuery.isLoading) {
@@ -110,8 +118,22 @@ export function CourseDetailPage() {
   )
   const coverageItems = uniqueCoverageItems(curriculum)
   const purchases = Array.isArray(purchasesQuery.data) ? purchasesQuery.data : []
-  const isOwned = purchases.some(
-    (purchase) => purchase.status === 'PAID' && String(purchase.course) === String(course.id),
+  const linkedLearners = (parentLinksQuery.data || []).map((link) => ({
+    id: link.student,
+    name: link.student_name || link.student_email || `Student ${link.student}`,
+  }))
+  const paidLearnerIds = new Set(
+    purchases
+      .filter((purchase) => purchase.status === 'PAID' && String(purchase.course) === String(course.id))
+      .map((purchase) => String(purchase.student)),
+  )
+  const eligibleLearners = linkedLearners.filter((learner) => !paidLearnerIds.has(String(learner.id)))
+  const isOwned = isStudent && purchases.some(
+    (purchase) => (
+      purchase.status === 'PAID'
+      && String(purchase.course) === String(course.id)
+      && String(purchase.student) === String(user?.id)
+    ),
   )
 
   return (
@@ -243,13 +265,19 @@ export function CourseDetailPage() {
             <span>Learning access after confirmed payment</span>
           </div>
 
-          {isStudent && purchasesQuery.isLoading ? (
+          {canPurchase && (purchasesQuery.isLoading || (isParent && parentLinksQuery.isLoading)) ? (
             <button type="button" disabled>Checking your access...</button>
           ) : isOwned ? (
             <Link className="course-enrollment-primary" to={`/learning?course=${course.id}`}>Continue learning</Link>
-          ) : isStudent ? (
+          ) : isParent && !linkedLearners.length ? (
+            <Link className="course-enrollment-primary" to="/parent-students">Link a student before purchasing</Link>
+          ) : isParent && !eligibleLearners.length ? (
+            <p className="course-enrollment-role-note">Every linked student already owns this course.</p>
+          ) : canPurchase ? (
             <button type="button" onClick={() => setCheckoutOpen(true)}>
-              {Number(course.price) === 0 ? 'Enroll in this course' : 'Buy this course'}
+              {Number(course.price) === 0
+                ? (isParent ? 'Enroll a linked student' : 'Enroll in this course')
+                : (isParent ? 'Buy for a linked student' : 'Buy this course')}
             </button>
           ) : !isAuthenticated ? (
             <Link
@@ -260,7 +288,7 @@ export function CourseDetailPage() {
               Sign in to buy this course
             </Link>
           ) : (
-            <p className="course-enrollment-role-note">Course enrollment is available through a student account.</p>
+            <p className="course-enrollment-role-note">Course enrollment is available through student and parent accounts.</p>
           )}
 
           <Link className="course-enrollment-secondary" to={`/tutors/${course.tutor}`}>View tutor profile</Link>
@@ -277,6 +305,8 @@ export function CourseDetailPage() {
         amount={course.price}
         currency="RWF"
         initialPhone={user?.profile?.data?.phone_number || ''}
+        learnerName={isStudent ? (user?.full_name || user?.first_name || user?.email) : ''}
+        learners={isParent ? eligibleLearners : []}
         onClose={() => setCheckoutOpen(false)}
         onSettled={async () => {
           await Promise.all([

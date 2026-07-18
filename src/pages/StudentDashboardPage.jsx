@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { getApiErrorMessage } from '../api/errors'
 import { listAssessments, listAssessmentAttempts } from '../api/services/assessments'
+import { listPayments } from '../api/services/payments'
 import { listEligibleReviews } from '../api/services/reviews'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { queryKeys } from '../api/queryKeys'
@@ -26,6 +27,10 @@ function formatDateTime(value) {
     month: new Intl.DateTimeFormat('en-RW', { month: 'short' }).format(date),
     time: new Intl.DateTimeFormat('en-RW', { weekday: 'short', hour: '2-digit', minute: '2-digit' }).format(date),
   }
+}
+
+function formatMoney(value, currency = 'RWF') {
+  return `${new Intl.NumberFormat('en-RW', { maximumFractionDigits: 0 }).format(Number(value || 0))} ${currency}`
 }
 
 function DashboardSkeleton({ rows = 3 }) {
@@ -53,12 +58,28 @@ export function StudentDashboardPage() {
     queryFn: listEligibleReviews,
     staleTime: 30_000,
   })
+  const paymentsQuery = useQuery({
+    queryKey: queryKeys.payments.bookings,
+    queryFn: () => listPayments().then((response) => response.data),
+    staleTime: 30_000,
+  })
 
   const courses = Array.isArray(libraryQuery.data) ? libraryQuery.data : []
   const bookings = Array.isArray(bookingsQuery.data) ? bookingsQuery.data : []
   const assessments = Array.isArray(assessmentsQuery.data) ? assessmentsQuery.data : []
   const attempts = Array.isArray(attemptsQuery.data) ? attemptsQuery.data : []
   const eligibleReviews = reviewsQuery.data || {}
+  const payments = Array.isArray(paymentsQuery.data) ? paymentsQuery.data : []
+  const paymentsByBooking = new Map(payments.map((payment) => [String(payment.booking_id), payment]))
+  const outstandingBookings = bookings.filter((booking) => (
+    ['CONFIRMED', 'COMPLETED'].includes(booking.status)
+    && !['PAID', 'REFUNDED'].includes(paymentsByBooking.get(String(booking.id))?.status)
+  ))
+  const outstandingTotal = outstandingBookings.reduce(
+    (total, booking) => total + Number(booking.total_amount || 0),
+    0,
+  )
+  const recentPayments = payments.filter((payment) => payment.status === 'PAID').slice(0, 2)
   const attemptedIds = new Set(attempts.map((attempt) => Number(attempt.assessment)))
   const pendingAssessments = assessments.filter((assessment) => !attemptedIds.has(Number(assessment.id)))
   const upcomingBookings = bookings
@@ -71,7 +92,7 @@ export function StudentDashboardPage() {
   const nextLesson = activeCourse?.lessons?.find((lesson) => !lesson.progress?.is_completed) || activeCourse?.lessons?.[0]
   const reviewCount = (eligibleReviews.bookings?.length || 0) + (eligibleReviews.lessons?.length || 0)
   const firstName = (user?.first_name || user?.username || user?.email || 'Student').split(/\s|@/)[0]
-  const overviewQueries = [libraryQuery, bookingsQuery, assessmentsQuery, attemptsQuery, reviewsQuery]
+  const overviewQueries = [libraryQuery, bookingsQuery, assessmentsQuery, attemptsQuery, reviewsQuery, paymentsQuery]
   const failedQuery = overviewQueries.find((query) => query.isError)
 
   function refreshDashboard() {
@@ -185,12 +206,28 @@ export function StudentDashboardPage() {
         <aside className="student-overview-side" aria-label="Student actions and progress">
           <section className="student-overview-panel">
             <SectionHeading eyebrow="Next steps" title="Needs your attention" />
-            {assessmentsQuery.isLoading || attemptsQuery.isLoading || reviewsQuery.isLoading ? <DashboardSkeleton rows={2} /> : (
+            {assessmentsQuery.isLoading || attemptsQuery.isLoading || reviewsQuery.isLoading || paymentsQuery.isLoading ? <DashboardSkeleton rows={3} /> : (
               <div className="student-action-list">
+                <Link to="/payments"><span><DashboardIcon name="payments" /></span><div><strong>{outstandingBookings.length} payment{outstandingBookings.length === 1 ? '' : 's'} due</strong><small>{outstandingBookings.length ? `${formatMoney(outstandingTotal)} for confirmed lessons.` : 'No confirmed lesson payments are due.'}</small></div><b aria-hidden="true">-&gt;</b></Link>
                 <Link to="/assessments"><span><DashboardIcon name="assessments" /></span><div><strong>{pendingAssessments.length} assessment{pendingAssessments.length === 1 ? '' : 's'}</strong><small>Check your knowledge before or after lessons.</small></div><b aria-hidden="true">-&gt;</b></Link>
                 <Link to="/reviews"><span><DashboardIcon name="reviews" /></span><div><strong>{reviewCount} review{reviewCount === 1 ? '' : 's'} pending</strong><small>Share feedback after completed learning.</small></div><b aria-hidden="true">-&gt;</b></Link>
               </div>
             )}
+          </section>
+
+          <section className="student-overview-panel student-payment-panel">
+            <SectionHeading eyebrow="Payments" title="Recent activity" to="/payments" action="View payments" />
+            {paymentsQuery.isLoading ? <DashboardSkeleton rows={2} /> : recentPayments.length ? (
+              <div className="student-payment-list">
+                {recentPayments.map((payment) => (
+                  <div key={payment.id}>
+                    <span><DashboardIcon name="verification" /></span>
+                    <div><strong>{payment.learner_name || 'Lesson payment'}</strong><small>Booking #{payment.booking_id}</small></div>
+                    <b>{formatMoney(payment.amount, payment.currency)}</b>
+                  </div>
+                ))}
+              </div>
+            ) : <p className="student-panel-message">Completed lesson payments will appear here.</p>}
           </section>
 
           <section className="student-overview-panel student-progress-panel">
@@ -209,6 +246,7 @@ export function StudentDashboardPage() {
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Find tutors</strong><small>Compare topics and prices</small></span></Link>
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Request a lesson</strong><small>Choose a tutor and send your learning needs</small></span></Link>
               <Link to="/messages"><DashboardIcon name="messages" /><span><strong>Messages</strong><small>Talk with your tutors</small></span></Link>
+              <Link to="/payments"><DashboardIcon name="payments" /><span><strong>Payments</strong><small>Pay lessons and print receipts</small></span></Link>
             </nav>
           </section>
         </aside>

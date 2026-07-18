@@ -97,6 +97,7 @@
     providers: '/payments/providers/',
     list: '/payments/bookings/',
     bookingPay: '/payments/bookings/pay/',
+    schedulePay: '/payments/schedules/pay/',
     coursePurchases: '/payments/course-purchases/',
     coursePurchaseCreate: '/payments/course-purchases/create/',
     transactionStatus: (kind, id) => `/payments/transactions/${kind}/${id}/`,

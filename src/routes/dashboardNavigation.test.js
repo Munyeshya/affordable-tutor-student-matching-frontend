@@ -28,8 +28,10 @@ describe('role navigation', () => {
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/assessments')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/schedule-proposals')
+    expect(getDashboardNavigationPaths('STUDENT')).toContain('/payments')
     expect(getDashboardNavigationPaths('STUDENT')).not.toContain('/book')
     expect(getDashboardNavigationPaths('PARENT')).toContain('/parent-students')
+    expect(getDashboardNavigationPaths('PARENT')).toContain('/payments')
     expect(getDashboardNavigationPaths('PARENT')).not.toContain('/book')
   })
 

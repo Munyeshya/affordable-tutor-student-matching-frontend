@@ -1,0 +1,93 @@
+.payments-page {
+  --payment-ink: #1b1b1b;
+  --payment-muted: #706861;
+  --payment-line: #e7dfd9;
+  --payment-orange: #ad5200;
+  display: grid;
+  gap: 1rem;
+  color: var(--payment-ink);
+}
+
+.payments-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--payment-line);
+  padding: 0.25rem 0 1.1rem;
+}
+
+.payments-page-header h1 { margin: 0.3rem 0 0.4rem; font-size: clamp(1.55rem, 2.5vw, 2.1rem); }
+.payments-page-header p:last-child { max-width: 680px; margin: 0; color: var(--payment-muted); font-size: 0.88rem; }
+.payments-page-header > span { width: 44px; height: 44px; display: grid; flex: 0 0 auto; place-items: center; background: #fff0e2; color: var(--payment-orange); }
+
+.payments-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.payments-summary article { min-width: 0; display: flex; align-items: center; gap: 0.75rem; border: 1px solid var(--payment-line); background: #fff; padding: 0.9rem; }
+.payments-summary article > span { width: 38px; height: 38px; display: grid; flex: 0 0 auto; place-items: center; background: #fff3e8; color: var(--payment-orange); }
+.payments-summary article > div { min-width: 0; display: grid; gap: 0.18rem; }
+.payments-summary small { overflow: hidden; color: var(--payment-muted); font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+.payments-summary strong { overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.payments-panel { border: 1px solid var(--payment-line); background: #fff; padding: 1rem; }
+.payments-panel > header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.payments-panel h2 { margin: 0; font-size: 1.05rem; }
+.payments-panel > header > small { color: var(--payment-muted); font-size: 0.68rem; }
+
+.payments-outstanding-list,
+.payments-history-list { display: grid; }
+
+.payments-outstanding-list article,
+.payments-history-list article {
+  display: grid;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid var(--payment-line);
+  padding: 0.8rem 0;
+}
+
+.payments-outstanding-list article { grid-template-columns: 38px minmax(0, 1fr) minmax(150px, auto) auto; }
+.payments-history-list article { grid-template-columns: 36px minmax(0, 1fr) minmax(150px, auto) auto auto; }
+.payments-outstanding-list article > span:first-child,
+.payments-history-list article > span:first-child { width: 36px; height: 36px; display: grid; place-items: center; background: #fff3e8; color: var(--payment-orange); }
+.payments-outstanding-list article > div,
+.payments-history-list article > div { min-width: 0; display: grid; gap: 0.16rem; }
+.payments-outstanding-list article > div:nth-child(3),
+.payments-history-list article > div:nth-child(3) { text-align: right; }
+.payments-outstanding-list strong,
+.payments-history-list strong { overflow: hidden; font-size: 0.76rem; text-overflow: ellipsis; white-space: nowrap; }
+.payments-outstanding-list small,
+.payments-history-list small { color: var(--payment-muted); font-size: 0.66rem; }
+
+.payments-filters { display: flex; overflow-x: auto; border-top: 1px solid var(--payment-line); border-bottom: 1px solid var(--payment-line); }
+.payments-filters button { display: flex; align-items: center; gap: 0.4rem; border: 0; border-right: 1px solid var(--payment-line); background: #fff; padding: 0.65rem 0.8rem; color: var(--payment-muted); cursor: pointer; font: inherit; font-size: 0.68rem; font-weight: 800; text-transform: capitalize; white-space: nowrap; }
+.payments-filters button.is-active { background: #fff5ec; color: var(--payment-orange); }
+.payments-filters span { display: grid; min-width: 20px; height: 20px; place-items: center; border: 1px solid #e1c8b2; border-radius: 50%; font-size: 0.6rem; }
+
+.payment-history-status { padding: 0.28rem 0.45rem; background: #f1efed; color: #625c58; font-size: 0.58rem; text-transform: uppercase; }
+.payment-history-status.is-paid { background: #edf7f0; color: #27613b; }
+.payment-history-status.is-pending { background: #fff5df; color: #825000; }
+.payment-history-status.is-failed { background: #fff0ee; color: #8b3025; }
+.payment-history-status.is-refunded { background: #eff5fb; color: #315c83; }
+.payments-no-receipt { color: var(--payment-muted); font-size: 0.64rem; text-align: center; }
+.payments-empty { border-top: 1px solid var(--payment-line); padding: 1.3rem 0 0.4rem; }
+.payments-error { border-left: 3px solid var(--payment-orange); background: #fff7f0; padding: 0.9rem; }
+
+@media (max-width: 1000px) {
+  .payments-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .payments-history-list article { grid-template-columns: 36px minmax(0, 1fr) auto; }
+  .payments-history-list article > div:nth-child(3) { text-align: left; }
+  .payment-history-status { grid-column: 2; width: fit-content; }
+}
+
+@media (max-width: 640px) {
+  .payments-summary { grid-template-columns: 1fr; }
+  .payments-panel > header { align-items: flex-start; flex-direction: column; }
+  .payments-outstanding-list article { grid-template-columns: 36px minmax(0, 1fr); }
+  .payments-outstanding-list article > div:nth-child(3) { grid-column: 2; text-align: left; }
+  .payments-outstanding-list article > button { grid-column: 1 / -1; justify-content: center; }
+  .payments-history-list article { grid-template-columns: 32px minmax(0, 1fr); }
+  .payments-history-list article > div:nth-child(3),
+  .payment-history-status,
+  .payments-history-list article > button,
+  .payments-no-receipt { grid-column: 2; width: fit-content; text-align: left; }
+}

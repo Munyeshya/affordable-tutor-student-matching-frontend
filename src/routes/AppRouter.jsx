@@ -9,6 +9,7 @@ import { adminRoutes } from './adminRoutes.jsx'
 import { authRoutes } from './authRoutes.jsx'
 import { parentRoutes } from './parentRoutes.jsx'
 import { participantRoutes } from './participantRoutes.jsx'
+import { payerRoutes } from './payerRoutes.jsx'
 import { protectedRoutes } from './protectedRoutes.jsx'
 import { publicRoutes } from './publicRoutes.jsx'
 import { studentRoutes } from './studentRoutes.jsx'
@@ -47,6 +48,10 @@ export function AppRouter() {
 
             <Route element={<RequireRole roles={['STUDENT']} />}>
               {renderRoutes(studentRoutes)}
+            </Route>
+
+            <Route element={<RequireRole roles={['STUDENT', 'PARENT']} />}>
+              {renderRoutes(payerRoutes)}
             </Route>
 
             <Route element={<RequireRole roles={['TUTOR']} />}>

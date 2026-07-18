@@ -23,6 +23,7 @@ vi.mock('../../api/services/payments', () => ({
   getPaymentTransaction: vi.fn(),
   getPrintablePaymentReceipt: vi.fn(),
   initiateBookingPayment: vi.fn(),
+  initiateSchedulePayment: vi.fn(),
   listPaymentProviders: vi.fn(),
 }))
 
@@ -47,7 +48,7 @@ describe('PaymentCheckoutDialog', () => {
           code: 'SIMULATED',
           name: 'Development payment',
           description: 'Local simulation only.',
-          networks: ['SIMULATED'],
+          networks: ['MTN', 'AIRTEL', 'CARD', 'BANK'],
         }],
       },
     })
@@ -68,9 +69,12 @@ describe('PaymentCheckoutDialog', () => {
 
     renderWithProviders(<PaymentCheckoutDialog {...baseProps} />)
 
-    await user.click(await screen.findByRole('button', { name: 'Continue to payment' }))
+    await user.click(await screen.findByRole('button', { name: 'Choose payment method' }))
+    await user.click(screen.getByRole('button', { name: 'Review payment' }))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Complete payment simulation' }))
 
-    expect(await screen.findByRole('heading', { name: 'Payment confirmed' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Payment completed' })).toBeInTheDocument()
     await waitFor(() => expect(baseProps.onSettled).toHaveBeenCalledWith(expect.objectContaining({
       id: 61,
       status: 'PAID',
@@ -80,7 +84,7 @@ describe('PaymentCheckoutDialog', () => {
         course_id: 15,
         provider: 'SIMULATED',
         phone_number: '',
-        network: 'SIMULATED',
+        network: 'MTN',
       },
       expect.any(String),
     )
@@ -111,11 +115,14 @@ describe('PaymentCheckoutDialog', () => {
 
     renderWithProviders(<PaymentCheckoutDialog {...baseProps} />)
 
-    await user.type(await screen.findByLabelText('Mobile money number'), '250788000001')
-    await user.click(screen.getByRole('button', { name: 'Continue to payment' }))
+    await user.click(await screen.findByRole('button', { name: 'Choose payment method' }))
+    await user.type(screen.getByLabelText('Mobile money number'), '250788000001')
+    await user.click(screen.getByRole('button', { name: 'Review payment' }))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Complete payment simulation' }))
 
     expect(await screen.findByRole('heading', { name: 'Waiting for approval' })).toBeInTheDocument()
-    expect(screen.getByText(/Approve the payment prompt on your phone/)).toBeInTheDocument()
+    expect(screen.getByText(/Approve the payment prompt/)).toBeInTheDocument()
     expect(baseProps.onSettled).not.toHaveBeenCalled()
   })
 })

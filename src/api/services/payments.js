@@ -16,6 +16,12 @@ export function initiateBookingPayment(data, idempotencyKey) {
   })
 }
 
+export function initiateSchedulePayment(data, idempotencyKey) {
+  return apiClient.post(API_ENDPOINTS.payments.schedulePay, data, {
+    headers: { 'Idempotency-Key': idempotencyKey },
+  })
+}
+
 export function listCoursePurchases() {
   return apiClient.get(API_ENDPOINTS.payments.coursePurchases).then(normalizeListResponse)
 }

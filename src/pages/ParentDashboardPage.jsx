@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { getApiErrorMessage } from '../api/errors'
 import { getParentDashboard } from '../api/services/parents'
+import { listPayments } from '../api/services/payments'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { queryKeys } from '../api/queryKeys'
 import { DashboardPanelHeading, DashboardStatCard, EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
@@ -42,6 +43,10 @@ function formatBudget(minimum, maximum) {
   if (!Number.isFinite(max)) return 'From RWF ' + number.format(min)
   if (!Number.isFinite(min)) return 'Up to RWF ' + number.format(max)
   return 'RWF ' + number.format(min) + ' - ' + number.format(max)
+}
+
+function formatMoney(value, currency = 'RWF') {
+  return `${new Intl.NumberFormat('en-RW', { maximumFractionDigits: 0 }).format(Number(value || 0))} ${currency}`
 }
 
 function ParentSkeleton({ rows = 3 }) {
@@ -132,11 +137,27 @@ export function ParentDashboardPage() {
     staleTime: 30_000,
   })
   const bookingsQuery = useBookingsQuery({ staleTime: 30_000 })
+  const paymentsQuery = useQuery({
+    queryKey: queryKeys.payments.bookings,
+    queryFn: () => listPayments().then((response) => response.data),
+    staleTime: 30_000,
+  })
 
   const dashboard = dashboardQuery.data || {}
   const linkedStudents = Array.isArray(dashboard.linked_students) ? dashboard.linked_students : []
   const bookings = Array.isArray(bookingsQuery.data) ? bookingsQuery.data : []
   const summary = dashboard.summary || {}
+  const payments = Array.isArray(paymentsQuery.data) ? paymentsQuery.data : []
+  const paymentsByBooking = new Map(payments.map((payment) => [String(payment.booking_id), payment]))
+  const outstandingBookings = bookings.filter((booking) => (
+    ['CONFIRMED', 'COMPLETED'].includes(booking.status)
+    && !['PAID', 'REFUNDED'].includes(paymentsByBooking.get(String(booking.id))?.status)
+  ))
+  const outstandingTotal = outstandingBookings.reduce(
+    (total, booking) => total + Number(booking.total_amount || 0),
+    0,
+  )
+  const recentPayments = payments.filter((payment) => payment.status === 'PAID').slice(0, 3)
   const upcomingBookings = bookings
     .filter((booking) => ['PENDING', 'CONFIRMED'].includes(booking.status))
     .sort((left, right) => String(left.start_datetime || '').localeCompare(String(right.start_datetime || '')))
@@ -153,11 +174,12 @@ export function ParentDashboardPage() {
     : 0
   const profileName = dashboard.profile?.full_name || user?.first_name || user?.username || user?.email || 'Parent'
   const firstName = profileName.split(/\s|@/)[0]
-  const failedQuery = [dashboardQuery, bookingsQuery].find((query) => query.isError)
+  const failedQuery = [dashboardQuery, bookingsQuery, paymentsQuery].find((query) => query.isError)
 
   function refreshDashboard() {
     dashboardQuery.refetch()
     bookingsQuery.refetch()
+    paymentsQuery.refetch()
   }
 
   return (
@@ -243,6 +265,28 @@ export function ParentDashboardPage() {
         </div>
 
         <aside className="parent-overview-side" aria-label="Family learning actions">
+          <section className="parent-overview-panel parent-payments-panel">
+            <SectionHeading eyebrow="Payments" title="Family payment summary" to="/payments" action="View all" />
+            {paymentsQuery.isLoading || bookingsQuery.isLoading ? <ParentSkeleton rows={3} /> : (
+              <>
+                <div className="parent-payment-total">
+                  <span><DashboardIcon name="payments" /></span>
+                  <div><strong>{formatMoney(outstandingTotal)}</strong><small>{outstandingBookings.length} confirmed lesson payment{outstandingBookings.length === 1 ? '' : 's'} due</small></div>
+                </div>
+                {recentPayments.length ? (
+                  <div className="parent-payment-list">
+                    {recentPayments.map((payment) => (
+                      <div key={payment.id}>
+                        <div><strong>{payment.learner_name}</strong><small>Booking #{payment.booking_id}</small></div>
+                        <b>{formatMoney(payment.amount, payment.currency)}</b>
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="parent-payment-empty">Completed family payments will appear here.</p>}
+              </>
+            )}
+          </section>
+
           <section className="parent-overview-panel parent-outcomes-panel">
             <SectionHeading eyebrow="Learning impact" title="Family outcomes" to="/reports" action="Reports" />
             {dashboardQuery.isLoading ? <ParentSkeleton rows={2} /> : (
@@ -263,6 +307,7 @@ export function ParentDashboardPage() {
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Find tutors</strong><small>Compare subjects, levels, and prices</small></span></Link>
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Request a lesson</strong><small>Choose a tutor, then select the learner</small></span></Link>
               <Link to="/reports"><DashboardIcon name="reports" /><span><strong>Learning reports</strong><small>Review family learning outcomes</small></span></Link>
+              <Link to="/payments"><DashboardIcon name="payments" /><span><strong>Payments</strong><small>Pay for learning and print receipts</small></span></Link>
               <Link to="/messages"><DashboardIcon name="messages" /><span><strong>Messages</strong><small>Talk with your students' tutors</small></span></Link>
             </nav>
           </section>

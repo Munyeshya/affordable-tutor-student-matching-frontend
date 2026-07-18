@@ -16,6 +16,7 @@ const iconPaths = {
   logout: 'M10 5H5v14h5m4-4l4-3-4-3m4 3H9',
   menu: 'M4 7h16M4 12h16M4 17h16',
   messages: 'M4 5h16v12H8l-4 4z',
+  payments: 'M3 6h18v13H3zM3 10h18m-4 5h1',
   reports: 'M5 20V10m7 10V4m7 16v-7',
   reviews: 'M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z',
   schedule: 'M5 5h14v16H5zM8 3v4m8-4v4M5 10h14m-9 4h4m-4 4h7',

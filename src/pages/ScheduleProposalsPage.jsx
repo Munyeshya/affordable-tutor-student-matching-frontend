@@ -6,6 +6,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors.js'
 import { queryKeys } from '../api/queryKeys.js'
 import { updateScheduleProposal } from '../api/services/bookings.js'
+import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -70,7 +71,7 @@ function ProposalTimeline({ proposal }) {
   )
 }
 
-function ProposalCard({ proposal, user, onAction, onCounter, busy, highlighted }) {
+function ProposalCard({ proposal, user, onAction, onCounter, onPay, busy, highlighted }) {
   const revision = proposal.current_revision
   const open = ['PENDING', 'COUNTERED'].includes(proposal.status)
   const canRespond = proposal.can_respond && ['STUDENT', 'PARENT', 'TUTOR'].includes(user?.role)
@@ -131,6 +132,11 @@ function ProposalCard({ proposal, user, onAction, onCounter, busy, highlighted }
           </>
         ) : null}
         {canCancel ? <button className="schedule-proposal-danger" type="button" disabled={busy} onClick={() => onAction(proposal, 'CANCEL')}>Cancel proposal</button> : null}
+        {proposal.status === 'ACCEPTED' && ['STUDENT', 'PARENT'].includes(user?.role) ? (
+          <button className="primary-button" type="button" onClick={() => onPay(proposal)}>
+            Pay accepted schedule
+          </button>
+        ) : null}
         {proposal.status === 'ACCEPTED' ? <Link className="secondary-button" to="/bookings">View confirmed lessons</Link> : null}
       </footer>
     </article>
@@ -265,6 +271,7 @@ export function ScheduleProposalsPage() {
   const [pendingAction, setPendingAction] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
   const [counter, setCounter] = useState(null)
+  const [paymentProposal, setPaymentProposal] = useState(null)
   const highlightedId = searchParams.get('proposal')
 
   useEffect(() => {
@@ -387,6 +394,7 @@ export function ScheduleProposalsPage() {
               user={user}
               onAction={openAction}
               onCounter={openCounter}
+              onPay={setPaymentProposal}
               busy={actionMutation.isPending}
               highlighted={String(proposal.id) === String(highlightedId)}
             />
@@ -417,6 +425,26 @@ export function ScheduleProposalsPage() {
         onClose={() => !actionMutation.isPending && setCounter(null)}
         onSubmit={submitCounter}
         busy={actionMutation.isPending}
+      />
+      <PaymentCheckoutDialog
+        key={paymentProposal?.id || 'schedule-payment'}
+        open={Boolean(paymentProposal)}
+        kind="schedule"
+        itemId={paymentProposal?.id}
+        title={`${paymentProposal?.subject_name || 'Lessons'} accepted schedule`}
+        amount={paymentProposal?.current_revision?.estimated_total}
+        currency={paymentProposal?.current_revision?.currency || 'RWF'}
+        learnerName={paymentProposal?.student_name}
+        initialPhone={user?.profile?.data?.phone_number || ''}
+        onClose={() => setPaymentProposal(null)}
+        onSettled={async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: queryKeys.payments.bookings }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+          ])
+        }}
       />
     </section>
   )

@@ -135,7 +135,7 @@ function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busy
     String(requesterId) === String(user?.id)
   )
   const canReview = role === 'STUDENT' && booking.status === 'COMPLETED'
-  const canPay = role === 'STUDENT' &&
+  const canPay = ['STUDENT', 'PARENT'].includes(role) &&
     ['CONFIRMED', 'COMPLETED'].includes(booking.status) &&
     !['PAID', 'REFUNDED'].includes(payment?.status)
 
@@ -155,7 +155,7 @@ function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busy
         <div><span>Mode</span><strong>{booking.mode === 'IN_PERSON' ? 'In person' : 'Online'}</strong></div>
         {booking.mode === 'IN_PERSON' ? <div><span>Location</span><strong>{booking.location || 'Not provided'}</strong></div> : null}
         <div><span>Total</span><strong>{formatMoney(booking.total_amount, booking.currency)}</strong></div>
-        {role === 'STUDENT' ? (
+        {['STUDENT', 'PARENT'].includes(role) ? (
           <div><span>Payment</span><strong>{payment?.status || 'Not started'}</strong></div>
         ) : null}
         {role === 'PARENT' ? <div><span>Student</span><strong>{booking.student_name}</strong></div> : null}
@@ -335,7 +335,7 @@ export function BookingsPage() {
   const paymentsQuery = useQuery({
     queryKey: queryKeys.payments.bookings,
     queryFn: () => listPayments().then((response) => response.data),
-    enabled: user?.role === 'STUDENT',
+    enabled: ['STUDENT', 'PARENT'].includes(user?.role),
   })
 
   const actionMutation = useMutation({
@@ -487,11 +487,13 @@ export function BookingsPage() {
         amount={paymentBooking?.total_amount}
         currency={paymentBooking?.currency || 'RWF'}
         initialPhone={user?.profile?.data?.phone_number || ''}
+        learnerName={paymentBooking?.student_name}
         onClose={() => setPaymentBooking(null)}
         onSettled={async () => {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.payments.bookings }),
             queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard }),
             queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
           ])
         }}
