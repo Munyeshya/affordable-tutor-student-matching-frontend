@@ -41,6 +41,22 @@ export function requestPayout(data) {
   return apiClient.post(API_ENDPOINTS.payments.payoutRequest, data)
 }
 
+export function listAdminPayouts(params = {}) {
+  return apiClient.get(API_ENDPOINTS.payments.payouts, { params })
+}
+
+export function getAdminPayoutSummary() {
+  return apiClient.get(API_ENDPOINTS.payments.payoutSummary)
+}
+
+export function getPayoutHistory(id) {
+  return apiClient.get(API_ENDPOINTS.payments.payoutHistory(id))
+}
+
+export function decidePayout(id, data) {
+  return apiClient.patch(API_ENDPOINTS.payments.payoutDecision(id), data)
+}
+
 export function getTutorEarnings() {
   return apiClient.get(API_ENDPOINTS.payments.earnings)
 }

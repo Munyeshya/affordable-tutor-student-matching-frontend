@@ -11,6 +11,9 @@ export const queryKeys = {
     course: (id) => ['admin', 'course-moderation', 'detail', id],
     reviewReports: (params = {}) => ['admin', 'review-moderation', params],
     reviewReport: (id) => ['admin', 'review-moderation', 'detail', id],
+    payouts: (params = {}) => ['admin', 'payouts', params],
+    payoutSummary: ['admin', 'payouts', 'summary'],
+    payoutHistory: (id) => ['admin', 'payouts', 'history', id],
     tutorVerifications: (status) => (
       status ? ['admin', 'tutor-verifications', { status }] : ['admin', 'tutor-verifications']
     ),

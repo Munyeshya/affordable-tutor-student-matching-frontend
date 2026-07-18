@@ -14,6 +14,7 @@ const navigationByRole = {
         { label: 'Course moderation', to: '/admin/courses', icon: 'courses' },
         { label: 'Review moderation', to: '/admin/reviews', icon: 'reviews' },
         { label: 'Disputes', to: '/admin/disputes', icon: 'disputes' },
+        { label: 'Payouts', to: '/admin/payouts', icon: 'earnings' },
         { label: 'Reports', to: '/reports', icon: 'reports' },
         { label: 'Audit trail', to: '/admin/audit', icon: 'audit' },
       ],

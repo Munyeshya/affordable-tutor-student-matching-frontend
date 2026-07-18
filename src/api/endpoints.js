@@ -108,6 +108,7 @@
     lessonProgress: '/payments/lesson-progress/',
     lessonProgressUpdate: '/payments/lesson-progress/update/',
     payouts: '/payments/payouts/',
+    payoutSummary: '/payments/payouts/summary/',
     payoutRequest: '/payments/payouts/request/',
     payoutDecision: (id) => `/payments/payouts/${id}/decide/`,
     payoutHistory: (id) => `/payments/payouts/${id}/history/`,

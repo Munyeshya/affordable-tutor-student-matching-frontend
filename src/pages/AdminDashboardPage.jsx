@@ -379,6 +379,7 @@ export function AdminDashboardPage() {
               <Link to="/admin/courses"><DashboardIcon name="courses" /><span><strong>Course moderation</strong><small>Preview lessons and decide submissions</small></span></Link>
               <Link to="/admin/reviews"><DashboardIcon name="reviews" /><span><strong>Review moderation</strong><small>Investigate reported student feedback</small></span></Link>
               <Link to="/admin/disputes"><DashboardIcon name="disputes" /><span><strong>Dispute management</strong><small>Resolve reported booking issues</small></span></Link>
+              <Link to="/admin/payouts"><DashboardIcon name="earnings" /><span><strong>Tutor payouts</strong><small>Review and process withdrawal requests</small></span></Link>
               <Link to="/reports"><DashboardIcon name="reports" /><span><strong>Printable reports</strong><small>Open the complete platform report</small></span></Link>
             </nav>
           </section>

@@ -207,6 +207,12 @@ export const dashboardRoleGuides = {
         linkLabel: 'Open disputes',
       },
       {
+        title: 'Process tutor payouts',
+        description: 'Review requested amounts, approve valid withdrawals, reject requests with a documented reason, and mark approved payouts paid without reopening completed records.',
+        to: '/admin/payouts',
+        linkLabel: 'Manage payouts',
+      },
+      {
         title: 'Monitor outcomes and affordability',
         description: 'Use visual and printable reports to review students helped, booking activity, learning improvement, course purchases, revenue, and platform health.',
         to: '/reports',

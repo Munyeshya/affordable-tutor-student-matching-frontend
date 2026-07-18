@@ -7,6 +7,7 @@ import { AdminReviewModerationPage } from '../pages/AdminReviewModerationPage.js
 import { AdminUsersPage } from '../pages/AdminUsersPage.jsx'
 import { AdminTutorReviewsPage } from '../pages/AdminTutorReviewsPage.jsx'
 import { AdminDashboardPage } from '../pages/AdminDashboardPage.jsx'
+import { AdminPayoutsPage } from '../pages/AdminPayoutsPage.jsx'
 
 export const adminRoutes = [
   { path: '/admin', element: <AdminDashboardPage /> },
@@ -16,4 +17,5 @@ export const adminRoutes = [
   { path: '/admin/users', element: <AdminUsersPage /> },
   { path: '/admin/disputes', element: <AdminDisputesPage /> },
   { path: '/admin/tutor-reviews', element: <AdminTutorReviewsPage /> },
+  { path: '/admin/payouts', element: <AdminPayoutsPage /> },
 ]
