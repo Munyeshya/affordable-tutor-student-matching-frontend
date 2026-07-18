@@ -78,6 +78,12 @@ export function AdminDashboardPage() {
   const topSubjects = Array.isArray(leaderboards.top_subjects_by_bookings)
     ? leaderboards.top_subjects_by_bookings.slice(0, 5)
     : []
+  const topEarningTutors = Array.isArray(revenue.top_earning_tutors)
+    ? revenue.top_earning_tutors.slice(0, 5)
+    : []
+  const topRevenueSubjects = Array.isArray(revenue.revenue_by_subject)
+    ? revenue.revenue_by_subject.slice(0, 5)
+    : []
   const firstName = (user?.first_name || user?.username || user?.email || 'Admin').split(/\s|@/)[0]
   const failedQuery = [analyticsQuery, verificationsQuery, disputesQuery].find((query) => query.isError)
 
@@ -115,7 +121,7 @@ export function AdminDashboardPage() {
         <DashboardStatCard icon={<DashboardIcon name="students" />} label="Platform users" value={analyticsQuery.isLoading ? '--' : totalUsers} detail={(users.new_registrations || 0) + ' new today'} />
         <DashboardStatCard icon={<DashboardIcon name="bookings" />} label="Total bookings" value={analyticsQuery.isLoading ? '--' : tutoring.total_bookings || 0} detail={(tutoring.completed_bookings || 0) + ' completed'} />
         <DashboardStatCard icon={<DashboardIcon name="verification" />} label="Marketplace-ready tutors" value={analyticsQuery.isLoading ? '--' : pipeline.marketplace_ready_tutors || 0} detail={(pipeline.pending_verifications || 0) + ' awaiting review'} />
-        <DashboardStatCard icon={<DashboardIcon name="earnings" />} label="Course revenue" value={analyticsQuery.isLoading ? '--' : formatMoney(revenue.platform_revenue)} detail={(courses.course_purchases || 0) + ' purchases'} />
+        <DashboardStatCard icon={<DashboardIcon name="earnings" />} label="Paid marketplace value" value={analyticsQuery.isLoading ? '--' : formatMoney(revenue.platform_revenue)} detail={(employment.tutors_earning_income || 0) + ' tutors earning'} />
       </section>
 
       <section className="admin-health-strip" aria-label="Administration queues">
@@ -241,6 +247,50 @@ export function AdminDashboardPage() {
               <div><dt>Completed</dt><dd>{tutoring.completed_bookings || 0}</dd></div>
               <div><dt>Cancelled</dt><dd>{tutoring.cancelled_bookings || 0}</dd></div>
             </dl>
+          </section>
+
+          <section className="admin-overview-panel admin-revenue-panel">
+            <SectionHeading eyebrow="Revenue analytics" title="Paid marketplace activity" to="/reports" action="Printable report" />
+            {analyticsQuery.isLoading ? <AdminSkeleton rows={4} /> : (
+              <>
+                <dl className="admin-revenue-kpis">
+                  <div><dt>Total paid value</dt><dd>{formatMoney(revenue.platform_revenue)}</dd><small>Bookings and courses</small></div>
+                  <div><dt>Individual lessons</dt><dd>{formatMoney(revenue.booking_revenue)}</dd><small>Provider-confirmed payments</small></div>
+                  <div><dt>Course purchases</dt><dd>{formatMoney(revenue.course_revenue)}</dd><small>{courses.course_purchases || 0} paid enrollments</small></div>
+                </dl>
+                <div className="admin-revenue-breakdown">
+                  <div>
+                    <h3>Top earning tutors</h3>
+                    {topEarningTutors.length ? (
+                      <ol className="admin-revenue-list">
+                        {topEarningTutors.map((tutor) => (
+                          <li key={tutor.tutor_id}>
+                            <span>{tutor.tutor_name || tutor.tutor_email}</span>
+                            <strong>{formatMoney(tutor.total)}</strong>
+                            <small>{formatMoney(tutor.booking_revenue)} lessons / {formatMoney(tutor.course_revenue)} courses</small>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : <p className="admin-panel-message">Paid tutor earnings will appear here.</p>}
+                  </div>
+                  <div>
+                    <h3>Revenue by subject</h3>
+                    {topRevenueSubjects.length ? (
+                      <ol className="admin-revenue-list">
+                        {topRevenueSubjects.map((subject) => (
+                          <li key={subject.subject_name}>
+                            <span>{subject.subject_name}</span>
+                            <strong>{formatMoney(subject.total)}</strong>
+                            <small>{subject.transactions || 0} paid transaction{Number(subject.transactions) === 1 ? '' : 's'}</small>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : <p className="admin-panel-message">Subject revenue will appear after paid activity.</p>}
+                  </div>
+                </div>
+                <p className="admin-revenue-note">Figures include only transactions currently verified as paid and represent gross marketplace activity, not ISOMO net profit.</p>
+              </>
+            )}
           </section>
 
           <section className="admin-overview-panel">
