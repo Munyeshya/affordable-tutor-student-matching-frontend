@@ -90,6 +90,12 @@ export function AdminDashboardPage() {
   const mostPurchasedCourses = Array.isArray(courses.most_purchased_courses)
     ? courses.most_purchased_courses.slice(0, 5)
     : []
+  const mostEffectiveSubjects = Array.isArray(impact.most_effective_subjects)
+    ? impact.most_effective_subjects.slice(0, 5)
+    : []
+  const mostEffectiveTutors = Array.isArray(impact.most_effective_tutors)
+    ? impact.most_effective_tutors.slice(0, 5)
+    : []
   const firstName = (user?.first_name || user?.username || user?.email || 'Admin').split(/\s|@/)[0]
   const failedQuery = [analyticsQuery, verificationsQuery, disputesQuery].find((query) => query.isError)
 
@@ -147,43 +153,80 @@ export function AdminDashboardPage() {
           action="Full report"
         />
         {analyticsQuery.isLoading ? <AdminSkeleton rows={3} /> : (
-          <div className="admin-learning-grid">
-            <div className="admin-reach-summary">
-              <div className="admin-impact-section-title">
-                <span><DashboardIcon name="students" /></span>
-                <div>
-                  <h3>Unique students helped</h3>
-                  <p>Students with completed tutoring sessions in each current period.</p>
+          <>
+            <div className="admin-learning-grid">
+              <div className="admin-reach-summary">
+                <div className="admin-impact-section-title">
+                  <span><DashboardIcon name="students" /></span>
+                  <div>
+                    <h3>Unique students helped</h3>
+                    <p>Students with completed tutoring sessions in each current period.</p>
+                  </div>
                 </div>
+                <dl className="admin-period-stats">
+                  <div><dt>Today</dt><dd>{studentsHelped.daily || 0}</dd><small>Daily reach</small></div>
+                  <div><dt>This week</dt><dd>{studentsHelped.weekly || 0}</dd><small>Since Monday</small></div>
+                  <div><dt>This month</dt><dd>{studentsHelped.monthly || 0}</dd><small>Calendar month</small></div>
+                </dl>
               </div>
-              <dl className="admin-period-stats">
-                <div><dt>Today</dt><dd>{studentsHelped.daily || 0}</dd><small>Daily reach</small></div>
-                <div><dt>This week</dt><dd>{studentsHelped.weekly || 0}</dd><small>Since Monday</small></div>
-                <div><dt>This month</dt><dd>{studentsHelped.monthly || 0}</dd><small>Calendar month</small></div>
-              </dl>
-            </div>
 
-            <div className="admin-progress-summary">
-              <div className="admin-impact-section-title">
-                <span><DashboardIcon name="reports" /></span>
-                <div>
-                  <h3>Verified learning improvement</h3>
-                  <p>Only student-confirmed pre-test and post-test outcomes are included.</p>
+              <div className="admin-progress-summary">
+                <div className="admin-impact-section-title">
+                  <span><DashboardIcon name="reports" /></span>
+                  <div>
+                    <h3>Verified learning improvement</h3>
+                    <p>Only student-confirmed pre-test and post-test outcomes are included.</p>
+                  </div>
                 </div>
+                <div className="admin-score-comparison">
+                  <div><small>Initial average</small><strong>{Number(impact.average_initial_score || 0).toFixed(1)}%</strong></div>
+                  <span aria-hidden="true">to</span>
+                  <div><small>Final average</small><strong>{Number(impact.average_final_score || 0).toFixed(1)}%</strong></div>
+                </div>
+                <dl className="admin-outcome-stats">
+                  <div><dt>Average gain</dt><dd>+{Number(impact.average_improvement || 0).toFixed(1)}%</dd></div>
+                  <div><dt>Highest gain</dt><dd>+{Number(impact.highest_improvement || 0).toFixed(1)}%</dd></div>
+                  <div><dt>Students improved</dt><dd>{impact.students_with_improvement || 0}</dd></div>
+                  <div><dt>Positive outcomes</dt><dd>{Number(impact.positive_outcome_rate || 0).toFixed(0)}%</dd></div>
+                  <div><dt>Verified outcomes</dt><dd>{impact.verified_learning_outcomes || 0}</dd></div>
+                  <div><dt>Rejected outcomes</dt><dd>{impact.rejected_improvements || 0}</dd></div>
+                </dl>
               </div>
-              <div className="admin-score-comparison">
-                <div><small>Initial average</small><strong>{Number(impact.average_initial_score || 0).toFixed(1)}%</strong></div>
-                <span aria-hidden="true">to</span>
-                <div><small>Final average</small><strong>{Number(impact.average_final_score || 0).toFixed(1)}%</strong></div>
-              </div>
-              <dl className="admin-outcome-stats">
-                <div><dt>Average gain</dt><dd>+{Number(impact.average_improvement || 0).toFixed(1)}%</dd></div>
-                <div><dt>Students improved</dt><dd>{impact.students_with_improvement || 0}</dd></div>
-                <div><dt>Positive outcomes</dt><dd>{Number(impact.positive_outcome_rate || 0).toFixed(0)}%</dd></div>
-                <div><dt>Confirmed results</dt><dd>{impact.confirmed_improvements || 0}</dd></div>
-              </dl>
             </div>
-          </div>
+            <div className="admin-impact-rankings">
+              <div>
+                <h3>Most effective subjects</h3>
+                {mostEffectiveSubjects.length ? (
+                  <ol>
+                    {mostEffectiveSubjects.map((subject, index) => (
+                      <li key={subject.impact_subject_name}>
+                        <b>{String(index + 1).padStart(2, '0')}</b>
+                        <span>{subject.impact_subject_name}</span>
+                        <strong>+{Number(subject.avg_improvement || 0).toFixed(1)}%</strong>
+                        <small>{subject.count || 0} confirmed outcome{Number(subject.count) === 1 ? '' : 's'}</small>
+                      </li>
+                    ))}
+                  </ol>
+                ) : <p className="admin-panel-message">Subject effectiveness will appear after students confirm assessment outcomes.</p>}
+              </div>
+              <div>
+                <h3>Most effective tutors</h3>
+                {mostEffectiveTutors.length ? (
+                  <ol>
+                    {mostEffectiveTutors.map((tutor, index) => (
+                      <li key={tutor.impact_tutor_id || tutor.impact_tutor_email}>
+                        <b>{String(index + 1).padStart(2, '0')}</b>
+                        <span>{tutor.impact_tutor_name || tutor.impact_tutor_email}</span>
+                        <strong>+{Number(tutor.avg_improvement || 0).toFixed(1)}%</strong>
+                        <small>{tutor.count || 0} confirmed outcome{Number(tutor.count) === 1 ? '' : 's'}</small>
+                      </li>
+                    ))}
+                  </ol>
+                ) : <p className="admin-panel-message">Tutor effectiveness will appear after students confirm assessment outcomes.</p>}
+              </div>
+            </div>
+            <p className="admin-impact-note">Rejected outcomes are counted for transparency but never influence improvement averages or effectiveness rankings.</p>
+          </>
         )}
       </section>
 

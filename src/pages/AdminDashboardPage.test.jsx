@@ -18,7 +18,29 @@ const analytics = {
   users: { total_students: 1, total_tutors: 2, total_parents: 1, total_admins: 1 },
   tutoring: { total_bookings: 1, completed_bookings: 1 },
   tutor_pipeline: { marketplace_ready_tutors: 1 },
-  educational_impact: { students_helped_by_period: {} },
+  educational_impact: {
+    students_helped_by_period: { daily: 1, weekly: 2, monthly: 3 },
+    average_initial_score: 45,
+    average_final_score: 75,
+    average_improvement: 30,
+    highest_improvement: 38,
+    students_with_improvement: 2,
+    positive_outcome_rate: 100,
+    verified_learning_outcomes: 2,
+    rejected_improvements: 1,
+    most_effective_subjects: [{
+      impact_subject_name: 'Mathematics',
+      avg_improvement: 34,
+      count: 2,
+    }],
+    most_effective_tutors: [{
+      impact_tutor_id: 9,
+      impact_tutor_email: 'impact@example.com',
+      impact_tutor_name: 'Impact Tutor',
+      avg_improvement: 34,
+      count: 2,
+    }],
+  },
   employment_impact: {
     tutors_earning_income: 2,
     estimated_unemployed_youth_supported: 1,
@@ -102,5 +124,18 @@ describe('AdminDashboardPage revenue analytics', () => {
     expect(screen.getByText('2 enrollments')).toBeInTheDocument()
     expect(screen.getAllByText('24').length).toBeGreaterThan(0)
     expect(screen.getByText(/only when a signed-in student opens content/i)).toBeInTheDocument()
+  })
+
+  it('shows complete verified educational impact and rankings', async () => {
+    renderWithProviders(<AdminDashboardPage />)
+
+    expect(await screen.findByText('Mathematics')).toBeInTheDocument()
+    expect(screen.getByText('Impact Tutor')).toBeInTheDocument()
+    expect(screen.getByText('Highest gain')).toBeInTheDocument()
+    expect(screen.getByText('+38.0%')).toBeInTheDocument()
+    expect(screen.getByText('Verified outcomes')).toBeInTheDocument()
+    expect(screen.getByText('Rejected outcomes')).toBeInTheDocument()
+    expect(screen.getAllByText('2 confirmed outcomes')).toHaveLength(2)
+    expect(screen.getByText(/never influence improvement averages/i)).toBeInTheDocument()
   })
 })
