@@ -37,6 +37,7 @@ describe('role navigation', () => {
 
   it('returns readable page titles and safe fallbacks', () => {
     expect(getDashboardPageTitle('ADMIN', '/admin/reviews')).toBe('Review moderation')
+    expect(getDashboardPageTitle('TUTOR', '/tutor-teaching/courses/4/curriculum')).toBe('Courses and lessons')
     expect(getDashboardPageTitle('STUDENT', '/unknown')).toBe('Dashboard')
     expect(getDashboardNavigation('UNKNOWN')).toEqual([])
     expect(getRoleHomePath('UNKNOWN')).toBe('/')

@@ -134,7 +134,8 @@ export function getDashboardNavigation(role) {
 export function getDashboardPageTitle(role, pathname) {
   const matchedItem = getDashboardNavigation(role)
     .flatMap((group) => group.items)
-    .find((item) => item.to === pathname)
+    .sort((left, right) => right.to.length - left.to.length)
+    .find((item) => item.to === pathname || (!item.end && pathname.startsWith(`${item.to}/`)))
 
   return matchedItem?.label || fallbackTitles[pathname] || 'Dashboard'
 }

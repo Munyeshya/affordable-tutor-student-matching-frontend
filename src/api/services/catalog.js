@@ -26,6 +26,10 @@ export function createCourse(payload) {
   return apiClient.post(API_ENDPOINTS.catalog.courseCreate, payload)
 }
 
+export function updateCourse(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.catalog.courseDetail(id), payload)
+}
+
 export function submitCourseForReview(id) {
   return apiClient.patch(API_ENDPOINTS.catalog.courseSubmit(id))
 }
@@ -36,6 +40,10 @@ export function createLesson(courseId, payload) {
 
 export function listLessons(courseId) {
   return apiClient.get(API_ENDPOINTS.catalog.lessons(courseId)).then(normalizeListResponse)
+}
+
+export function updateLesson(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.catalog.lessonDetail(id), payload)
 }
 
 export function listPublicCourses(params = {}) {
