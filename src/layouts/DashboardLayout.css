@@ -88,7 +88,13 @@
   align-content: start;
   gap: 20px;
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   padding: 18px 12px;
+}
+
+.dashboard-sidebar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .dashboard-sidebar-group > p {
