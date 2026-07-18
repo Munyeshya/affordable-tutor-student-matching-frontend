@@ -18,6 +18,10 @@ export function updateBookingProgress(id, payload) {
   return apiClient.patch(API_ENDPOINTS.bookings.progress(id), payload)
 }
 
+export function updateOnlineLessonSession(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.bookings.onlineSession(id), payload)
+}
+
 export function createScheduleProposal(payload) {
   return apiClient.post(API_ENDPOINTS.bookings.proposalCreate, payload)
 }

@@ -23,7 +23,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Follow your bookings',
-        description: 'Track tutor approval, upcoming lessons, active learning progress, completion status, and report a serious problem from an eligible booking when support is needed.',
+        description: 'Track tutor approval, join a prepared online room during its secure access window, follow learning progress, and report a serious booking problem when support is needed.',
         to: '/bookings',
         linkLabel: 'Open bookings',
       },
@@ -85,7 +85,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Monitor learning progress',
-        description: 'Open bookings and individual student records to follow lesson status, tutor-recorded progress, confirmed outcomes, and disputes you reported for linked learners.',
+        description: 'Open bookings and individual student records to follow lesson status, securely join a linked learner\'s online room, review progress, and track reported disputes.',
         to: '/bookings',
         linkLabel: 'Review bookings',
       },
@@ -141,7 +141,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Deliver and record tutoring',
-        description: 'Accept or reject requests, follow approved bookings, update lesson progress, and record the learner\'s initial and final level when the workflow requires it.',
+        description: 'Accept or reject requests, prepare secure meeting rooms for confirmed online lessons, update progress, and record the learner\'s initial and final level.',
         to: '/bookings',
         linkLabel: 'Manage bookings',
       },

@@ -12,6 +12,7 @@ import {
   listDisputes,
   updateBookingAction,
   updateBookingProgress,
+  updateOnlineLessonSession,
 } from '../api/services/bookings'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery } from '../hooks/useCommonQueries'
@@ -49,6 +50,14 @@ const DISPUTE_STATUS_COPY = {
 }
 
 const DISPUTE_ELIGIBLE_STATUSES = ['CONFIRMED', 'COMPLETED', 'CANCELLED']
+
+const ONLINE_SESSION_PROVIDERS = [
+  ['GOOGLE_MEET', 'Google Meet'],
+  ['ZOOM', 'Zoom'],
+  ['MICROSOFT_TEAMS', 'Microsoft Teams'],
+  ['JITSI', 'Jitsi Meet'],
+  ['OTHER', 'Other secure platform'],
+]
 
 function formatDateTime(value) {
   if (!value) return 'Not scheduled'
@@ -139,6 +148,71 @@ function BookingProgressPanel({ booking }) {
   )
 }
 
+function OnlineLessonPanel({ booking, role, onManage }) {
+  const session = booking.online_session
+  const isTutor = role === 'TUTOR'
+
+  return (
+    <section className={'booking-online-session ' + (session ? 'is-ready' : 'is-waiting')}>
+      <header>
+        <div>
+          <span className="booking-online-session-icon" aria-hidden="true">ON</span>
+          <div>
+            <small>Online lesson room</small>
+            <strong>{session?.provider_label || 'Waiting for room setup'}</strong>
+          </div>
+        </div>
+        {session ? <b>{session.can_join_now ? 'Open now' : 'Scheduled'}</b> : null}
+      </header>
+
+      {session ? (
+        <>
+          <p>{session.access_message}</p>
+          {session.instructions ? (
+            <div className="booking-online-instructions">
+              <span>Before joining</span>
+              <p>{session.instructions}</p>
+            </div>
+          ) : null}
+          <footer>
+            {!isTutor && !session.can_join_now ? (
+              <small>Join access opens {formatDateTime(session.access_opens_at)}.</small>
+            ) : null}
+            {session.join_url && (isTutor || session.can_join_now) ? (
+              <a
+                className="primary-button"
+                href={session.join_url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {isTutor && !session.can_join_now ? 'Open room link' : 'Join online lesson'}
+              </a>
+            ) : null}
+            {isTutor ? (
+              <button className="secondary-button" type="button" onClick={() => onManage(booking)}>
+                Update room
+              </button>
+            ) : null}
+          </footer>
+        </>
+      ) : (
+        <div className="booking-online-empty">
+          <p>
+            {isTutor
+              ? 'Add a secure meeting link so the learner knows where the online lesson will happen.'
+              : 'The tutor has not added the meeting room yet. You will receive a notification when it is ready.'}
+          </p>
+          {isTutor ? (
+            <button className="primary-button" type="button" onClick={() => onManage(booking)}>
+              Set online room
+            </button>
+          ) : null}
+        </div>
+      )}
+    </section>
+  )
+}
+
 function BookingCard({
   booking,
   payment,
@@ -148,6 +222,7 @@ function BookingCard({
   onPay,
   onProgress,
   onDispute,
+  onOnlineSession,
   busyAction,
 }) {
   const role = user?.role
@@ -189,6 +264,9 @@ function BookingCard({
 
       <p className="booking-status-detail">{status.detail}</p>
       {booking.notes ? <div className="booking-lifecycle-note"><span>Lesson note</span><p>{booking.notes}</p></div> : null}
+      {booking.mode === 'ONLINE' && booking.status === 'CONFIRMED' ? (
+        <OnlineLessonPanel booking={booking} role={role} onManage={onOnlineSession} />
+      ) : null}
       {['CONFIRMED', 'COMPLETED'].includes(booking.status) ? <BookingProgressPanel booking={booking} /> : null}
 
       <details className="booking-history">
@@ -233,6 +311,76 @@ function BookingCard({
         ) : null}
       </footer>
     </article>
+  )
+}
+
+function OnlineSessionDialog({ booking, form, setForm, onClose, onSave, busy }) {
+  if (!booking) return null
+  const secureUrl = form.join_url.trim().startsWith('https://')
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  return (
+    <ConfirmationDialog
+      open={Boolean(booking)}
+      onClose={onClose}
+      labelledBy="booking-online-session-title"
+      describedBy="booking-online-session-description"
+      backdropClassName="booking-dialog-backdrop"
+      dialogClassName="booking-action-dialog booking-online-dialog"
+    >
+      <p className="eyebrow">Booking #{booking.id}</p>
+      <h2 id="booking-online-session-title">
+        {booking.online_session ? 'Update online lesson room' : 'Prepare online lesson room'}
+      </h2>
+      <p id="booking-online-session-description">
+        Add the secure room for {booking.subject_name || 'this lesson'}. The learner receives access 30 minutes before the scheduled start.
+      </p>
+
+      <div className="booking-online-access-summary">
+        <span><small>Lesson starts</small><strong>{formatDateTime(booking.start_datetime)}</strong></span>
+        <span><small>Access window</small><strong>30 min before to 60 min after</strong></span>
+      </div>
+
+      <label className="booking-field">
+        <span>Meeting provider</span>
+        <select value={form.provider} onChange={(event) => updateField('provider', event.target.value)}>
+          {ONLINE_SESSION_PROVIDERS.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+        </select>
+      </label>
+      <label className="booking-field">
+        <span>Secure meeting link</span>
+        <input
+          type="url"
+          value={form.join_url}
+          onChange={(event) => updateField('join_url', event.target.value)}
+          placeholder="https://meet.google.com/..."
+          autoFocus
+        />
+        {form.join_url && !secureUrl ? <small>Enter a complete HTTPS meeting link.</small> : null}
+      </label>
+      <label className="booking-field">
+        <span>Joining instructions <small>Optional</small></span>
+        <textarea
+          rows="4"
+          maxLength="1000"
+          value={form.instructions}
+          onChange={(event) => updateField('instructions', event.target.value)}
+          placeholder="For example: Join five minutes early and use the learner's full name."
+        />
+      </label>
+      <aside className="booking-online-privacy">
+        The meeting URL is never placed in notifications or activity history. Only this booking's tutor, learner, and linked parent can access it.
+      </aside>
+      <div className="booking-review-actions">
+        <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Cancel</button>
+        <button className="primary-button" type="button" onClick={onSave} disabled={busy || !secureUrl}>
+          {busy ? 'Saving room...' : booking.online_session ? 'Save room changes' : 'Notify learner'}
+        </button>
+      </div>
+    </ConfirmationDialog>
   )
 }
 
@@ -481,6 +629,12 @@ export function BookingsPage() {
   const [progressBooking, setProgressBooking] = useState(null)
   const [disputeBooking, setDisputeBooking] = useState(null)
   const [disputeReason, setDisputeReason] = useState('')
+  const [onlineSessionBooking, setOnlineSessionBooking] = useState(null)
+  const [onlineSessionForm, setOnlineSessionForm] = useState({
+    provider: 'GOOGLE_MEET',
+    join_url: '',
+    instructions: '',
+  })
   const [progressForm, setProgressForm] = useState({
     progress_percent: 0,
     summary: '',
@@ -549,6 +703,21 @@ export function BookingsPage() {
     onError: (error) => toast.error(getApiErrorMessage(error, 'Could not submit this dispute.')),
   })
 
+  const onlineSessionMutation = useMutation({
+    mutationFn: async ({ bookingId, payload }) => (
+      await updateOnlineLessonSession(bookingId, payload)
+    ).data,
+    onSuccess: async () => {
+      toast.success('Online lesson room saved and participants notified.')
+      setOnlineSessionBooking(null)
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+      ])
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not save the online lesson room.')),
+  })
+
   const bookings = bookingsQuery.data || []
   const paymentsByBooking = new Map(
     (paymentsQuery.data || []).map((payment) => [String(payment.booking_id), payment]),
@@ -589,6 +758,16 @@ export function BookingsPage() {
   function openDispute(booking) {
     setDisputeReason('')
     setDisputeBooking(booking)
+  }
+
+  function openOnlineSession(booking) {
+    const session = booking.online_session || {}
+    setOnlineSessionBooking(booking)
+    setOnlineSessionForm({
+      provider: session.provider || 'GOOGLE_MEET',
+      join_url: session.join_url || '',
+      instructions: session.instructions || '',
+    })
   }
 
   return (
@@ -654,6 +833,7 @@ export function BookingsPage() {
               onPay={setPaymentBooking}
               onProgress={openProgress}
               onDispute={openDispute}
+              onOnlineSession={openOnlineSession}
               busyAction={actionMutation.isPending && pendingAction?.booking.id === booking.id}
             />
           ))
@@ -734,6 +914,23 @@ export function BookingsPage() {
           reason: disputeReason.trim(),
         })}
         busy={disputeMutation.isPending}
+      />
+      <OnlineSessionDialog
+        booking={onlineSessionBooking}
+        form={onlineSessionForm}
+        setForm={setOnlineSessionForm}
+        onClose={() => {
+          if (!onlineSessionMutation.isPending) setOnlineSessionBooking(null)
+        }}
+        onSave={() => onlineSessionMutation.mutate({
+          bookingId: onlineSessionBooking.id,
+          payload: {
+            provider: onlineSessionForm.provider,
+            join_url: onlineSessionForm.join_url.trim(),
+            instructions: onlineSessionForm.instructions.trim(),
+          },
+        })}
+        busy={onlineSessionMutation.isPending}
       />
     </section>
   )

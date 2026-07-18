@@ -410,6 +410,170 @@
   padding: 0.9rem;
 }
 
+.booking-online-session {
+  margin: 1rem 0;
+  border: 1px solid #ddc8b8;
+  background: #fffaf6;
+  padding: 1rem;
+}
+
+.booking-online-session.is-ready {
+  border-left: 4px solid #b45309;
+}
+
+.booking-online-session > header,
+.booking-online-session > header > div,
+.booking-online-session > footer {
+  display: flex;
+  align-items: center;
+}
+
+.booking-online-session > header {
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-online-session > header > div {
+  min-width: 0;
+  gap: 0.7rem;
+}
+
+.booking-online-session-icon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  background: #171717;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.booking-online-session > header small,
+.booking-online-session > header strong {
+  display: block;
+}
+
+.booking-online-session > header small,
+.booking-online-instructions span {
+  color: #81756e;
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.booking-online-session > header strong {
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+}
+
+.booking-online-session > header b {
+  flex: 0 0 auto;
+  border: 1px solid #d9b58f;
+  background: #fff;
+  padding: 0.3rem 0.5rem;
+  color: #7b4b2d;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+}
+
+.booking-online-session > p,
+.booking-online-empty p {
+  margin: 0.8rem 0;
+  color: #625852;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.booking-online-instructions {
+  margin: 0.75rem 0;
+  border-top: 1px solid #eadfd7;
+  border-bottom: 1px solid #eadfd7;
+  padding: 0.7rem 0;
+}
+
+.booking-online-instructions p {
+  margin: 0.25rem 0 0;
+  color: #443c38;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.booking-online-session > footer {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.booking-online-session > footer small {
+  margin-right: auto;
+  color: #81756e;
+  font-size: 0.67rem;
+}
+
+.booking-online-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-online-empty p {
+  max-width: 680px;
+}
+
+.booking-online-dialog {
+  width: min(620px, 100%);
+}
+
+.booking-online-access-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 1rem;
+  border: 1px solid #eadfd7;
+  background: #fcfaf8;
+}
+
+.booking-online-access-summary span {
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.booking-online-access-summary span + span {
+  border-left: 1px solid #eadfd7;
+}
+
+.booking-online-access-summary small,
+.booking-online-access-summary strong {
+  display: block;
+}
+
+.booking-online-access-summary small {
+  color: #81756e;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.booking-online-access-summary strong {
+  margin-top: 0.25rem;
+  font-size: 0.76rem;
+}
+
+.booking-online-privacy {
+  margin-top: 0.9rem;
+  border-left: 3px solid #b45309;
+  background: #fff8f3;
+  padding: 0.75rem 0.9rem;
+  color: #625852;
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
 .booking-progress-panel > header {
   display: flex;
   align-items: flex-start;
@@ -749,8 +913,19 @@
   }
 
   .booking-progress-details,
-  .booking-progress-field-grid {
+  .booking-progress-field-grid,
+  .booking-online-access-summary {
     grid-template-columns: 1fr;
+  }
+
+  .booking-online-access-summary span + span {
+    border-top: 1px solid #eadfd7;
+    border-left: 0;
+  }
+
+  .booking-online-empty {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 
@@ -774,5 +949,17 @@
 
   .booking-lifecycle-facts {
     grid-template-columns: 1fr;
+  }
+
+  .booking-online-session > footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .booking-online-session > footer .primary-button,
+  .booking-online-session > footer .secondary-button,
+  .booking-online-empty .primary-button {
+    width: 100%;
+    justify-content: center;
   }
 }

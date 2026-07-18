@@ -85,6 +85,7 @@
     create: '/bookings/create/',
     action: (id) => `/bookings/${id}/action/`,
     progress: (id) => `/bookings/${id}/progress/`,
+    onlineSession: (id) => `/bookings/${id}/online-session/`,
     proposals: '/bookings/proposals/',
     proposalCreate: '/bookings/proposals/create/',
     proposalAction: (id) => `/bookings/proposals/${id}/action/`,
