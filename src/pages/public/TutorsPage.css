@@ -338,6 +338,35 @@
   text-overflow: ellipsis;
 }
 
+.market-tutor-impact {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) repeat(2, minmax(76px, 0.8fr));
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-left: 3px solid var(--brand);
+  background: #fff7ef;
+}
+
+.market-tutor-impact > span {
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.market-tutor-impact > div {
+  display: grid;
+  gap: 1px;
+}
+
+.market-tutor-impact strong {
+  font-size: 0.9rem;
+}
+
+.market-tutor-impact small {
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
 .market-rating-value {
   display: inline-flex;
   align-items: center;

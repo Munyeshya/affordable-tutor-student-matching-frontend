@@ -150,7 +150,10 @@ export function ParentStudentDetailPage() {
               <div className="parent-outcome-list">
                 {outcomes.map((outcome) => (
                   <article key={outcome.id}>
-                    <div><span>{outcome.course_title}</span><h3>{outcome.lesson_title}</h3></div>
+                    <div>
+                      <span>{outcome.context_type === 'BOOKING' ? 'Booked tutoring lesson' : outcome.course_title}</span>
+                      <h3>{outcome.context_title || outcome.lesson_title}</h3>
+                    </div>
                     <dl>
                       <div><dt>Initial</dt><dd>{Number(outcome.pre_test_score).toFixed(0)}%</dd></div>
                       <div><dt>Final</dt><dd>{Number(outcome.post_test_score).toFixed(0)}%</dd></div>

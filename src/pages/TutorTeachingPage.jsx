@@ -275,9 +275,14 @@ export function TutorTeachingPage() {
                       <span>{course.latest_moderation.reason}</span>
                     </p>
                   ) : null}
+                  <p className={`tutor-course-review-feedback ${course.assessment_readiness?.is_ready ? 'is-published' : 'is-changes-requested'}`}>
+                    <strong>Assessment readiness</strong>
+                    <span>{course.assessment_readiness?.is_ready ? 'Initial and final checks are ready.' : 'Add initial and final assessments with questions before submission.'}</span>
+                  </p>
                   <div className="hero-actions" style={{ marginTop: '0.75rem' }}>
                     <button className="secondary-button" type="button" onClick={() => setSelectedCourseId(String(course.id))}>{EDITABLE_COURSE_STATUSES.has(course.status) ? 'Manage lessons' : 'View lessons'}</button>
-                    <button className="primary-button" type="button" onClick={() => submitCourseMutation.mutate(course.id)} disabled={submitCourseMutation.isPending || !EDITABLE_COURSE_STATUSES.has(course.status)}>
+                    <Link className="secondary-button" to="/assessments">Set assessments</Link>
+                    <button className="primary-button" type="button" onClick={() => submitCourseMutation.mutate(course.id)} disabled={submitCourseMutation.isPending || !EDITABLE_COURSE_STATUSES.has(course.status) || course.assessment_readiness?.is_ready === false}>
                       {course.status === 'PENDING_REVIEW' ? 'Awaiting review' : course.status === 'PUBLISHED' ? 'Published' : course.status === 'DRAFT' ? 'Submit for review' : 'Resubmit for review'}
                     </button>
                   </div>
@@ -331,6 +336,7 @@ export function TutorTeachingPage() {
                   <div key={lesson.id}>
                     <span>{lesson.order_number}. {lesson.title}</span>
                     <small>{lesson.topic || 'No topic'} / {lesson.is_preview ? 'Preview' : 'Private'}</small>
+                    {canEditSelectedCourse ? <Link to={`/assessments?lesson=${lesson.id}`}>Set initial and final assessments</Link> : null}
                   </div>
                 ))}
               </div>

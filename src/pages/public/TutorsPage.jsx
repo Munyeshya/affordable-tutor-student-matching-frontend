@@ -220,6 +220,7 @@ function TutorCard({ tutor, marketplacePath }) {
     .join(' and ') || 'Arrange with tutor'
   const availability = tutor.availability_summary || {}
   const matchReasons = Array.isArray(tutor.match_reasons) ? tutor.match_reasons : []
+  const impact = tutor.learning_impact || {}
 
   return (
     <article className="market-tutor-card">
@@ -254,6 +255,18 @@ function TutorCard({ tutor, marketplacePath }) {
         ))}
         {subjectLevels.length > 3 ? <span>+{subjectLevels.length - 3} more</span> : null}
         {subjectLevels.length === 0 ? <span>Subjects available on profile</span> : null}
+      </div>
+
+      <div className="market-tutor-impact" aria-label="Student-confirmed learning impact">
+        <span>Verified learning impact</span>
+        <div>
+          <strong>+{Number(impact.average_improvement || 0).toFixed(1)}%</strong>
+          <small>average growth</small>
+        </div>
+        <div>
+          <strong>{impact.assessed_students || 0}</strong>
+          <small>students assessed</small>
+        </div>
       </div>
 
       <div className="market-tutor-match" aria-label={`Match score ${tutor.match_score || 0} out of 100`}>

@@ -187,6 +187,11 @@ function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busy
             {booking.progress ? 'Update progress' : 'Add progress'}
           </button>
         ) : null}
+        {['TUTOR', 'STUDENT'].includes(role) && ['CONFIRMED', 'COMPLETED'].includes(booking.status) ? (
+          <Link className="secondary-button" to={`/assessments?booking=${booking.id}`}>
+            {role === 'TUTOR' ? 'Set assessments' : 'View assessments'}
+          </Link>
+        ) : null}
         {canMessage ? <Link className="secondary-button" to={'/messages?booking=' + booking.id}>Message</Link> : null}
         {canReview ? <Link className="secondary-button" to={'/reviews?booking=' + booking.id}>Leave review</Link> : null}
         {canPay ? <button className="primary-button" type="button" onClick={() => onPay(booking)}>Pay securely</button> : null}

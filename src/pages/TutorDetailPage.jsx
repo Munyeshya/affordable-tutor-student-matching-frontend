@@ -264,6 +264,7 @@ export function TutorDetailPage() {
   const todayKey = getDateKey(new Date())
   const subjectLevels = Array.isArray(tutor.subject_levels) ? tutor.subject_levels : []
   const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : []
+  const learningImpact = tutor.learning_impact || {}
   const lowestCoursePrice = courses.reduce((lowest, course) => {
     const price = Number(course.price)
     if (!Number.isFinite(price)) return lowest
@@ -369,6 +370,18 @@ export function TutorDetailPage() {
               </div>
             </article>
           ) : null}
+
+          <article className="tutor-detail-section tutor-impact-section">
+            <p className="eyebrow"><InlineIcon name="teaching" /> Verified learning impact</p>
+            <h2>Progress confirmed by students.</h2>
+            <p className="supporting-text">These figures use completed initial and final assessments that students have confirmed as reflecting their learning.</p>
+            <div className="tutor-credentials-grid">
+              <div><span>Average improvement</span><strong>+{Number(learningImpact.average_improvement || 0).toFixed(1)}%</strong></div>
+              <div><span>Positive outcomes</span><strong>{Number(learningImpact.positive_outcome_rate || 0).toFixed(0)}%</strong></div>
+              <div><span>Students assessed</span><strong>{learningImpact.assessed_students || 0}</strong></div>
+              <div><span>Confirmed results</span><strong>{learningImpact.confirmed_outcomes || 0}</strong></div>
+            </div>
+          </article>
 
           <article className="tutor-detail-section tutor-courses-section">
             <div className="tutor-detail-section-heading">
