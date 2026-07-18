@@ -31,6 +31,7 @@
     agreement: '/tutors/agreement/',
     agreementDownload: '/tutors/agreement/download/',
     documents: '/tutors/documents/',
+    documentPreview: (id) => `/tutors/verifications/documents/${id}/preview/`,
     documentReview: (id) => `/tutors/verifications/documents/${id}/review/`,
     verifications: '/tutors/verifications/',
     verificationDecision: (id) => `/tutors/verifications/${id}/decide/`,

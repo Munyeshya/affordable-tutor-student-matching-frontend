@@ -47,6 +47,12 @@ export function reviewTutorDocument(id, payload) {
   return apiClient.patch(API_ENDPOINTS.tutors.documentReview(id), payload)
 }
 
+export function previewTutorDocument(id) {
+  return apiClient.get(API_ENDPOINTS.tutors.documentPreview(id), {
+    responseType: 'blob',
+  })
+}
+
 export function getTutorAgreementDetails() {
   return apiClient.get(API_ENDPOINTS.tutors.agreement)
 }

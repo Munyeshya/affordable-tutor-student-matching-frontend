@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
@@ -7,10 +7,12 @@ import { getApiErrorMessage } from '../api/errors'
 import {
   decideTutorVerification,
   listTutorVerifications,
+  previewTutorDocument,
   reviewTutorDocument,
 } from '../api/services/tutors.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
+import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { AdminDocumentReview } from '../components/VerificationDocuments.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { queryKeys } from '../api/queryKeys'
@@ -44,6 +46,20 @@ function getReviewState(verification) {
   return { label: 'Incomplete', tone: 'neutral' }
 }
 
+function getDocumentContentType(document, response) {
+  const responseType = response.headers?.['content-type']
+  if (responseType) return responseType
+  if (document.file?.toLowerCase().endsWith('.pdf')) return 'application/pdf'
+  if (document.file?.toLowerCase().match(/\.(png|jpe?g)$/)) return 'image/*'
+  return response.data?.type || 'application/octet-stream'
+}
+
+function getDocumentFilename(document) {
+  if (!document) return 'verification-document'
+  const path = String(document.file || '')
+  return path.split('/').pop()?.split('?')[0] || `verification-document-${document.id}`
+}
+
 function ReviewQueueSkeleton() {
   return (
     <div className="admin-tutor-review-queue-skeleton" aria-hidden="true">
@@ -57,10 +73,18 @@ function ReviewQueueSkeleton() {
 export function AdminTutorReviewsPage() {
   const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
+  const previewRequestId = useRef(0)
   const [selectedVerificationId, setSelectedVerificationId] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [reasonById, setReasonById] = useState({})
   const [documentReviewById, setDocumentReviewById] = useState({})
+  const [documentPreview, setDocumentPreview] = useState({
+    document: null,
+    url: '',
+    contentType: '',
+    loading: false,
+    error: '',
+  })
   const [notice, setNotice] = useState('')
 
   const verificationsQuery = useQuery({
@@ -110,15 +134,64 @@ export function AdminTutorReviewsPage() {
 
   const verifications = Array.isArray(verificationsQuery.data) ? verificationsQuery.data : []
 
-  useEffect(() => {
-    if (!verifications.length) {
-      setSelectedVerificationId(null)
-      return
+  useEffect(() => () => {
+    if (documentPreview.url) {
+      window.URL.revokeObjectURL(documentPreview.url)
     }
-    if (!verifications.some((item) => item.id === selectedVerificationId)) {
-      setSelectedVerificationId(verifications[0].id)
+  }, [documentPreview.url])
+
+  async function openDocumentPreview(document) {
+    const requestId = previewRequestId.current + 1
+    previewRequestId.current = requestId
+    setDocumentPreview({
+      document,
+      url: '',
+      contentType: '',
+      loading: true,
+      error: '',
+    })
+    try {
+      const response = await previewTutorDocument(document.id)
+      if (previewRequestId.current !== requestId) return
+      const contentType = getDocumentContentType(document, response)
+      const blob = response.data instanceof Blob
+        ? response.data
+        : new Blob([response.data], { type: contentType })
+      const url = window.URL.createObjectURL(blob)
+      setDocumentPreview({
+        document,
+        url,
+        contentType,
+        loading: false,
+        error: '',
+      })
+    } catch (error) {
+      if (previewRequestId.current !== requestId) return
+      const message = getApiErrorMessage(
+        error,
+        'This document could not be previewed.',
+      )
+      setDocumentPreview({
+        document,
+        url: '',
+        contentType: '',
+        loading: false,
+        error: message,
+      })
+      toast.error(message)
     }
-  }, [selectedVerificationId, verifications])
+  }
+
+  function closeDocumentPreview() {
+    previewRequestId.current += 1
+    setDocumentPreview({
+      document: null,
+      url: '',
+      contentType: '',
+      loading: false,
+      error: '',
+    })
+  }
 
   if (!isAuthenticated) {
     return (
@@ -156,7 +229,8 @@ export function AdminTutorReviewsPage() {
     : verifications
   const selectedVerification = verifications.find(
     (item) => item.id === selectedVerificationId,
-  ) || null
+  ) || verifications[0] || null
+  const activeVerificationId = selectedVerification?.id || null
   const readyCount = verifications.filter(
     (item) => item.document_summary?.all_required_uploaded
       && !item.document_summary?.has_blocking_issues,
@@ -231,7 +305,7 @@ export function AdminTutorReviewsPage() {
                   const reviewState = getReviewState(verification)
                   return (
                     <button
-                      className={verification.id === selectedVerificationId ? 'is-selected' : ''}
+                      className={verification.id === activeVerificationId ? 'is-selected' : ''}
                       type="button"
                       key={verification.id}
                       onClick={() => {
@@ -295,6 +369,7 @@ export function AdminTutorReviewsPage() {
                   id: documentId,
                   payload,
                 })}
+                onDocumentPreview={openDocumentPreview}
                 onDecision={(status) => decisionMutation.mutate({
                   id: selectedVerification.id,
                   status,
@@ -311,6 +386,12 @@ export function AdminTutorReviewsPage() {
           </main>
         </div>
       )}
+
+      <DocumentPreviewDialog
+        preview={documentPreview}
+        onClose={closeDocumentPreview}
+        onRetry={() => openDocumentPreview(documentPreview.document)}
+      />
     </section>
   )
 }
@@ -323,6 +404,7 @@ function VerificationDetail({
   documentBusy,
   onReasonChange,
   onDocumentChange,
+  onDocumentPreview,
   onDocumentReview,
   onDecision,
 }) {
@@ -388,6 +470,7 @@ function VerificationDetail({
                 busy={documentBusy}
                 key={document.id}
                 onChange={(value) => onDocumentChange(document.id, value)}
+                onPreview={() => onDocumentPreview(document)}
                 onReview={(payload) => onDocumentReview(document.id, payload)}
               />
             ))}
@@ -445,5 +528,79 @@ function VerificationDetail({
         </div>
       </section>
     </>
+  )
+}
+
+function DocumentPreviewDialog({ preview, onClose, onRetry }) {
+  const document = preview.document
+  const title = document?.doc_type_display || formatLabel(document?.doc_type)
+  const isPdf = preview.contentType.includes('pdf')
+  const isImage = preview.contentType.startsWith('image/')
+
+  return (
+    <ConfirmationDialog
+      open={Boolean(document)}
+      onClose={onClose}
+      labelledBy="verification-preview-title"
+      describedBy="verification-preview-description"
+      backdropClassName="admin-document-preview-backdrop"
+      dialogClassName="admin-document-preview-dialog"
+    >
+      <header className="admin-document-preview-header">
+        <div>
+          <span>Verification evidence</span>
+          <h2 id="verification-preview-title">{title}</h2>
+          <p id="verification-preview-description">
+            Inspect the complete document before recording a review decision.
+          </p>
+        </div>
+        <button type="button" onClick={onClose} aria-label="Close document preview">
+          <DashboardIcon name="close" size={18} />
+          Close
+        </button>
+      </header>
+
+      <div className="admin-document-preview-stage">
+        {preview.loading ? (
+          <div className="admin-document-preview-loading" role="status">
+            <span />
+            <strong>Preparing secure preview...</strong>
+            <small>The document is being loaded from protected storage.</small>
+          </div>
+        ) : preview.error ? (
+          <div className="admin-document-preview-error" role="alert">
+            <DashboardIcon name="documents" size={28} />
+            <strong>Preview unavailable</strong>
+            <p>{preview.error}</p>
+            <button type="button" onClick={onRetry}>Try again</button>
+          </div>
+        ) : isPdf ? (
+          <iframe
+            src={preview.url}
+            title={`${title} preview`}
+          />
+        ) : isImage ? (
+          <img src={preview.url} alt={`${title} submitted by the tutor`} />
+        ) : (
+          <div className="admin-document-preview-error">
+            <DashboardIcon name="documents" size={28} />
+            <strong>Preview is not supported for this file</strong>
+            <p>Download the document to inspect it with a compatible application.</p>
+          </div>
+        )}
+      </div>
+
+      <footer className="admin-document-preview-footer">
+        <div>
+          <strong>{getDocumentFilename(document)}</strong>
+          <span>{document?.status_display || formatLabel(document?.status)}</span>
+        </div>
+        {preview.url ? (
+          <a href={preview.url} download={getDocumentFilename(document)}>
+            Download copy
+          </a>
+        ) : null}
+      </footer>
+    </ConfirmationDialog>
   )
 }

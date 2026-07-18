@@ -105,6 +105,7 @@ export function AdminDocumentReview({
   reviewValue,
   busy,
   onChange,
+  onPreview,
   onReview,
 }) {
   const reason = reviewValue?.reason || 'UNREADABLE'
@@ -128,9 +129,19 @@ export function AdminDocumentReview({
       </div>
 
       <div className="document-meta-row">
-        <a href={document.file} target="_blank" rel="noreferrer">
-          Open document
-        </a>
+        {onPreview ? (
+          <button
+            className="document-preview-button"
+            type="button"
+            onClick={onPreview}
+          >
+            Preview document
+          </button>
+        ) : (
+          <a href={document.file} target="_blank" rel="noreferrer">
+            Open document
+          </a>
+        )}
         {document.review_reason_display ? (
           <span>{document.review_reason_display}</span>
         ) : null}
