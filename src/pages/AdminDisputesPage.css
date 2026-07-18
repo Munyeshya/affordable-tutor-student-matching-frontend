@@ -1,0 +1,131 @@
+.admin-disputes-page { display: grid; gap: 18px; }
+.admin-disputes-header,
+.admin-disputes-policy,
+.admin-disputes-metrics article,
+.admin-disputes-tabs,
+.admin-disputes-results { border: 1px solid #ebe5de; background: #fff; }
+
+.admin-disputes-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; border-top: 3px solid #d86400; padding: 28px 30px; }
+.admin-disputes-header h1 { margin: 5px 0 8px; color: #171717; font-size: clamp(1.65rem, 2.5vw, 2.15rem); }
+.admin-disputes-header p:last-child { max-width: 720px; margin: 0; color: #68625d; line-height: 1.6; }
+.admin-disputes-total { display: grid; min-width: 130px; border-left: 2px solid #f0d2b7; padding-left: 20px; }
+.admin-disputes-total strong { color: #181716; font-size: 1.7rem; }
+.admin-disputes-total span { color: #746e68; font-size: 0.76rem; }
+
+.admin-disputes-policy { display: flex; align-items: flex-start; gap: 12px; border-color: #f0d2b7; background: #fffaf5; padding: 15px 18px; color: #62574d; }
+.admin-disputes-policy svg { flex: 0 0 auto; color: #d86400; }
+.admin-disputes-policy p { margin: 0; font-size: 0.82rem; line-height: 1.6; }
+
+.admin-disputes-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.admin-disputes-metrics article { display: grid; gap: 5px; border-left: 3px solid #d86400; padding: 18px 20px; }
+.admin-disputes-metrics span { color: #6e6761; font-size: 0.72rem; font-weight: 750; text-transform: uppercase; }
+.admin-disputes-metrics strong { color: #1e1c1a; font-size: 1.65rem; }
+.admin-disputes-metrics small { color: #7b746e; font-size: 0.7rem; }
+
+.admin-disputes-tabs { display: flex; overflow-x: auto; padding: 0 18px; }
+.admin-disputes-tabs button { flex: 0 0 auto; border: 0; border-bottom: 3px solid transparent; background: transparent; padding: 14px 16px 11px; color: #6d6761; font: inherit; font-size: 0.76rem; font-weight: 750; cursor: pointer; }
+.admin-disputes-tabs button.is-active { border-bottom-color: #d86400; color: #9f4900; }
+
+.admin-disputes-results { min-width: 0; padding: 24px; }
+.admin-disputes-results > header { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.admin-disputes-results > header p,
+.admin-disputes-results > header h2 { margin: 0; }
+.admin-disputes-results > header p { color: #d86400; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.admin-disputes-results > header h2 { margin-top: 4px; font-size: 1.25rem; }
+.admin-disputes-results > header label { display: flex; align-items: center; width: min(360px, 100%); border: 1px solid #dcd5ce; border-radius: 5px; padding: 0 11px; color: #817970; }
+.admin-disputes-results > header input { width: 100%; min-height: 40px; border: 0; outline: 0; background: transparent; padding: 8px; color: #1e1c1a; font: inherit; font-size: 0.78rem; }
+.admin-disputes-results > header label:focus-within { border-color: #d86400; outline: 2px solid rgba(216, 100, 0, 0.14); }
+.admin-disputes-table .ui-data-table { min-width: 940px; }
+.admin-dispute-identity,
+.admin-dispute-person { display: grid; min-width: 155px; gap: 3px; }
+.admin-dispute-identity strong,
+.admin-dispute-person strong { color: #25221f; font-size: 0.8rem; }
+.admin-dispute-identity small,
+.admin-dispute-person small { color: #79726c; font-size: 0.69rem; }
+.admin-dispute-status { display: inline-flex; width: fit-content; border-radius: 999px; padding: 4px 8px; font-size: 0.65rem; font-weight: 800; white-space: nowrap; }
+.admin-dispute-status.is-open { background: #fff5e8; color: #985000; }
+.admin-dispute-status.is-under_review { background: #eef4fb; color: #315c86; }
+.admin-dispute-status.is-resolved { background: #eef9f2; color: #176540; }
+.admin-dispute-status.is-rejected { background: #f2efed; color: #665e58; }
+.admin-dispute-open { border: 0; border-bottom: 1px solid #d86400; background: transparent; padding: 3px 0; color: #a94e00; font: inherit; font-size: 0.74rem; font-weight: 800; cursor: pointer; }
+.admin-disputes-skeleton { display: grid; gap: 10px; }
+.admin-disputes-skeleton span { height: 52px; background: #f3f0ec; animation: admin-disputes-pulse 1.25s ease-in-out infinite alternate; }
+
+.ui-dialog-backdrop:has(.admin-dispute-dialog) { display: grid; place-items: center; padding: 20px; background: rgba(17, 16, 15, 0.68); }
+.admin-dispute-dialog { width: min(860px, 100%); max-height: min(920px, calc(100vh - 40px)); overflow-y: auto; border: 1px solid #e4ddd5; border-top: 4px solid #d86400; border-radius: 8px; background: #fff; padding: 24px; }
+.admin-dispute-dialog > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; border-bottom: 1px solid #ece6df; padding-bottom: 16px; }
+.admin-dispute-dialog > header span { color: #d86400; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.admin-dispute-dialog > header h2 { margin: 4px 0 0; color: #1c1a18; font-size: 1.35rem; }
+.admin-dispute-dialog > header button,
+.admin-dispute-decision-form > button { border: 0; background: transparent; color: #6f6861; font: inherit; font-size: 0.78rem; font-weight: 750; cursor: pointer; }
+.admin-dispute-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin-top: 16px; border: 1px solid #ebe4dd; background: #ebe4dd; }
+.admin-dispute-detail-grid > div { display: grid; align-content: start; gap: 5px; min-width: 0; background: #fff; padding: 13px; }
+.admin-dispute-detail-grid > div > span:first-child { color: #7b746d; font-size: 0.65rem; font-weight: 750; text-transform: uppercase; }
+.admin-dispute-detail-grid strong { overflow-wrap: anywhere; color: #2a2724; font-size: 0.78rem; }
+.admin-dispute-detail-grid small { overflow-wrap: anywhere; color: #78716a; font-size: 0.68rem; }
+
+.admin-dispute-booking-context,
+.admin-dispute-evidence,
+.admin-dispute-history,
+.admin-dispute-actions,
+.admin-dispute-decision-form,
+.admin-dispute-closed { margin-top: 18px; border-top: 1px solid #ece6df; padding-top: 17px; }
+.admin-dispute-booking-context h3,
+.admin-dispute-evidence h3,
+.admin-dispute-history h3,
+.admin-dispute-actions h3,
+.admin-dispute-decision-form h3 { margin: 0 0 10px; color: #292623; font-size: 0.95rem; }
+.admin-dispute-booking-context > div { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid #e7e0d9; background: #e7e0d9; gap: 1px; }
+.admin-dispute-booking-context > div span { display: grid; gap: 4px; background: #faf8f5; padding: 12px; }
+.admin-dispute-booking-context small { color: #7a736c; font-size: 0.65rem; text-transform: uppercase; }
+.admin-dispute-booking-context strong { color: #302c28; font-size: 0.76rem; overflow-wrap: anywhere; }
+.admin-dispute-booking-context > p { margin: 8px 0 0; color: #7a736c; font-size: 0.67rem; }
+.admin-dispute-evidence > p { margin: 0; border-left: 3px solid #d86400; background: #faf7f3; padding: 14px 16px; color: #49443f; font-size: 0.8rem; line-height: 1.65; white-space: pre-wrap; }
+.admin-dispute-evidence > small { display: block; margin-top: 7px; color: #7a736c; font-size: 0.67rem; }
+.admin-dispute-history article { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; border-top: 1px solid #eee8e2; padding: 12px 0; }
+.admin-dispute-history article > span { color: #9e4900; font-size: 0.68rem; font-weight: 850; text-transform: uppercase; }
+.admin-dispute-history p { margin: 0; color: #4f4a45; font-size: 0.76rem; line-height: 1.5; }
+.admin-dispute-history small { color: #7a736c; font-size: 0.66rem; }
+.admin-dispute-actions > p,
+.admin-dispute-decision-form > p { margin: -4px 0 14px; color: #6f6862; font-size: 0.78rem; line-height: 1.55; }
+.admin-dispute-actions > div,
+.admin-dispute-decision-form > div { display: flex; justify-content: flex-end; gap: 9px; }
+.admin-dispute-actions button,
+.admin-dispute-confirm { border: 1px solid currentColor; border-radius: 4px; background: #fff; padding: 9px 13px; font: inherit; font-size: 0.77rem; font-weight: 800; cursor: pointer; }
+.admin-dispute-actions .is-positive { color: #176540; }
+.admin-dispute-actions .is-danger { color: #9b2f1d; }
+.admin-dispute-actions .is-neutral { color: #315c86; }
+.admin-dispute-decision-form > button { margin-bottom: 12px; padding: 0; color: #a95000; }
+.admin-dispute-decision-form label { display: grid; gap: 7px; color: #4d4945; font-size: 0.76rem; font-weight: 750; }
+.admin-dispute-decision-form textarea { width: 100%; min-height: 94px; resize: vertical; border: 1px solid #dcd5ce; border-radius: 5px; padding: 10px 11px; color: #1e1c1a; font: inherit; }
+.admin-dispute-decision-form textarea:focus { border-color: #d86400; outline: 2px solid rgba(216, 100, 0, 0.16); outline-offset: 1px; }
+.admin-dispute-decision-form > small { display: block; margin: 5px 0 14px; color: #77706a; font-size: 0.68rem; }
+.admin-dispute-confirm.is-positive { background: #176540; color: #fff; }
+.admin-dispute-confirm.is-danger { background: #9b2f1d; color: #fff; }
+.admin-dispute-confirm.is-neutral { background: #315c86; color: #fff; }
+.admin-dispute-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-dispute-closed { display: flex; align-items: flex-start; gap: 10px; color: #176540; }
+.admin-dispute-closed p { margin: 0; color: #625d57; font-size: 0.78rem; line-height: 1.55; }
+
+@keyframes admin-disputes-pulse { to { opacity: 0.5; } }
+
+@media (max-width: 760px) {
+  .admin-disputes-header { display: grid; padding: 22px 18px; }
+  .admin-disputes-total { border-top: 2px solid #f0d2b7; border-left: 0; padding-top: 12px; padding-left: 0; }
+  .admin-disputes-metrics { grid-template-columns: 1fr; }
+  .admin-disputes-tabs { padding: 0 8px; }
+  .admin-disputes-results { padding: 18px; }
+  .admin-disputes-results > header { display: grid; align-items: start; }
+  .admin-disputes-results > header label { width: 100%; }
+  .ui-dialog-backdrop:has(.admin-dispute-dialog) { align-items: end; padding: 0; }
+  .admin-dispute-dialog { width: 100%; max-height: 94vh; border-right: 0; border-bottom: 0; border-left: 0; border-radius: 8px 8px 0 0; padding: 20px 18px; }
+  .admin-dispute-detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-dispute-booking-context > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-dispute-history article { grid-template-columns: 1fr; }
+  .admin-dispute-actions > div,
+  .admin-dispute-decision-form > div { display: grid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-disputes-skeleton span { animation: none; }
+}

@@ -86,6 +86,7 @@
     proposalCreate: '/bookings/proposals/create/',
     proposalAction: (id) => `/bookings/proposals/${id}/action/`,
     disputes: '/bookings/disputes/',
+    disputeDetail: (id) => `/bookings/disputes/${id}/`,
     disputeCreate: '/bookings/disputes/create/',
     disputeDecision: (id) => `/bookings/disputes/${id}/decide/`,
   },

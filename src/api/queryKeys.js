@@ -3,6 +3,7 @@ export const queryKeys = {
     all: ['admin'],
     dashboard: ['admin', 'dashboard'],
     disputes: ['admin', 'disputes'],
+    dispute: (id) => ['admin', 'disputes', 'detail', id],
     auditEvents: (params = {}) => ['admin', 'audit-events', params],
     users: (params = {}) => ['admin', 'users', params],
     user: (id) => ['admin', 'users', 'detail', id],

@@ -30,6 +30,10 @@ export function listDisputes() {
   return apiClient.get(API_ENDPOINTS.bookings.disputes).then(normalizeListResponse)
 }
 
+export function getDispute(id) {
+  return apiClient.get(API_ENDPOINTS.bookings.disputeDetail(id))
+}
+
 export function decideDispute(id, payload) {
   return apiClient.patch(API_ENDPOINTS.bookings.disputeDecision(id), payload)
 }
