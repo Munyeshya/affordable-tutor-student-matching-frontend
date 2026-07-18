@@ -8,9 +8,11 @@ import {
   updateCurrentUser,
   uploadProfileImage,
 } from '../api/services/auth'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useSubjectsQuery } from '../hooks/useCommonQueries.js'
+import './AccountPage.css'
 
 const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 const ACCEPTED_PROFILE_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
@@ -57,6 +59,22 @@ function getProfileDefaults(user) {
     teaches_online: Boolean(profile.teaches_online),
     teaches_in_person: Boolean(profile.teaches_in_person),
   }
+}
+
+function SettingsSection({ icon, label, title, description, children }) {
+  return (
+    <section className="account-settings-section">
+      <header>
+        <span className="account-settings-section-icon"><DashboardIcon name={icon} size={20} /></span>
+        <div>
+          <p>{label}</p>
+          <h2>{title}</h2>
+          <span>{description}</span>
+        </div>
+      </header>
+      <div className="account-settings-fields">{children}</div>
+    </section>
+  )
 }
 
 export function AccountPage() {
@@ -244,325 +262,130 @@ export function AccountPage() {
     || user.username
     || user.email
   const imageBusy = imageMutation.isPending || removeImageMutation.isPending
+  const roleLabel = role.toLowerCase().replace(/^./, (letter) => letter.toUpperCase())
+  const defaultStatus = role === 'TUTOR'
+    ? 'Your public profile becomes visible after tutor approval requirements are complete.'
+    : role === 'STUDENT'
+      ? 'These details help Isomo recommend tutors that fit your learning needs and budget.'
+      : role === 'PARENT'
+        ? 'These details help you manage learning support for linked students.'
+        : 'Keep your account identity accurate and up to date.'
 
   return (
-    <section className="page-card card account-page">
-      <div className="account-header">
+    <section className="account-settings-page">
+      <header className="account-settings-header">
         <div>
-          <p className="eyebrow">My account</p>
-          <h1>Manage your profile</h1>
-          <p className="supporting-text">
-            Update the details that help students, parents, and admins understand your profile.
-          </p>
+          <p className="admin-overview-eyebrow">Account preferences</p>
+          <h1>Profile settings</h1>
+          <p>Keep your identity, contact details, and {roleLabel.toLowerCase()} profile accurate across Isomo.</p>
         </div>
-
-        <div className="account-summary">
-          <span className="account-summary-label">Role</span>
-          <strong>{role}</strong>
-          <span className="account-summary-label">Profile</span>
-          <strong>{profileType}</strong>
-          {role === 'TUTOR' ? (
-            <>
-              <span className="account-summary-label">Verification</span>
-              <strong>{profile.verification_status || 'Pending'}</strong>
-            </>
-          ) : null}
+        <div className="account-settings-header-meta">
+          <span>{roleLabel} account</span>
+          {role === 'TUTOR' ? <strong>{profile.verification_status || 'Pending verification'}</strong> : <strong>{profileType === 'none' ? 'Basic profile' : `${roleLabel} profile`}</strong>}
         </div>
-      </div>
+      </header>
 
-      <section className="account-photo-card" aria-labelledby="profile-photo-heading">
-        <UserAvatar
-          className="account-photo-preview"
-          src={user.profile_image_url}
-          name={profileName}
-          loading="eager"
-        />
-        <div className="account-photo-copy">
-          <h2 id="profile-photo-heading">Profile picture</h2>
-          <p>
-            Add a clear photo so people can recognize you across Isomo. PNG, JPEG, and WebP
-            files up to 5 MB are supported.
-          </p>
-          {selectedImage ? <small>Ready to upload: {selectedImage.name}</small> : null}
-        </div>
-        <div className="account-photo-actions">
-          <label className="secondary-button account-photo-select">
-            {user.profile_image_url ? 'Choose replacement' : 'Choose picture'}
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              aria-label="Choose profile picture"
-              disabled={imageBusy}
-              onChange={handleImageSelection}
-            />
-          </label>
-          {selectedImage ? (
-            <button
-              className="primary-button"
-              type="button"
-              disabled={imageBusy}
-              onClick={handleImageUpload}
-            >
-              {imageMutation.isPending ? 'Uploading...' : 'Upload picture'}
-            </button>
-          ) : null}
-          {user.profile_image_url ? (
-            <button
-              className="account-photo-remove"
-              type="button"
-              disabled={imageBusy}
-              onClick={() => removeImageMutation.mutate()}
-            >
-              {removeImageMutation.isPending ? 'Removing...' : 'Remove picture'}
-            </button>
-          ) : null}
-        </div>
-      </section>
+      <div className="account-settings-layout">
+        <aside className="account-profile-panel" aria-labelledby="profile-photo-heading">
+          <div className="account-profile-identity">
+            <UserAvatar className="account-photo-preview" src={user.profile_image_url} name={profileName} loading="eager" />
+            <div><h2 id="profile-photo-heading">{profileName}</h2><p>{user.email}</p><span>{roleLabel}</span></div>
+          </div>
 
-      <form className="account-form" onSubmit={handleSubmit}>
-        <div className="account-form-grid">
-          <label className="account-field">
-            <span>First name</span>
-            <input
-              type="text"
-              value={toInputValue(form.first_name)}
-              onChange={(event) => updateField('first_name', event.target.value)}
-            />
-          </label>
+          <div className="account-profile-facts">
+            <div><span>Account role</span><strong>{roleLabel}</strong></div>
+            <div><span>Profile type</span><strong>{profileType === 'none' ? 'Basic' : roleLabel}</strong></div>
+            {role === 'TUTOR' ? <div><span>Verification</span><strong>{profile.verification_status || 'Pending'}</strong></div> : null}
+          </div>
 
-          <label className="account-field">
-            <span>Last name</span>
-            <input
-              type="text"
-              value={toInputValue(form.last_name)}
-              onChange={(event) => updateField('last_name', event.target.value)}
-            />
-          </label>
+          <div className="account-photo-copy">
+            <h3>Profile picture</h3>
+            <p>Use a clear PNG, JPEG, or WebP image up to 5 MB.</p>
+            {selectedImage ? <small>Ready to upload: {selectedImage.name}</small> : null}
+          </div>
+          <div className="account-photo-actions">
+            <label className="secondary-button account-photo-select">
+              {user.profile_image_url ? 'Choose replacement' : 'Choose picture'}
+              <input type="file" accept="image/png,image/jpeg,image/webp" aria-label="Choose profile picture" disabled={imageBusy} onChange={handleImageSelection} />
+            </label>
+            {selectedImage ? <button className="primary-button" type="button" disabled={imageBusy} onClick={handleImageUpload}>{imageMutation.isPending ? 'Uploading...' : 'Upload picture'}</button> : null}
+            {user.profile_image_url ? <button className="account-photo-remove" type="button" disabled={imageBusy} onClick={() => removeImageMutation.mutate()}>{removeImageMutation.isPending ? 'Removing...' : 'Remove picture'}</button> : null}
+          </div>
+        </aside>
+
+        <form className="account-settings-form" onSubmit={handleSubmit}>
+          <SettingsSection icon="account" label="Identity" title="Personal information" description="Use the name people should see when interacting with your account.">
+            <label className="account-field"><span>First name</span><input type="text" value={toInputValue(form.first_name)} onChange={(event) => updateField('first_name', event.target.value)} /></label>
+            <label className="account-field"><span>Last name</span><input type="text" value={toInputValue(form.last_name)} onChange={(event) => updateField('last_name', event.target.value)} /></label>
+            {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? <label className="account-field account-field-wide"><span>Full name</span><input type="text" value={toInputValue(form.full_name)} onChange={(event) => updateField('full_name', event.target.value)} /></label> : null}
+            <div className="account-readonly-field account-field-wide"><span>Email address</span><strong>{user.email}</strong><small>Contact support if this sign-in address needs to change.</small></div>
+          </SettingsSection>
 
           {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? (
-            <label className="account-field account-field-wide">
-              <span>Full name</span>
-              <input
-                type="text"
-                value={toInputValue(form.full_name)}
-                onChange={(event) => updateField('full_name', event.target.value)}
-              />
-            </label>
-          ) : null}
-
-          {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? (
-            <label className="account-field account-field-wide">
-              <span>Phone number</span>
-              <input
-                type="tel"
-                value={toInputValue(form.phone_number)}
-                onChange={(event) => updateField('phone_number', event.target.value)}
-              />
-            </label>
-          ) : null}
-
-          {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? (
-            <label className="account-field account-field-wide">
-              <span>Location</span>
-              <input
-                type="text"
-                value={toInputValue(form.location)}
-                onChange={(event) => updateField('location', event.target.value)}
-              />
-            </label>
+            <SettingsSection icon="site" label="Contact" title="Contact and location" description="Keep these details current for account and lesson coordination.">
+              <label className="account-field"><span>Phone number</span><input type="tel" value={toInputValue(form.phone_number)} onChange={(event) => updateField('phone_number', event.target.value)} /></label>
+              <label className="account-field"><span>Location</span><input type="text" value={toInputValue(form.location)} onChange={(event) => updateField('location', event.target.value)} /></label>
+            </SettingsSection>
           ) : null}
 
           {role === 'STUDENT' ? (
             <>
-              <label className="account-field">
-                <span>Level</span>
-                <input
-                  type="text"
-                  value={toInputValue(form.level)}
-                  onChange={(event) => updateField('level', event.target.value)}
-                />
-              </label>
+              <SettingsSection icon="assessments" label="Learning profile" title="Learning needs" description="Tell us where you study and what support would make the biggest difference.">
+                <label className="account-field"><span>Level</span><input type="text" value={toInputValue(form.level)} onChange={(event) => updateField('level', event.target.value)} /></label>
+                <label className="account-field"><span>School name</span><input type="text" value={toInputValue(form.school_name)} onChange={(event) => updateField('school_name', event.target.value)} /></label>
+                <label className="account-field account-field-wide">
+                  <span>Subjects needing help</span>
+                  <select multiple value={form.subjects_needing_help} onChange={(event) => updateField('subjects_needing_help', Array.from(event.target.selectedOptions, (option) => option.value))} disabled={subjectsQuery.isLoading || subjectsQuery.isError}>
+                    {(subjectsQuery.data || []).map((subject) => <option key={subject.id} value={String(subject.id)}>{subject.name}</option>)}
+                  </select>
+                  <small>{subjectsQuery.isError ? 'Subjects could not be loaded. Try refreshing the page.' : 'Select every subject where you would like tutor support.'}</small>
+                </label>
+                <label className="account-field account-field-wide"><span>Learning goals</span><textarea rows="4" value={toInputValue(form.learning_goals)} onChange={(event) => updateField('learning_goals', event.target.value)} /></label>
+              </SettingsSection>
 
-              <label className="account-field">
-                <span>School name</span>
-                <input
-                  type="text"
-                  value={toInputValue(form.school_name)}
-                  onChange={(event) => updateField('school_name', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field account-field-wide">
-                <span>Subjects needing help</span>
-                <select
-                  multiple
-                  value={form.subjects_needing_help}
-                  onChange={(event) => updateField(
-                    'subjects_needing_help',
-                    Array.from(event.target.selectedOptions, (option) => option.value),
-                  )}
-                  disabled={subjectsQuery.isLoading || subjectsQuery.isError}
-                >
-                  {(subjectsQuery.data || []).map((subject) => (
-                    <option key={subject.id} value={String(subject.id)}>{subject.name}</option>
-                  ))}
-                </select>
-                <small>
-                  {subjectsQuery.isError
-                    ? 'Subjects could not be loaded. Try refreshing the page.'
-                    : 'Select every subject where you would like tutor support.'}
-                </small>
-              </label>
-
-              <label className="account-field account-field-wide">
-                <span>Learning goals</span>
-                <textarea
-                  rows="4"
-                  value={toInputValue(form.learning_goals)}
-                  onChange={(event) => updateField('learning_goals', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field">
-                <span>Budget min</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={toInputValue(form.budget_min)}
-                  onChange={(event) => updateField('budget_min', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field">
-                <span>Budget max</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={toInputValue(form.budget_max)}
-                  onChange={(event) => updateField('budget_max', event.target.value)}
-                />
-              </label>
-
-              <label className="account-check">
-                <input
-                  type="checkbox"
-                  checked={form.prefers_online}
-                  onChange={() => toggleField('prefers_online')}
-                />
-                <span>Prefers online lessons</span>
-              </label>
-
-              <label className="account-check">
-                <input
-                  type="checkbox"
-                  checked={form.prefers_in_person}
-                  onChange={() => toggleField('prefers_in_person')}
-                />
-                <span>Prefers in-person lessons</span>
-              </label>
+              <SettingsSection icon="earnings" label="Matching preferences" title="Budget and lesson format" description="Set practical preferences so tutor recommendations remain affordable and relevant.">
+                <label className="account-field"><span>Budget min</span><input type="number" step="0.01" value={toInputValue(form.budget_min)} onChange={(event) => updateField('budget_min', event.target.value)} /></label>
+                <label className="account-field"><span>Budget max</span><input type="number" step="0.01" value={toInputValue(form.budget_max)} onChange={(event) => updateField('budget_max', event.target.value)} /></label>
+                <div className="account-preference-grid account-field-wide">
+                  <label className="account-check"><input type="checkbox" checked={form.prefers_online} onChange={() => toggleField('prefers_online')} /><span><strong>Online lessons</strong><small>Include tutors who teach remotely.</small></span></label>
+                  <label className="account-check"><input type="checkbox" checked={form.prefers_in_person} onChange={() => toggleField('prefers_in_person')} /><span><strong>In-person lessons</strong><small>Include tutors available near you.</small></span></label>
+                </div>
+              </SettingsSection>
             </>
           ) : null}
 
           {role === 'TUTOR' ? (
             <>
-              <label className="account-field account-field-wide">
-                <span>Headline</span>
-                <input
-                  type="text"
-                  value={toInputValue(form.headline)}
-                  onChange={(event) => updateField('headline', event.target.value)}
-                />
-              </label>
+              <SettingsSection icon="courses" label="Marketplace profile" title="Professional introduction" description="Present your experience clearly so families can assess whether you are the right fit.">
+                <label className="account-field account-field-wide"><span>Headline</span><input type="text" value={toInputValue(form.headline)} onChange={(event) => updateField('headline', event.target.value)} /></label>
+                <label className="account-field account-field-wide"><span>Bio</span><textarea rows="5" value={toInputValue(form.bio)} onChange={(event) => updateField('bio', event.target.value)} /></label>
+                <label className="account-field account-field-wide"><span>Education level</span><input type="text" value={toInputValue(form.education_level)} onChange={(event) => updateField('education_level', event.target.value)} /></label>
+                <label className="account-field account-field-wide"><span>Teaching experience</span><textarea rows="4" value={toInputValue(form.teaching_experience)} onChange={(event) => updateField('teaching_experience', event.target.value)} /></label>
+              </SettingsSection>
 
-              <label className="account-field account-field-wide">
-                <span>Bio</span>
-                <textarea
-                  rows="5"
-                  value={toInputValue(form.bio)}
-                  onChange={(event) => updateField('bio', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field account-field-wide">
-                <span>Education level</span>
-                <input
-                  type="text"
-                  value={toInputValue(form.education_level)}
-                  onChange={(event) => updateField('education_level', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field account-field-wide">
-                <span>Teaching experience</span>
-                <textarea
-                  rows="4"
-                  value={toInputValue(form.teaching_experience)}
-                  onChange={(event) => updateField('teaching_experience', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field">
-                <span>Hourly rate</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={toInputValue(form.hourly_rate)}
-                  onChange={(event) => updateField('hourly_rate', event.target.value)}
-                />
-              </label>
-
-              <label className="account-field">
-                <span>Currency</span>
-                <input
-                  type="text"
-                  value={toInputValue(form.currency)}
-                  onChange={(event) => updateField('currency', event.target.value)}
-                />
-              </label>
-
-              <label className="account-check">
-                <input
-                  type="checkbox"
-                  checked={form.teaches_online}
-                  onChange={() => toggleField('teaches_online')}
-                />
-                <span>Teaches online</span>
-              </label>
-
-              <label className="account-check">
-                <input
-                  type="checkbox"
-                  checked={form.teaches_in_person}
-                  onChange={() => toggleField('teaches_in_person')}
-                />
-                <span>Teaches in person</span>
-              </label>
+              <SettingsSection icon="earnings" label="Lesson offer" title="Pricing and teaching format" description="Keep your rate and supported lesson formats accurate for affordability matching.">
+                <label className="account-field"><span>Hourly rate</span><input type="number" step="0.01" value={toInputValue(form.hourly_rate)} onChange={(event) => updateField('hourly_rate', event.target.value)} /></label>
+                <label className="account-field"><span>Currency</span><input type="text" value={toInputValue(form.currency)} onChange={(event) => updateField('currency', event.target.value)} /></label>
+                <div className="account-preference-grid account-field-wide">
+                  <label className="account-check"><input type="checkbox" checked={form.teaches_online} onChange={() => toggleField('teaches_online')} /><span><strong>Teach online</strong><small>Accept remote lesson requests.</small></span></label>
+                  <label className="account-check"><input type="checkbox" checked={form.teaches_in_person} onChange={() => toggleField('teaches_in_person')} /><span><strong>Teach in person</strong><small>Accept location-based lesson requests.</small></span></label>
+                </div>
+              </SettingsSection>
             </>
           ) : null}
 
           {role === 'PARENT' ? (
-            <>
-              <label className="account-field account-field-wide">
-                <span>Notes</span>
-                <textarea
-                  rows="5"
-                  value={toInputValue(form.notes)}
-                  onChange={(event) => updateField('notes', event.target.value)}
-                />
-              </label>
-            </>
+            <SettingsSection icon="students" label="Family profile" title="Learning support notes" description="Add context that helps you coordinate tutoring for linked students.">
+              <label className="account-field account-field-wide"><span>Notes</span><textarea rows="5" value={toInputValue(form.notes)} onChange={(event) => updateField('notes', event.target.value)} /></label>
+            </SettingsSection>
           ) : null}
-        </div>
 
-        <div className="account-actions">
-          <button className="primary-button" type="submit" disabled={saveMutation.isPending}>
-            {saveMutation.isPending ? 'Saving...' : 'Save profile'}
-          </button>
-          <p className="account-status" aria-live="polite">
-            {statusMessage || 'Your profile stays hidden from public search until your tutor approval is complete.'}
-          </p>
-        </div>
-      </form>
+          <footer className="account-settings-actions">
+            <div><strong>Save your changes</strong><p className="account-status" aria-live="polite">{statusMessage || defaultStatus}</p></div>
+            <button className="primary-button" type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? 'Saving...' : 'Save profile'}</button>
+          </footer>
+        </form>
+      </div>
     </section>
   )
 }
