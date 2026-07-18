@@ -23,7 +23,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Follow your bookings',
-        description: 'Track tutor approval, upcoming lessons, active learning progress, completion status, and any booking action currently required from you.',
+        description: 'Track tutor approval, upcoming lessons, active learning progress, completion status, and report a serious problem from an eligible booking when support is needed.',
         to: '/bookings',
         linkLabel: 'Open bookings',
       },
@@ -50,6 +50,7 @@ export const dashboardRoleGuides = {
       'Tutor contact, private lessons, and paid course content are available only through eligible bookings or purchases.',
       'Assessments must be completed by the student. A parent cannot submit answers or confirm outcomes on your behalf.',
       'Reviews are available only after an eligible completed learning activity and cannot be used to change payment or booking records.',
+      'You can submit and track a dispute for your own eligible booking, but only an administrator can investigate and resolve the case.',
       'You cannot approve tutors, publish courses, resolve disputes, manage payouts, or view another learner\'s private records.',
     ],
     tip: 'Use the notification bell for unread proposal changes, booking updates, payment results, and assessment activity.',
@@ -84,7 +85,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Monitor learning progress',
-        description: 'Open bookings and individual student records to follow lesson status, tutor-recorded progress, and confirmed learning outcomes.',
+        description: 'Open bookings and individual student records to follow lesson status, tutor-recorded progress, confirmed outcomes, and disputes you reported for linked learners.',
         to: '/bookings',
         linkLabel: 'Review bookings',
       },
@@ -105,6 +106,7 @@ export const dashboardRoleGuides = {
       'You can only view, book, pay, and communicate for students formally linked to your account.',
       'Students complete their own assessments, outcome confirmations, and eligible reviews.',
       'A parent payment does not bypass tutor approval, booking requirements, or course eligibility.',
+      'You can submit and track a dispute for a formally linked student\'s eligible booking, but only an administrator can investigate and resolve it.',
       'You cannot approve tutors, moderate courses or reviews, resolve disputes, access tutor earnings, or inspect unrelated students.',
     ],
     tip: 'Open a learner from Linked students when you need a student-specific view instead of the combined family dashboard.',

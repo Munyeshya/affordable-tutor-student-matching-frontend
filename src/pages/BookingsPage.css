@@ -27,10 +27,215 @@
 
 .booking-status-tabs {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   margin: 1rem 0;
   border: 1px solid #eadfd7;
   background: #fff;
+}
+
+.booking-disputes-panel {
+  margin-top: 1rem;
+  border: 1px solid #eadfd7;
+  background: #fff;
+}
+
+.booking-disputes-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #eadfd7;
+}
+
+.booking-disputes-panel > header h2 {
+  margin: 0.2rem 0;
+  font-size: 1.05rem;
+}
+
+.booking-disputes-panel > header p:last-child {
+  max-width: 690px;
+  margin: 0;
+  color: #6b625d;
+  font-size: 0.78rem;
+}
+
+.booking-disputes-panel > header > span {
+  flex: 0 0 auto;
+  border: 1px solid #e2c5b2;
+  background: #fff8f3;
+  padding: 0.45rem 0.65rem;
+  color: #70401d;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.booking-disputes-panel > header > span strong {
+  margin-right: 0.25rem;
+  color: #9b4d00;
+}
+
+.booking-disputes-list {
+  display: grid;
+}
+
+.booking-disputes-list > article {
+  scroll-margin-top: 100px;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid #eee5de;
+}
+
+.booking-disputes-list > article:last-child {
+  border-bottom: 0;
+}
+
+.booking-dispute-case-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-dispute-case-head > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.booking-dispute-case-head span {
+  color: #81756e;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.booking-dispute-case-head strong {
+  font-size: 0.86rem;
+}
+
+.booking-disputes-list > article > p {
+  margin: 0.55rem 0;
+  color: #6b625d;
+  font-size: 0.76rem;
+}
+
+.booking-dispute-status {
+  flex: 0 0 auto;
+  border: 1px solid;
+  padding: 0.32rem 0.5rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.booking-dispute-status-open {
+  border-color: #e7b868;
+  background: #fff8e8;
+  color: #875200;
+}
+
+.booking-dispute-status-under_review {
+  border-color: #93acc5;
+  background: #f0f6fb;
+  color: #2c567d;
+}
+
+.booking-dispute-status-resolved {
+  border-color: #8ebfa2;
+  background: #eff9f3;
+  color: #23633d;
+}
+
+.booking-dispute-status-rejected {
+  border-color: #c8bbb4;
+  background: #f7f4f2;
+  color: #615650;
+}
+
+.booking-disputes-list details {
+  margin-top: 0.5rem;
+}
+
+.booking-disputes-list summary {
+  color: #9b4d00;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.booking-dispute-detail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.7rem;
+  border-left: 2px solid #d96b00;
+  background: #fcfaf8;
+  padding: 0.75rem 0.9rem;
+}
+
+.booking-dispute-detail span {
+  min-width: 0;
+}
+
+.booking-dispute-detail small,
+.booking-dispute-detail p {
+  display: block;
+  margin: 0;
+}
+
+.booking-dispute-detail small {
+  color: #81756e;
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.booking-dispute-detail p {
+  margin-top: 0.25rem;
+  color: #443c38;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.booking-dispute-detail time {
+  grid-column: 1 / -1;
+  color: #81756e;
+  font-size: 0.65rem;
+}
+
+.booking-disputes-empty,
+.booking-disputes-error,
+.booking-disputes-loading {
+  margin: 0;
+  padding: 1rem 1.2rem;
+  color: #6b625d;
+  font-size: 0.78rem;
+}
+
+.booking-disputes-loading {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.booking-disputes-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-disputes-error p {
+  margin: 0;
+}
+
+.booking-disputes-error button {
+  border: 0;
+  background: transparent;
+  color: #9b4d00;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
 }
 
 .booking-status-tabs button {
@@ -399,6 +604,33 @@
   opacity: 0.6;
 }
 
+.booking-report-button,
+.booking-case-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  padding: 0.65rem 0.3rem;
+  color: #7b4b2d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.booking-case-link {
+  color: #2c567d;
+}
+
+.booking-report-button:hover,
+.booking-case-link:hover {
+  color: #b45309;
+}
+
 .booking-lifecycle-empty {
   text-align: center;
 }
@@ -438,6 +670,35 @@
   line-height: 1.55;
 }
 
+.booking-dispute-dialog {
+  width: min(610px, 100%);
+}
+
+.booking-dispute-guidance {
+  margin: 0 0 1rem;
+  border-left: 3px solid #d96b00;
+  background: #fff8f3;
+  padding: 0.8rem 1rem;
+}
+
+.booking-dispute-guidance strong {
+  font-size: 0.78rem;
+}
+
+.booking-dispute-guidance ul {
+  margin: 0.45rem 0 0;
+  padding-left: 1.1rem;
+  color: #625852;
+  font-size: 0.72rem;
+  line-height: 1.65;
+}
+
+.booking-dispute-notice {
+  border-top: 1px solid #eadfd7;
+  padding-top: 0.8rem;
+  font-size: 0.7rem;
+}
+
 @media (max-width: 760px) {
   .bookings-lifecycle-page {
     width: min(100% - 24px, 1120px);
@@ -455,6 +716,21 @@
 
   .booking-status-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-disputes-panel > header,
+  .booking-dispute-case-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .booking-disputes-panel > header > span,
+  .booking-dispute-status {
+    align-self: flex-start;
+  }
+
+  .booking-dispute-detail {
+    grid-template-columns: 1fr;
   }
 
   .booking-status-tabs button {

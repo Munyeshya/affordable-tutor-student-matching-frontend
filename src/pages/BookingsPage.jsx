@@ -7,7 +7,12 @@ import { queryKeys } from '../api/queryKeys'
 import { listPayments } from '../api/services/payments'
 import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
-import { updateBookingAction, updateBookingProgress } from '../api/services/bookings'
+import {
+  createDispute,
+  listDisputes,
+  updateBookingAction,
+  updateBookingProgress,
+} from '../api/services/bookings'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery } from '../hooks/useCommonQueries'
 import './BookingsPage.css'
@@ -35,6 +40,15 @@ const ACTION_RESULT_COPY = {
   COMPLETE: 'completed',
   CANCEL: 'cancelled',
 }
+
+const DISPUTE_STATUS_COPY = {
+  OPEN: { label: 'Awaiting review', detail: 'Your case is in the administration review queue.' },
+  UNDER_REVIEW: { label: 'Under review', detail: 'An administrator is reviewing the booking context and your report.' },
+  RESOLVED: { label: 'Resolved', detail: 'The administrator recorded a resolution for this case.' },
+  REJECTED: { label: 'Closed', detail: 'The administrator closed this case without further action.' },
+}
+
+const DISPUTE_ELIGIBLE_STATUSES = ['CONFIRMED', 'COMPLETED', 'CANCELLED']
 
 function formatDateTime(value) {
   if (!value) return 'Not scheduled'
@@ -125,7 +139,17 @@ function BookingProgressPanel({ booking }) {
   )
 }
 
-function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busyAction }) {
+function BookingCard({
+  booking,
+  payment,
+  user,
+  activeDispute,
+  onAction,
+  onPay,
+  onProgress,
+  onDispute,
+  busyAction,
+}) {
   const role = user?.role
   const status = STATUS_COPY[booking.status] || { label: booking.status, detail: 'Booking status updated.' }
   const actions = getBookingActions(booking, role)
@@ -138,6 +162,8 @@ function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busy
   const canPay = ['STUDENT', 'PARENT'].includes(role) &&
     ['CONFIRMED', 'COMPLETED'].includes(booking.status) &&
     !['PAID', 'REFUNDED'].includes(payment?.status)
+  const canReportProblem = ['STUDENT', 'PARENT'].includes(role) &&
+    DISPUTE_ELIGIBLE_STATUSES.includes(booking.status)
 
   return (
     <article className="booking-lifecycle-card">
@@ -195,8 +221,137 @@ function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busy
         {canMessage ? <Link className="secondary-button" to={'/messages?booking=' + booking.id}>Message</Link> : null}
         {canReview ? <Link className="secondary-button" to={'/reviews?booking=' + booking.id}>Leave review</Link> : null}
         {canPay ? <button className="primary-button" type="button" onClick={() => onPay(booking)}>Pay securely</button> : null}
+        {canReportProblem && activeDispute ? (
+          <a className="booking-case-link" href={'#dispute-' + activeDispute.id}>
+            Case #{activeDispute.id}: {DISPUTE_STATUS_COPY[activeDispute.status]?.label || activeDispute.status}
+          </a>
+        ) : null}
+        {canReportProblem && !activeDispute ? (
+          <button className="booking-report-button" type="button" onClick={() => onDispute(booking)}>
+            Report a problem
+          </button>
+        ) : null}
       </footer>
     </article>
+  )
+}
+
+function DisputeTracker({ disputes, loading, error, onRetry, user }) {
+  if (!['STUDENT', 'PARENT'].includes(user?.role)) return null
+  const activeCount = disputes.filter((item) => ['OPEN', 'UNDER_REVIEW'].includes(item.status)).length
+
+  return (
+    <section className="booking-disputes-panel" aria-labelledby="booking-disputes-title">
+      <header>
+        <div>
+          <p className="eyebrow">Support cases</p>
+          <h2 id="booking-disputes-title">My dispute cases</h2>
+          <p>Track concerns reported from your bookings and read the administrator's recorded outcome.</p>
+        </div>
+        <span><strong>{activeCount}</strong> active</span>
+      </header>
+
+      {loading ? (
+        <div className="booking-disputes-loading" aria-busy="true">
+          <span className="skeleton skeleton-line" />
+          <span className="skeleton skeleton-line" />
+        </div>
+      ) : error ? (
+        <div className="booking-disputes-error">
+          <p>Dispute cases could not be loaded.</p>
+          <button type="button" onClick={onRetry}>Try again</button>
+        </div>
+      ) : disputes.length ? (
+        <div className="booking-disputes-list">
+          {disputes.map((dispute) => {
+            const status = DISPUTE_STATUS_COPY[dispute.status] || {
+              label: dispute.status,
+              detail: 'This case has been updated.',
+            }
+            const latestDecision = dispute.decisions?.at(-1)
+
+            return (
+              <article id={'dispute-' + dispute.id} key={dispute.id}>
+                <div className="booking-dispute-case-head">
+                  <div>
+                    <span>Case #{dispute.id} / Booking #{dispute.booking_id}</span>
+                    <strong>{dispute.booking_context?.subject || 'Lesson booking'}</strong>
+                  </div>
+                  <b className={'booking-dispute-status booking-dispute-status-' + dispute.status.toLowerCase()}>
+                    {status.label}
+                  </b>
+                </div>
+                <p>{status.detail}</p>
+                <details>
+                  <summary>View case details</summary>
+                  <div className="booking-dispute-detail">
+                    <span><small>Reported concern</small><p>{dispute.reason}</p></span>
+                    <span>
+                      <small>Administrative outcome</small>
+                      <p>{latestDecision?.comment || dispute.admin_comment || 'No decision has been recorded yet.'}</p>
+                    </span>
+                    <time dateTime={dispute.created_at}>Submitted {formatDateTime(dispute.created_at)}</time>
+                  </div>
+                </details>
+              </article>
+            )
+          })}
+        </div>
+      ) : (
+        <p className="booking-disputes-empty">You have no dispute cases. If a confirmed lesson has a serious problem, report it directly from that booking.</p>
+      )}
+    </section>
+  )
+}
+
+function DisputeDialog({ booking, reason, setReason, onClose, onSubmit, busy }) {
+  if (!booking) return null
+  const cleanReason = reason.trim()
+
+  return (
+    <ConfirmationDialog
+      open={Boolean(booking)}
+      onClose={onClose}
+      labelledBy="booking-dispute-title"
+      describedBy="booking-dispute-description"
+      backdropClassName="booking-dialog-backdrop"
+      dialogClassName="booking-action-dialog booking-dispute-dialog"
+    >
+      <p className="eyebrow">Booking #{booking.id}</p>
+      <h2 id="booking-dispute-title">Report a lesson problem</h2>
+      <p id="booking-dispute-description">
+        Explain what happened during {booking.subject_name || 'this lesson'} so an administrator can review the case fairly.
+      </p>
+      <aside className="booking-dispute-guidance">
+        <strong>Include useful facts</strong>
+        <ul>
+          <li>What was agreed and what happened instead.</li>
+          <li>Any communication or action already taken to solve it.</li>
+          <li>The fair outcome you would like the administrator to consider.</li>
+        </ul>
+      </aside>
+      <label className="booking-field">
+        <span>Describe the concern</span>
+        <textarea
+          rows="6"
+          maxLength="2000"
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          placeholder="For example: The lesson was confirmed for this time, but..."
+          autoFocus
+        />
+        <small>{cleanReason.length}/20 minimum characters</small>
+      </label>
+      <p className="booking-dispute-notice">
+        Your report is shared with the person involved and the administrator. It becomes part of the case record.
+      </p>
+      <div className="booking-review-actions">
+        <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Cancel</button>
+        <button className="primary-button" type="button" onClick={onSubmit} disabled={busy || cleanReason.length < 20}>
+          {busy ? 'Submitting case...' : 'Submit dispute'}
+        </button>
+      </div>
+    </ConfirmationDialog>
   )
 }
 
@@ -324,6 +479,8 @@ export function BookingsPage() {
   const [actionMessage, setActionMessage] = useState('')
   const [paymentBooking, setPaymentBooking] = useState(null)
   const [progressBooking, setProgressBooking] = useState(null)
+  const [disputeBooking, setDisputeBooking] = useState(null)
+  const [disputeReason, setDisputeReason] = useState('')
   const [progressForm, setProgressForm] = useState({
     progress_percent: 0,
     summary: '',
@@ -335,6 +492,11 @@ export function BookingsPage() {
   const paymentsQuery = useQuery({
     queryKey: queryKeys.payments.bookings,
     queryFn: () => listPayments().then((response) => response.data),
+    enabled: ['STUDENT', 'PARENT'].includes(user?.role),
+  })
+  const disputesQuery = useQuery({
+    queryKey: queryKeys.bookings.disputes,
+    queryFn: () => listDisputes().then((response) => response.data),
     enabled: ['STUDENT', 'PARENT'].includes(user?.role),
   })
 
@@ -371,9 +533,34 @@ export function BookingsPage() {
     onError: (error) => toast.error(getApiErrorMessage(error, 'Could not save this progress update.')),
   })
 
+  const disputeMutation = useMutation({
+    mutationFn: async ({ bookingId, reason }) => (
+      await createDispute({ booking_id: bookingId, reason })
+    ).data,
+    onSuccess: async (dispute) => {
+      toast.success(`Dispute case #${dispute.id} submitted for review.`)
+      setDisputeBooking(null)
+      setDisputeReason('')
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.disputes }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+      ])
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not submit this dispute.')),
+  })
+
   const bookings = bookingsQuery.data || []
   const paymentsByBooking = new Map(
     (paymentsQuery.data || []).map((payment) => [String(payment.booking_id), payment]),
+  )
+  const disputes = disputesQuery.data || []
+  const activeDisputesByBooking = new Map(
+    disputes
+      .filter((dispute) => (
+        String(dispute.reported_by) === String(user?.id) &&
+        ['OPEN', 'UNDER_REVIEW'].includes(dispute.status)
+      ))
+      .map((dispute) => [String(dispute.booking_id), dispute]),
   )
   const visibleBookings = activeStatus === 'ALL'
     ? bookings
@@ -399,6 +586,11 @@ export function BookingsPage() {
     })
   }
 
+  function openDispute(booking) {
+    setDisputeReason('')
+    setDisputeBooking(booking)
+  }
+
   return (
     <section className="bookings-lifecycle-page">
       <header className="bookings-lifecycle-hero">
@@ -411,6 +603,14 @@ export function BookingsPage() {
           <Link className="primary-button" to="/tutors">Request another tutor</Link>
         ) : null}
       </header>
+
+      <DisputeTracker
+        disputes={disputes}
+        loading={disputesQuery.isLoading}
+        error={disputesQuery.isError}
+        onRetry={disputesQuery.refetch}
+        user={user}
+      />
 
       <section className="booking-status-tabs" aria-label="Filter bookings by status">
         {STATUS_FILTERS.map((status) => (
@@ -448,10 +648,12 @@ export function BookingsPage() {
               booking={booking}
               payment={paymentsByBooking.get(String(booking.id))}
               user={user}
+              activeDispute={activeDisputesByBooking.get(String(booking.id))}
               key={booking.id}
               onAction={openAction}
               onPay={setPaymentBooking}
               onProgress={openProgress}
+              onDispute={openDispute}
               busyAction={actionMutation.isPending && pendingAction?.booking.id === booking.id}
             />
           ))
@@ -516,6 +718,22 @@ export function BookingsPage() {
           },
         })}
         busy={progressMutation.isPending}
+      />
+      <DisputeDialog
+        booking={disputeBooking}
+        reason={disputeReason}
+        setReason={setDisputeReason}
+        onClose={() => {
+          if (!disputeMutation.isPending) {
+            setDisputeBooking(null)
+            setDisputeReason('')
+          }
+        }}
+        onSubmit={() => disputeMutation.mutate({
+          bookingId: disputeBooking.id,
+          reason: disputeReason.trim(),
+        })}
+        busy={disputeMutation.isPending}
       />
     </section>
   )
