@@ -11,6 +11,11 @@ describe('formatted course descriptions', () => {
     )
   })
 
+  it('normalizes browser italic and bold elements to semantic tags', () => {
+    expect(sanitizeFormattedHtml('<p><i>Italic</i> and <b>bold</b></p>'))
+      .toBe('<p><em>Italic</em> and <strong>bold</strong></p>')
+  })
+
   it('removes scripts, event handlers, and unsupported elements', () => {
     expect(sanitizeFormattedHtml(
       '<p onclick="alert(1)">Safe <script>alert(1)</script><a href="javascript:alert(1)">description</a></p>',

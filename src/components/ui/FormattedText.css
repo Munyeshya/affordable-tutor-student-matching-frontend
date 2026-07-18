@@ -19,7 +19,16 @@
 .formatted-text li { padding-left: 0.2rem; }
 .formatted-text strong { color: inherit; font-weight: 800; }
 .formatted-text em,
-.formatted-text u { color: inherit; }
+.formatted-text-input em {
+  color: inherit;
+  font-style: italic;
+}
+
+.formatted-text u,
+.formatted-text-input u {
+  color: inherit;
+  text-decoration: underline;
+}
 
 .formatted-text-editor {
   display: grid;

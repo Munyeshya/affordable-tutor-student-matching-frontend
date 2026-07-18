@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { sanitizeFormattedHtml } from './formattedText.js'
 import './FormattedText.css'
@@ -18,7 +18,7 @@ const COMMANDS = [
   { command: 'bold', label: 'Bold', content: <strong>B</strong> },
   { command: 'italic', label: 'Italic', content: <em>I</em> },
   { command: 'underline', label: 'Underline', content: <u>U</u> },
-  { command: 'insertUnorderedList', label: 'Bullet list', content: <><span aria-hidden="true">•</span> List</> },
+  { command: 'insertUnorderedList', label: 'Bullet list', content: <><span aria-hidden="true">&bull;</span> List</> },
 ]
 
 export function FormattedTextEditor({
@@ -29,6 +29,7 @@ export function FormattedTextEditor({
   placeholder = '',
 }) {
   const editorRef = useRef(null)
+  const savedRangeRef = useRef(null)
   const [activeCommands, setActiveCommands] = useState({})
 
   useLayoutEffect(() => {
@@ -37,6 +38,22 @@ export function FormattedTextEditor({
     const safeValue = sanitizeFormattedHtml(value)
     if (editor.innerHTML !== safeValue) editor.innerHTML = safeValue
   }, [value])
+
+  useEffect(() => {
+    function rememberEditorSelection() {
+      const editor = editorRef.current
+      const selection = window.getSelection()
+      if (!editor || !selection?.rangeCount) return
+
+      const range = selection.getRangeAt(0)
+      if (editor.contains(range.commonAncestorContainer)) {
+        savedRangeRef.current = range.cloneRange()
+      }
+    }
+
+    document.addEventListener('selectionchange', rememberEditorSelection)
+    return () => document.removeEventListener('selectionchange', rememberEditorSelection)
+  }, [])
 
   function updateActiveCommands() {
     if (typeof document.queryCommandState !== 'function') return
@@ -54,8 +71,17 @@ export function FormattedTextEditor({
 
   function applyCommand(command) {
     if (disabled || typeof document.execCommand !== 'function') return
-    editorRef.current?.focus()
-    document.execCommand(command, false)
+    const editor = editorRef.current
+    const selection = window.getSelection()
+    editor?.focus()
+
+    if (selection && savedRangeRef.current) {
+      selection.removeAllRanges()
+      selection.addRange(savedRangeRef.current)
+    }
+
+    document.execCommand('styleWithCSS', false, false)
+    document.execCommand(command, false, null)
     publishValue()
   }
 
