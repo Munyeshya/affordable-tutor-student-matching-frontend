@@ -21,7 +21,16 @@ export function updateCurrentUser(data) {
   return apiClient.patch(API_ENDPOINTS.auth.me, data)
 }
 
+export function uploadProfileImage(file) {
+  const formData = new FormData()
+  formData.append('profile_image', file)
+  return apiClient.patch(API_ENDPOINTS.auth.profileImage, formData)
+}
+
+export function removeProfileImage() {
+  return apiClient.delete(API_ENDPOINTS.auth.profileImage)
+}
+
 export function refreshToken(refresh) {
   return apiClient.post(API_ENDPOINTS.auth.refresh, { refresh })
 }
-

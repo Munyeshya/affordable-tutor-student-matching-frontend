@@ -6,6 +6,7 @@ import { EMPTY_PAGE } from '../../api/response.js'
 import { usePublicTutorsQuery, useSubjectsQuery } from '../../hooks/useCommonQueries.js'
 import { InlineIcon } from '../../components/ui/InlineIcon.jsx'
 import { Pagination } from '../../components/ui/Pagination.jsx'
+import { UserAvatar } from '../../components/ui/UserAvatar.jsx'
 import './TutorsPage.css'
 
 const PAGE_SIZE = 9
@@ -172,15 +173,6 @@ function TutorSkeleton() {
   )
 }
 
-function getInitials(name = '') {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('') || 'IT'
-}
-
 function TutorRating({ value, reviewCount }) {
   const rating = Number(value)
   const label = Number.isFinite(rating) ? `${rating.toFixed(1)} (${reviewCount || 0})` : 'New tutor'
@@ -232,13 +224,12 @@ function TutorCard({ tutor, marketplacePath }) {
   return (
     <article className="market-tutor-card">
       <div className="market-tutor-profile">
-        <div className="market-tutor-avatar">
-          {tutor.profile_image_url ? (
-            <img loading="lazy" src={tutor.profile_image_url} alt={`${tutor.full_name} profile`} />
-          ) : (
-            <span>{getInitials(tutor.full_name)}</span>
-          )}
-        </div>
+        <UserAvatar
+          className="market-tutor-avatar"
+          src={tutor.profile_image_url}
+          name={tutor.full_name}
+          fallback="IT"
+        />
         <div className="market-tutor-identity">
           <span className="market-verified-badge">
             <InlineIcon name="verified" />

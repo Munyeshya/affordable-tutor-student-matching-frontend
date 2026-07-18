@@ -7,6 +7,7 @@ import { queryKeys } from '../api/queryKeys'
 import { getPublicCourse } from '../api/services/catalog'
 import { listCoursePurchases } from '../api/services/payments'
 import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import './CourseDetailPage.css'
 
@@ -139,7 +140,12 @@ export function CourseDetailPage() {
             {course.description || 'A focused course created by a verified Isomo tutor.'}
           </p>
           <Link className="course-detail-tutor" to={`/tutors/${course.tutor}`}>
-            <span aria-hidden="true">{(course.tutor_name || 'T').charAt(0).toUpperCase()}</span>
+            <UserAvatar
+              src={course.tutor_profile_image_url}
+              name={course.tutor_name}
+              fallback="T"
+              alt=""
+            />
             <span><small>Course tutor</small><strong>{course.tutor_name || 'Verified Isomo tutor'}</strong></span>
           </Link>
 

@@ -7,6 +7,7 @@ import { getParentDashboard } from '../api/services/parents'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { queryKeys } from '../api/queryKeys'
 import { DashboardPanelHeading, DashboardStatCard, EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery } from '../hooks/useCommonQueries'
 import './ParentDashboardPage.css'
@@ -65,7 +66,13 @@ function StudentCard({ item, bookings }) {
   return (
     <article className="parent-student-overview-card">
       <header>
-        <span className="parent-student-avatar">{student.full_name?.slice(0, 2).toUpperCase() || 'ST'}</span>
+        <UserAvatar
+          className="parent-student-avatar"
+          src={student.profile_image_url}
+          name={student.full_name || student.email}
+          fallback="ST"
+          alt=""
+        />
         <div>
           <small>{link.label || (link.is_primary ? 'Primary student' : 'Linked student')}</small>
           <h3>{student.full_name || student.email}</h3>

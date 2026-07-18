@@ -19,6 +19,7 @@
     logout: '/auth/logout/',
     register: '/auth/register/',
     me: '/auth/me/',
+    profileImage: '/auth/me/profile-image/',
     refresh: '/auth/refresh/',
   },
   tutors: {

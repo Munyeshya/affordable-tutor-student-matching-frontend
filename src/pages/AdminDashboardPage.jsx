@@ -10,6 +10,7 @@ import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { queryKeys } from '../api/queryKeys'
 import { DashboardPanelHeading, DashboardStatCard, EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
 import { DataTable } from '../components/ui/DataTable.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import './AdminDashboardPage.css'
 
@@ -159,7 +160,12 @@ export function AdminDashboardPage() {
                   const missing = Array.isArray(verification.missing_required_documents) ? verification.missing_required_documents : []
                   return (
                     <article key={verification.id}>
-                      <span>{verification.tutor_name?.slice(0, 2).toUpperCase() || 'TU'}</span>
+                      <UserAvatar
+                        src={verification.profile_image_url}
+                        name={verification.tutor_name || verification.tutor_email}
+                        fallback="TU"
+                        alt=""
+                      />
                       <div><h3>{verification.tutor_name || verification.tutor_email}</h3><p>{verification.documents?.length || 0} documents / Submitted {formatDate(verification.created_at)}</p></div>
                       <b className={missing.length ? 'is-warning' : 'is-ready'}>{missing.length ? `${missing.length} missing` : 'Ready'}</b>
                       <Link to="/admin/tutor-reviews">Review</Link>

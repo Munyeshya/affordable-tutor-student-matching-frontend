@@ -8,6 +8,7 @@ import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { DashboardRoleGuide } from '../components/layout/DashboardRoleGuide.jsx'
 import { DashboardSidebar } from '../components/layout/DashboardSidebar.jsx'
 import { SkipLink } from '../components/layout/SkipLink.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { getDashboardNavigation, getDashboardPageTitle } from '../routes/dashboardNavigation.js'
 import { getRoleHomePath } from '../routes/rolePaths.js'
@@ -21,14 +22,6 @@ function getDisplayName(user) {
     || user?.email
     || 'Isomo member'
 }
-
-function getInitials(name) {
-  const parts = String(name || '').trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return 'IM'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-}
-
 
 export function DashboardLayout() {
   const { user, signOut } = useAuth()
@@ -44,7 +37,6 @@ export function DashboardLayout() {
   const [guideOpen, setGuideOpen] = useState(false)
 
   const displayName = getDisplayName(user)
-  const initials = getInitials(displayName)
   const role = String(user?.role || 'member').toLowerCase()
   const homePath = getRoleHomePath(user?.role)
   const navigation = getDashboardNavigation(user?.role)
@@ -217,7 +209,14 @@ export function DashboardLayout() {
                 aria-expanded={accountOpen}
                 onClick={() => setAccountOpen((current) => !current)}
               >
-                <span className="dashboard-account-avatar">{initials}</span>
+                <UserAvatar
+                  className="dashboard-account-avatar"
+                  src={user?.profile_image_url}
+                  name={displayName}
+                  alt=""
+                  fallback="IM"
+                  loading="eager"
+                />
                 <span>{displayName}</span>
               </button>
 

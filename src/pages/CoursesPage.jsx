@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { FilterBar } from '../components/ui/FilterBar.jsx'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { usePublicCoursesQuery } from '../hooks/useCommonQueries'
 import './CoursesPage.css'
 
@@ -41,7 +42,12 @@ function CourseCard({ course }) {
         <p>{course.description || 'A focused course created by a verified Isomo tutor.'}</p>
 
         <div className="market-course-tutor">
-          <span aria-hidden="true">{(course.tutor_name || 'T').charAt(0).toUpperCase()}</span>
+          <UserAvatar
+            src={course.tutor_profile_image_url}
+            name={course.tutor_name}
+            fallback="T"
+            alt=""
+          />
           <div>
             <small>Verified tutor</small>
             <strong>{course.tutor_name || 'Isomo tutor'}</strong>

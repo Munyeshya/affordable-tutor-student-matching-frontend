@@ -5,6 +5,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { getTutor } from '../api/services/tutors'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const AVAILABILITY_SLOTS_PER_PAGE = 4
@@ -142,17 +143,6 @@ function groupAvailabilityByDay(slots) {
     })
 
   return Array.from(groups.values())
-}
-
-function getInitials(name = '') {
-  const initials = name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-
-  return initials.toUpperCase() || 'IT'
 }
 
 function getMarketplaceReturnPath(value) {
@@ -308,13 +298,13 @@ export function TutorDetailPage() {
       </nav>
 
       <section className="tutor-detail-hero">
-        <div className="tutor-detail-avatar">
-          {tutor.profile_image_url ? (
-            <img src={tutor.profile_image_url} alt={`${tutor.full_name} profile`} />
-          ) : (
-            <span>{getInitials(tutor.full_name)}</span>
-          )}
-        </div>
+        <UserAvatar
+          className="tutor-detail-avatar"
+          src={tutor.profile_image_url}
+          name={tutor.full_name}
+          fallback="IT"
+          loading="eager"
+        />
 
         <div className="tutor-detail-identity">
           <div className="tutor-detail-title-row">

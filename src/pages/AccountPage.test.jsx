@@ -3,7 +3,11 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { updateCurrentUser } from '../api/services/auth.js'
+import {
+  removeProfileImage,
+  updateCurrentUser,
+  uploadProfileImage,
+} from '../api/services/auth.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useSubjectsQuery } from '../hooks/useCommonQueries.js'
 import { renderWithProviders } from '../test/render.jsx'
@@ -14,7 +18,11 @@ const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }))
 vi.mock('react-toastify', () => ({ toast }))
 vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 vi.mock('../hooks/useCommonQueries.js', () => ({ useSubjectsQuery: vi.fn() }))
-vi.mock('../api/services/auth.js', () => ({ updateCurrentUser: vi.fn() }))
+vi.mock('../api/services/auth.js', () => ({
+  removeProfileImage: vi.fn(),
+  updateCurrentUser: vi.fn(),
+  uploadProfileImage: vi.fn(),
+}))
 
 const refreshUser = vi.fn()
 const student = {
@@ -41,6 +49,8 @@ describe('AccountPage', () => {
     useAuth.mockReturnValue({ user: student, loading: false, refreshUser })
     useSubjectsQuery.mockReturnValue({ data: [{ id: 3, name: 'Mathematics' }], isLoading: false, isError: false })
     updateCurrentUser.mockResolvedValue({ data: {} })
+    uploadProfileImage.mockResolvedValue({ data: {} })
+    removeProfileImage.mockResolvedValue({ data: {} })
     refreshUser.mockResolvedValue(student)
   })
 
@@ -73,5 +83,20 @@ describe('AccountPage', () => {
     }))
     expect(refreshUser).toHaveBeenCalled()
     expect(await screen.findByText('Your profile has been updated.')).toBeInTheDocument()
+  })
+
+  it('uploads a valid profile picture and refreshes the current user', async () => {
+    const user = userEvent.setup()
+    const image = new File(['image-content'], 'aline.png', { type: 'image/png' })
+    renderWithProviders(<AccountPage />)
+
+    await user.upload(screen.getByLabelText('Choose profile picture'), image)
+    expect(screen.getByText('Ready to upload: aline.png')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Upload picture' }))
+
+    await waitFor(() => expect(uploadProfileImage).toHaveBeenCalled())
+    expect(uploadProfileImage.mock.calls[0][0]).toBe(image)
+    expect(refreshUser).toHaveBeenCalled()
+    expect(await screen.findByText('Your profile picture has been updated.')).toBeInTheDocument()
   })
 })

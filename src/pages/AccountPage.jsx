@@ -3,9 +3,17 @@ import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
-import { updateCurrentUser } from '../api/services/auth'
+import {
+  removeProfileImage,
+  updateCurrentUser,
+  uploadProfileImage,
+} from '../api/services/auth'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useSubjectsQuery } from '../hooks/useCommonQueries.js'
+
+const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
+const ACCEPTED_PROFILE_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 function toInputValue(value) {
   return value ?? ''
@@ -56,6 +64,7 @@ export function AccountPage() {
   const subjectsQuery = useSubjectsQuery({ enabled: user?.role === 'STUDENT' })
   const [form, setForm] = useState(() => getProfileDefaults(user))
   const [statusMessage, setStatusMessage] = useState('')
+  const [selectedImage, setSelectedImage] = useState(null)
 
   useEffect(() => {
     setForm(getProfileDefaults(user))
@@ -70,6 +79,36 @@ export function AccountPage() {
     },
     onError: (error) => {
       const message = getApiErrorMessage(error, 'We could not save your changes. Please try again.')
+      setStatusMessage(message)
+      toast.error(message)
+    },
+  })
+
+  const imageMutation = useMutation({
+    mutationFn: uploadProfileImage,
+    onSuccess: async () => {
+      await refreshUser()
+      setSelectedImage(null)
+      setStatusMessage('Your profile picture has been updated.')
+      toast.success('Your profile picture has been updated.')
+    },
+    onError: (error) => {
+      const message = getApiErrorMessage(error, 'We could not upload your profile picture.')
+      setStatusMessage(message)
+      toast.error(message)
+    },
+  })
+
+  const removeImageMutation = useMutation({
+    mutationFn: removeProfileImage,
+    onSuccess: async () => {
+      await refreshUser()
+      setSelectedImage(null)
+      setStatusMessage('Your profile picture has been removed.')
+      toast.success('Your profile picture has been removed.')
+    },
+    onError: (error) => {
+      const message = getApiErrorMessage(error, 'We could not remove your profile picture.')
       setStatusMessage(message)
       toast.error(message)
     },
@@ -172,6 +211,40 @@ export function AccountPage() {
     saveMutation.mutate(payload)
   }
 
+  function handleImageSelection(event) {
+    const file = event.target.files?.[0] || null
+    event.target.value = ''
+    setStatusMessage('')
+
+    if (!file) return
+    if (!ACCEPTED_PROFILE_IMAGE_TYPES.has(file.type)) {
+      const message = 'Choose a PNG, JPEG, or WebP image.'
+      setSelectedImage(null)
+      setStatusMessage(message)
+      toast.error(message)
+      return
+    }
+    if (file.size > MAX_PROFILE_IMAGE_SIZE) {
+      const message = 'Profile pictures must be 5 MB or smaller.'
+      setSelectedImage(null)
+      setStatusMessage(message)
+      toast.error(message)
+      return
+    }
+
+    setSelectedImage(file)
+  }
+
+  function handleImageUpload() {
+    if (selectedImage) imageMutation.mutate(selectedImage)
+  }
+
+  const profileName = form.full_name
+    || [form.first_name, form.last_name].filter(Boolean).join(' ')
+    || user.username
+    || user.email
+  const imageBusy = imageMutation.isPending || removeImageMutation.isPending
+
   return (
     <section className="page-card card account-page">
       <div className="account-header">
@@ -196,6 +269,55 @@ export function AccountPage() {
           ) : null}
         </div>
       </div>
+
+      <section className="account-photo-card" aria-labelledby="profile-photo-heading">
+        <UserAvatar
+          className="account-photo-preview"
+          src={user.profile_image_url}
+          name={profileName}
+          loading="eager"
+        />
+        <div className="account-photo-copy">
+          <h2 id="profile-photo-heading">Profile picture</h2>
+          <p>
+            Add a clear photo so people can recognize you across Isomo. PNG, JPEG, and WebP
+            files up to 5 MB are supported.
+          </p>
+          {selectedImage ? <small>Ready to upload: {selectedImage.name}</small> : null}
+        </div>
+        <div className="account-photo-actions">
+          <label className="secondary-button account-photo-select">
+            {user.profile_image_url ? 'Choose replacement' : 'Choose picture'}
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              aria-label="Choose profile picture"
+              disabled={imageBusy}
+              onChange={handleImageSelection}
+            />
+          </label>
+          {selectedImage ? (
+            <button
+              className="primary-button"
+              type="button"
+              disabled={imageBusy}
+              onClick={handleImageUpload}
+            >
+              {imageMutation.isPending ? 'Uploading...' : 'Upload picture'}
+            </button>
+          ) : null}
+          {user.profile_image_url ? (
+            <button
+              className="account-photo-remove"
+              type="button"
+              disabled={imageBusy}
+              onClick={() => removeImageMutation.mutate()}
+            >
+              {removeImageMutation.isPending ? 'Removing...' : 'Remove picture'}
+            </button>
+          ) : null}
+        </div>
+      </section>
 
       <form className="account-form" onSubmit={handleSubmit}>
         <div className="account-form-grid">

@@ -1,0 +1,22 @@
+.user-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  overflow: hidden;
+  place-items: center;
+}
+
+.user-avatar > img,
+.user-avatar > span {
+  width: 100%;
+  height: 100%;
+}
+
+.user-avatar > img {
+  display: block;
+  object-fit: cover;
+}
+
+.user-avatar > span {
+  display: grid;
+  place-items: center;
+}
