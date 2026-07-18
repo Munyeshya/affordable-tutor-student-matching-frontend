@@ -43,6 +43,25 @@ const student = {
   },
 }
 
+const tutor = {
+  id: 2,
+  role: 'TUTOR',
+  first_name: 'Tutor',
+  last_name: 'One',
+  email: 'tutor@example.com',
+  profile: {
+    type: 'tutor',
+    data: {
+      full_name: 'Tutor One',
+      hourly_rate: 8000,
+      currency: 'RWF',
+      teaches_online: true,
+      age_group: 'AGE_18_24',
+      employment_status: 'UNEMPLOYED',
+    },
+  },
+}
+
 describe('AccountPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -98,5 +117,22 @@ describe('AccountPage', () => {
     expect(uploadProfileImage.mock.calls[0][0]).toBe(image)
     expect(refreshUser).toHaveBeenCalled()
     expect(await screen.findByText('Your profile picture has been updated.')).toBeInTheDocument()
+  })
+
+  it('submits optional tutor employment context for aggregate reporting', async () => {
+    useAuth.mockReturnValue({ user: tutor, loading: false, refreshUser })
+    const user = userEvent.setup()
+    renderWithProviders(<AccountPage />)
+
+    await user.selectOptions(screen.getByLabelText('Age group'), 'AGE_25_34')
+    await user.selectOptions(screen.getByLabelText('Employment status'), 'UNDEREMPLOYED')
+    await user.click(screen.getByRole('button', { name: 'Save profile' }))
+
+    await waitFor(() => expect(updateCurrentUser).toHaveBeenCalled())
+    expect(updateCurrentUser.mock.calls[0][0]).toEqual(expect.objectContaining({
+      age_group: 'AGE_25_34',
+      employment_status: 'UNDEREMPLOYED',
+    }))
+    expect(screen.getByText('Aggregate impact reporting only')).toBeInTheDocument()
   })
 })

@@ -16,6 +16,23 @@ import './AccountPage.css'
 
 const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 const ACCEPTED_PROFILE_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const TUTOR_AGE_GROUPS = [
+  ['', 'Select an age group'],
+  ['AGE_18_24', '18-24'],
+  ['AGE_25_34', '25-34'],
+  ['AGE_35_44', '35-44'],
+  ['AGE_45_PLUS', '45 or older'],
+  ['PREFER_NOT_TO_SAY', 'Prefer not to say'],
+]
+const TUTOR_EMPLOYMENT_STATUSES = [
+  ['', 'Select employment status'],
+  ['UNEMPLOYED', 'Unemployed'],
+  ['UNDEREMPLOYED', 'Underemployed'],
+  ['EMPLOYED', 'Employed'],
+  ['SELF_EMPLOYED', 'Self-employed'],
+  ['STUDENT', 'Student'],
+  ['PREFER_NOT_TO_SAY', 'Prefer not to say'],
+]
 
 function toInputValue(value) {
   return value ?? ''
@@ -58,6 +75,8 @@ function getProfileDefaults(user) {
     currency: profile.currency ?? '',
     teaches_online: Boolean(profile.teaches_online),
     teaches_in_person: Boolean(profile.teaches_in_person),
+    age_group: profile.age_group ?? '',
+    employment_status: profile.employment_status ?? '',
   }
 }
 
@@ -217,6 +236,8 @@ export function AccountPage() {
       payload.location = form.location.trim()
       payload.teaches_online = form.teaches_online
       payload.teaches_in_person = form.teaches_in_person
+      payload.age_group = form.age_group
+      payload.employment_status = form.employment_status
     }
 
     if (role === 'PARENT') {
@@ -369,6 +390,26 @@ export function AccountPage() {
                 <div className="account-preference-grid account-field-wide">
                   <label className="account-check"><input type="checkbox" checked={form.teaches_online} onChange={() => toggleField('teaches_online')} /><span><strong>Teach online</strong><small>Accept remote lesson requests.</small></span></label>
                   <label className="account-check"><input type="checkbox" checked={form.teaches_in_person} onChange={() => toggleField('teaches_in_person')} /><span><strong>Teach in person</strong><small>Accept location-based lesson requests.</small></span></label>
+                </div>
+              </SettingsSection>
+
+              <SettingsSection icon="reports" label="Platform impact" title="Optional employment context" description="Help Isomo measure whether tutor earnings are creating meaningful work opportunities.">
+                <label className="account-field">
+                  <span>Age group</span>
+                  <select value={form.age_group} onChange={(event) => updateField('age_group', event.target.value)}>
+                    {TUTOR_AGE_GROUPS.map(([value, label]) => <option key={value || 'empty-age'} value={value}>{label}</option>)}
+                  </select>
+                </label>
+                <label className="account-field">
+                  <span>Employment status</span>
+                  <select value={form.employment_status} onChange={(event) => updateField('employment_status', event.target.value)}>
+                    {TUTOR_EMPLOYMENT_STATUSES.map(([value, label]) => <option key={value || 'empty-employment'} value={value}>{label}</option>)}
+                  </select>
+                </label>
+                <div className="account-readonly-field account-field-wide">
+                  <span>How this information is used</span>
+                  <strong>Aggregate impact reporting only</strong>
+                  <small>These optional answers are not shown on your public tutor profile. Choose “Prefer not to say” if you do not want to provide this context.</small>
                 </div>
               </SettingsSection>
             </>

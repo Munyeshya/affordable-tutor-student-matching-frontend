@@ -411,6 +411,102 @@
   padding: 1.1rem;
 }
 
+.admin-employment-overview {
+  padding: 1.1rem;
+}
+
+.admin-employment-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--admin-line);
+}
+
+.admin-employment-grid article {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: 0.65rem;
+  border-right: 1px solid var(--admin-line);
+  padding: 1rem;
+}
+
+.admin-employment-grid article:first-child {
+  padding-left: 0;
+}
+
+.admin-employment-grid article:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.admin-employment-grid article > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: var(--admin-orange-soft);
+  color: var(--admin-orange-dark);
+}
+
+.admin-employment-grid article > div {
+  min-width: 0;
+  display: grid;
+  gap: 0.14rem;
+}
+
+.admin-employment-grid small {
+  color: var(--admin-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.admin-employment-grid strong {
+  overflow: hidden;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-employment-grid p,
+.admin-employment-footnote p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 0.62rem;
+  line-height: 1.45;
+}
+
+.admin-employment-footnote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  border-top: 1px solid var(--admin-line);
+  background: #faf8f6;
+  padding: 0.72rem 0.85rem;
+}
+
+.admin-employment-footnote div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+.admin-employment-footnote span {
+  color: var(--admin-muted);
+  font-size: 0.64rem;
+}
+
+.admin-employment-footnote strong {
+  font-size: 0.82rem;
+}
+
+.admin-employment-footnote p {
+  max-width: 580px;
+  text-align: right;
+}
+
 .admin-learning-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -650,6 +746,18 @@
 }
 
 @media (max-width: 1100px) {
+  .admin-employment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-employment-grid article:nth-child(2) {
+    border-right: 0;
+  }
+
+  .admin-employment-grid article:nth-child(n + 3) {
+    border-top: 1px solid var(--admin-line);
+  }
+
   .admin-overview-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -718,6 +826,31 @@
 }
 
 @media (max-width: 560px) {
+  .admin-employment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-employment-grid article,
+  .admin-employment-grid article:first-child,
+  .admin-employment-grid article:last-child {
+    border-top: 1px solid var(--admin-line);
+    border-right: 0;
+    padding: 0.8rem 0;
+  }
+
+  .admin-employment-grid article:first-child {
+    border-top: 0;
+  }
+
+  .admin-employment-footnote {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-employment-footnote p {
+    text-align: left;
+  }
+
   .admin-overview-actions {
     width: 100%;
   }

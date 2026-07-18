@@ -61,6 +61,7 @@ export function AdminDashboardPage() {
   const tutoring = analytics.tutoring || {}
   const pipeline = analytics.tutor_pipeline || {}
   const impact = analytics.educational_impact || {}
+  const employment = analytics.employment_impact || {}
   const studentsHelped = impact.students_helped_by_period || {}
   const courses = analytics.courses || {}
   const revenue = analytics.revenue || {}
@@ -171,6 +172,47 @@ export function AdminDashboardPage() {
               </dl>
             </div>
           </div>
+        )}
+      </section>
+
+      <section className="admin-overview-panel admin-employment-overview">
+        <SectionHeading
+          eyebrow="Employment impact"
+          title="Tutor income and work opportunities"
+          to="/reports"
+          action="Full report"
+        />
+        {analyticsQuery.isLoading ? <AdminSkeleton rows={3} /> : (
+          <>
+            <div className="admin-employment-grid">
+              <article>
+                <span><DashboardIcon name="earnings" /></span>
+                <div><small>Tutors earning income</small><strong>{employment.tutors_earning_income || 0}</strong><p>Unique tutors with paid lessons or course sales.</p></div>
+              </article>
+              <article>
+                <span><DashboardIcon name="students" /></span>
+                <div><small>Youth work opportunities</small><strong>{employment.estimated_unemployed_youth_supported || 0}</strong><p>Qualifying unemployed or underemployed youth with paid activity.</p></div>
+              </article>
+              <article>
+                <span><DashboardIcon name="bookings" /></span>
+                <div><small>Paid lesson income</small><strong>{formatMoney(employment.booking_income_generated)}</strong><p>{employment.tutors_receiving_booking_income || 0} tutors received booking income.</p></div>
+              </article>
+              <article>
+                <span><DashboardIcon name="courses" /></span>
+                <div><small>Paid course income</small><strong>{formatMoney(employment.course_income_generated)}</strong><p>{employment.tutors_selling_courses || 0} tutors made course sales.</p></div>
+              </article>
+            </div>
+            <div className="admin-employment-footnote">
+              <div>
+                <span>Combined tutor income generated</span>
+                <strong>{formatMoney(employment.income_generated_through_platform)}</strong>
+              </div>
+              <p>
+                Employment context is optional and private. Coverage: {Number(employment.employment_data_completion_rate || 0).toFixed(0)}%
+                {' '}({employment.employment_profiles_completed || 0} of {employment.total_tutors_registered || 0} tutor profiles).
+              </p>
+            </div>
+          </>
         )}
       </section>
 
