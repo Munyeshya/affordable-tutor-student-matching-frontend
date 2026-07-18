@@ -1,0 +1,4 @@
+.join-form input,
+.join-form select {
+  border-radius: 0;
+}

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Page } from '../App'
 import { InfoCard, MinimalList } from '../components/ui/PagePrimitives.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import './JoinPage.css'
 
 const joinChecklist = [
   'Qualification documents',
@@ -60,7 +61,7 @@ export function JoinPage() {
         <article className="panel card">
           <p className="eyebrow">Create account</p>
           <h2>Choose the role that fits you.</h2>
-          <form className="steps-list" onSubmit={handleSubmit}>
+          <form className="steps-list join-form" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Full name"
