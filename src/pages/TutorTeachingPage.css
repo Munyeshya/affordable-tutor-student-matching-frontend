@@ -615,16 +615,29 @@
 }
 
 .course-details-form label.is-wide,
+.course-description-field.is-wide,
 .lesson-editor-panel form > label.is-wide,
 .lesson-preview-option,
 .course-details-form footer,
 .lesson-editor-panel form footer { grid-column: 1 / -1; }
 
 .course-details-form label small,
+.course-description-field > small,
 .lesson-editor-panel form label small {
   color: var(--teaching-muted);
   font-size: 0.63rem;
   line-height: 1.4;
+}
+
+.course-description-field {
+  display: grid;
+  gap: 6px;
+}
+
+.course-description-field > label {
+  color: #4e4944;
+  font-size: 0.68rem;
+  font-weight: 800;
 }
 
 .course-details-form input:disabled,
@@ -897,6 +910,7 @@
   .course-details-form,
   .lesson-editor-panel form { grid-template-columns: 1fr; }
   .course-details-form label.is-wide,
+  .course-description-field.is-wide,
   .lesson-editor-panel form > label.is-wide,
   .lesson-preview-option,
   .course-details-form footer,

@@ -86,6 +86,7 @@
 
 .course-detail-summary,
 .course-detail-section > p:last-child,
+.course-detail-section > .formatted-text,
 .course-enrollment-card > p {
   color: #625b56;
   line-height: 1.7;

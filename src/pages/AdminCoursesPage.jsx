@@ -9,6 +9,7 @@ import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { DataTable } from '../components/ui/DataTable.jsx'
 import { EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
+import { FormattedText } from '../components/ui/FormattedText.jsx'
 import { useSubjectsQuery } from '../hooks/useCommonQueries.js'
 import './AdminCoursesPage.css'
 
@@ -276,7 +277,7 @@ export function AdminCoursesPage() {
               <div><span>Submitted</span><strong>{formatDate(selectedCourse.submitted_at, true)}</strong></div>
             </div>
 
-            <section className="admin-course-description"><h3>Course description</h3><p id="admin-course-dialog-description">{selectedCourse.description || 'No course description was provided.'}</p></section>
+            <section className="admin-course-description"><h3>Course description</h3><FormattedText id="admin-course-dialog-description" value={selectedCourse.description} fallback="No course description was provided." /></section>
 
             <section className="admin-course-lessons">
               <div><h3>Lesson preview</h3><span>{selectedCourse.lessons.length} lesson{selectedCourse.lessons.length === 1 ? '' : 's'}</span></div>

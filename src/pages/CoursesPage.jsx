@@ -2,6 +2,7 @@ import React, { useDeferredValue, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { FilterBar } from '../components/ui/FilterBar.jsx'
+import { toPlainFormattedText } from '../components/ui/formattedText.js'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { usePublicCoursesQuery } from '../hooks/useCommonQueries'
@@ -39,7 +40,7 @@ function CourseCard({ course }) {
           <span>{course.academic_level || 'All levels'}</span>
         </div>
         <h2>{course.title}</h2>
-        <p>{course.description || 'A focused course created by a verified Isomo tutor.'}</p>
+        <p>{toPlainFormattedText(course.description) || 'A focused course created by a verified Isomo tutor.'}</p>
 
         <div className="market-course-tutor">
           <UserAvatar

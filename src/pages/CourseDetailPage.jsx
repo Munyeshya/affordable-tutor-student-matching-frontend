@@ -8,6 +8,8 @@ import { getPublicCourse } from '../api/services/catalog'
 import { listCoursePurchases } from '../api/services/payments'
 import { listParentLinks } from '../api/services/parents'
 import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
+import { FormattedText } from '../components/ui/FormattedText.jsx'
+import { toPlainFormattedText } from '../components/ui/formattedText.js'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import './CourseDetailPage.css'
@@ -159,7 +161,7 @@ export function CourseDetailPage() {
           <p className="eyebrow">{course.subject_name || 'Isomo course'} / {formatLevel(course.academic_level)}</p>
           <h1>{course.title}</h1>
           <p className="course-detail-summary">
-            {course.description || 'A focused course created by a verified Isomo tutor.'}
+            {toPlainFormattedText(course.description) || 'A focused course created by a verified Isomo tutor.'}
           </p>
           <Link className="course-detail-tutor" to={`/tutors/${course.tutor}`}>
             <UserAvatar
@@ -184,7 +186,10 @@ export function CourseDetailPage() {
           <article className="course-detail-section">
             <p className="eyebrow">About this course</p>
             <h2>Know what you are buying before you enroll.</h2>
-            <p>{course.description || 'This course provides structured lessons from a verified tutor at a clearly stated price.'}</p>
+            <FormattedText
+              value={course.description}
+              fallback="This course provides structured lessons from a verified tutor at a clearly stated price."
+            />
           </article>
 
           <article className="course-detail-section">

@@ -14,6 +14,8 @@ import {
   updateCourse,
 } from '../api/services/catalog.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
+import { FormattedTextEditor } from '../components/ui/FormattedText.jsx'
+import { toPlainFormattedText } from '../components/ui/formattedText.js'
 import { CourseWorkspaceNav } from './tutorTeaching/CourseWorkspaceNav.jsx'
 import {
   courseCompletion,
@@ -69,6 +71,8 @@ function WorkspaceLoading() {
 }
 
 function CourseDetailsSection({ course, form, editable, busy, tutorSubjects, onChange, onFile, onSubmit }) {
+  const descriptionLength = toPlainFormattedText(form.description).length
+
   return (
     <section className="course-workspace-panel">
       <header>
@@ -81,8 +85,18 @@ function CourseDetailsSection({ course, form, editable, busy, tutorSubjects, onC
         <label><span>Academic level</span><input required disabled={!editable} value={form.academic_level} onChange={(event) => onChange('academic_level', event.target.value)} placeholder="Secondary lower level" /></label>
         <label><span>Course price (RWF)</span><input required disabled={!editable} type="number" min="0" value={form.price} onChange={(event) => onChange('price', event.target.value)} /></label>
         <label><span>Marketplace image</span><input disabled={!editable} type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => onFile(event.target.files?.[0] || null)} /><small>JPEG, PNG, or WebP. Maximum 10 MB.</small></label>
-        <label className="is-wide"><span>Course description</span><textarea required disabled={!editable} minLength="20" rows="7" value={form.description} onChange={(event) => onChange('description', event.target.value)} placeholder="Describe the learning problem, what the course covers, and who it is designed for." /><small>{form.description.trim().length}/20 minimum characters</small></label>
-        {editable ? <footer><Link to="/tutor-teaching">Cancel</Link><button type="submit" disabled={busy}>{busy ? 'Saving...' : course ? 'Save course details' : 'Create course and continue'}</button></footer> : null}
+        <div className="course-description-field is-wide">
+          <label htmlFor="course-description">Course description</label>
+          <FormattedTextEditor
+            id="course-description"
+            disabled={!editable}
+            value={form.description}
+            onChange={(value) => onChange('description', value)}
+            placeholder="Describe the learning problem, what the course covers, and who it is designed for."
+          />
+          <small>{descriptionLength}/20 minimum characters</small>
+        </div>
+        {editable ? <footer><Link to="/tutor-teaching">Cancel</Link><button type="submit" disabled={busy || descriptionLength < 20}>{busy ? 'Saving...' : course ? 'Save course details' : 'Create course and continue'}</button></footer> : null}
       </form>
     </section>
   )

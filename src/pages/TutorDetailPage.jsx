@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { getTutor } from '../api/services/tutors'
+import { toPlainFormattedText } from '../components/ui/formattedText.js'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -416,7 +417,7 @@ export function TutorDetailPage() {
                             </div>
                             <strong className="tutor-course-price">{formatMoney(course.price, course.currency, ' / course')}</strong>
                           </div>
-                          {course.description ? <p className="supporting-text">{course.description}</p> : null}
+                          {course.description ? <p className="supporting-text">{toPlainFormattedText(course.description)}</p> : null}
                           {canBook ? (
                             <Link className="link-button tutor-course-action" to={courseBookingPath}>
                               <InlineIcon name="calendar" /> Request lesson

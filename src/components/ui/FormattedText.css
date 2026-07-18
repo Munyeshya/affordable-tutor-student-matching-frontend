@@ -1,0 +1,107 @@
+.formatted-text {
+  display: grid;
+  gap: 0.65rem;
+  color: inherit;
+  line-height: 1.65;
+}
+
+.formatted-text p,
+.formatted-text ul {
+  margin: 0;
+}
+
+.formatted-text ul {
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 1.15rem;
+}
+
+.formatted-text li { padding-left: 0.2rem; }
+.formatted-text strong { color: inherit; font-weight: 800; }
+.formatted-text em,
+.formatted-text u { color: inherit; }
+
+.formatted-text-editor {
+  display: grid;
+  gap: 0;
+}
+
+.formatted-text-toolbar {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d9d1ca;
+  border-bottom: 0;
+  background: #f8f6f4;
+  padding: 5px 7px;
+}
+
+.formatted-text-toolbar button {
+  min-width: 32px;
+  min-height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0 8px;
+  color: #443f3b;
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.formatted-text-toolbar button:hover,
+.formatted-text-toolbar button:focus-visible,
+.formatted-text-toolbar button.is-active {
+  border-color: #d9b38d;
+  background: #fff;
+  color: #a94f00;
+}
+
+.formatted-text-toolbar button:disabled {
+  color: #a49d97;
+  cursor: not-allowed;
+}
+
+.formatted-text-input {
+  min-height: 168px;
+  overflow-y: auto;
+  border: 1px solid #d9d1ca;
+  background: #fff;
+  padding: 11px;
+  color: #24211f;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  outline: none;
+}
+
+.formatted-text-input:focus {
+  border-color: #c96a18;
+  box-shadow: inset 0 0 0 1px #c96a18;
+}
+
+.formatted-text-input:empty::before {
+  content: attr(data-placeholder);
+  color: #9a928b;
+  pointer-events: none;
+}
+
+.formatted-text-input p { margin: 0 0 0.65rem; }
+.formatted-text-input p:last-child { margin-bottom: 0; }
+.formatted-text-input ul { margin: 0.45rem 0; padding-left: 1.2rem; }
+.formatted-text-input li { margin: 0.25rem 0; }
+
+.formatted-text-editor.is-disabled .formatted-text-input {
+  background: #f7f5f3;
+  color: #6d665f;
+}
+
+.formatted-text-editor > small {
+  margin-top: 6px;
+  color: #746d67;
+  font-size: 0.63rem;
+  line-height: 1.4;
+}
