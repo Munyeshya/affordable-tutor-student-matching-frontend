@@ -1,0 +1,826 @@
+.admin-tutor-reviews-page {
+  --review-orange: #b45309;
+  --review-orange-soft: #fff3e8;
+  --review-ink: #1c1c1c;
+  --review-muted: #6d6d69;
+  --review-line: #e0e0dc;
+  display: grid;
+  gap: 15px;
+  min-height: calc(100dvh - 72px);
+  padding: clamp(14px, 2vw, 24px);
+  background: #f4f4f1;
+  color: var(--review-ink);
+}
+
+.admin-tutor-reviews-header,
+.admin-tutor-review-stats article,
+.admin-tutor-review-queue,
+.admin-tutor-review-detail,
+.admin-tutor-review-error {
+  border: 1px solid var(--review-line);
+  background: #ffffff;
+}
+
+.admin-tutor-reviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 19px 21px;
+}
+
+.admin-tutor-reviews-header p,
+.admin-tutor-reviews-header h1,
+.admin-tutor-reviews-header div > span {
+  margin: 0;
+}
+
+.admin-tutor-reviews-header p,
+.admin-tutor-review-section-head p,
+.admin-tutor-review-identity p {
+  color: var(--review-orange);
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-tutor-reviews-header h1 {
+  margin-top: 3px;
+  font-size: clamp(1.3rem, 2vw, 1.75rem);
+}
+
+.admin-tutor-reviews-header div > span {
+  display: block;
+  margin-top: 4px;
+  color: var(--review-muted);
+  font-size: 0.8rem;
+}
+
+.admin-tutor-reviews-back {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #d8d8d4;
+  padding: 0 13px;
+  color: #333333;
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.admin-tutor-reviews-back:hover,
+.admin-tutor-reviews-back:focus-visible {
+  border-color: var(--review-orange);
+  color: var(--review-orange);
+}
+
+.admin-tutor-review-notice {
+  margin: 0;
+  border-left: 3px solid var(--review-orange);
+  padding: 10px 13px;
+  background: var(--review-orange-soft);
+  color: #6e3500;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.admin-tutor-review-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-tutor-review-stats article {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 15px;
+}
+
+.admin-tutor-review-stats article > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  background: var(--review-orange-soft);
+  color: var(--review-orange);
+}
+
+.admin-tutor-review-stats strong,
+.admin-tutor-review-stats small {
+  display: block;
+}
+
+.admin-tutor-review-stats strong {
+  font-size: 1.2rem;
+}
+
+.admin-tutor-review-stats small {
+  margin-top: 2px;
+  color: var(--review-muted);
+  font-size: 0.68rem;
+}
+
+.admin-tutor-review-workspace {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.32fr) minmax(0, 0.68fr);
+  gap: 15px;
+  align-items: start;
+}
+
+.admin-tutor-review-queue {
+  position: sticky;
+  top: 87px;
+  min-width: 0;
+  max-height: calc(100dvh - 111px);
+  overflow: hidden;
+}
+
+.admin-tutor-review-queue-head {
+  display: grid;
+  gap: 12px;
+  border-bottom: 1px solid var(--review-line);
+  padding: 15px;
+}
+
+.admin-tutor-review-queue-head > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-tutor-review-queue-head strong {
+  font-size: 0.86rem;
+}
+
+.admin-tutor-review-queue-head > div span {
+  color: var(--review-muted);
+  font-size: 0.66rem;
+}
+
+.admin-tutor-review-queue-head label {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #ddddda;
+  padding: 0 10px;
+  background: #f7f7f5;
+  color: #777774;
+}
+
+.admin-tutor-review-queue-head label:focus-within {
+  border-color: var(--review-orange);
+  background: #ffffff;
+}
+
+.admin-tutor-review-queue-head input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--review-ink);
+  font: inherit;
+  font-size: 0.75rem;
+}
+
+.admin-tutor-review-queue .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.admin-tutor-review-queue-list {
+  max-height: calc(100dvh - 223px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c7c7c3 transparent;
+}
+
+.admin-tutor-review-queue-list > button {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid #ecece9;
+  padding: 13px 12px;
+  background: #ffffff;
+  color: var(--review-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-tutor-review-queue-list > button:hover,
+.admin-tutor-review-queue-list > button.is-selected {
+  background: #fafaf8;
+}
+
+.admin-tutor-review-queue-list > button.is-selected {
+  box-shadow: inset 3px 0 0 var(--review-orange);
+}
+
+.admin-tutor-review-queue-list .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--review-orange-soft);
+  color: var(--review-orange);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.admin-tutor-review-queue-list button > span {
+  min-width: 0;
+}
+
+.admin-tutor-review-queue-list strong,
+.admin-tutor-review-queue-list small,
+.admin-tutor-review-queue-list em {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-tutor-review-queue-list strong {
+  font-size: 0.76rem;
+}
+
+.admin-tutor-review-queue-list small,
+.admin-tutor-review-queue-list em {
+  margin-top: 2px;
+  color: var(--review-muted);
+  font-size: 0.62rem;
+  font-style: normal;
+}
+
+.admin-tutor-review-queue-list button > i,
+.admin-tutor-review-identity > i {
+  padding: 5px 7px;
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-tutor-review-queue-list i.is-ready,
+.admin-tutor-review-identity i.is-ready {
+  background: #e9f6ed;
+  color: #22733c;
+}
+
+.admin-tutor-review-queue-list i.is-warning,
+.admin-tutor-review-identity i.is-warning {
+  background: #fff0e2;
+  color: #9a4700;
+}
+
+.admin-tutor-review-queue-list i.is-neutral,
+.admin-tutor-review-identity i.is-neutral {
+  background: #eeeeeb;
+  color: #646460;
+}
+
+.admin-tutor-review-queue-empty,
+.admin-tutor-review-detail-empty,
+.admin-tutor-review-no-documents {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: 28px;
+  color: var(--review-muted);
+  text-align: center;
+}
+
+.admin-tutor-review-queue-empty {
+  min-height: 260px;
+}
+
+.admin-tutor-review-queue-empty strong,
+.admin-tutor-review-queue-empty span,
+.admin-tutor-review-no-documents strong,
+.admin-tutor-review-no-documents span {
+  display: block;
+}
+
+.admin-tutor-review-queue-empty strong,
+.admin-tutor-review-no-documents strong {
+  margin-top: 10px;
+  color: var(--review-ink);
+  font-size: 0.82rem;
+}
+
+.admin-tutor-review-queue-empty span,
+.admin-tutor-review-no-documents span {
+  max-width: 280px;
+  margin-top: 4px;
+  font-size: 0.7rem;
+}
+
+.admin-tutor-review-queue-empty button {
+  margin-top: 12px;
+  border: 1px solid var(--review-orange);
+  padding: 8px 11px;
+  background: #ffffff;
+  color: var(--review-orange);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.admin-tutor-review-detail {
+  min-width: 0;
+}
+
+.admin-tutor-review-identity {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: center;
+  border-bottom: 1px solid var(--review-line);
+  padding: 18px;
+}
+
+.admin-tutor-review-identity .user-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--review-orange-soft);
+  color: var(--review-orange);
+  font-weight: 850;
+}
+
+.admin-tutor-review-identity p,
+.admin-tutor-review-identity h2,
+.admin-tutor-review-identity div > span {
+  margin: 0;
+}
+
+.admin-tutor-review-identity h2 {
+  margin-top: 3px;
+  font-size: 1.05rem;
+}
+
+.admin-tutor-review-identity div > span {
+  display: block;
+  margin-top: 3px;
+  color: var(--review-muted);
+  font-size: 0.72rem;
+}
+
+.admin-tutor-review-evidence-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--review-line);
+}
+
+.admin-tutor-review-evidence-summary div {
+  min-width: 0;
+  border-right: 1px solid var(--review-line);
+  padding: 13px 15px;
+}
+
+.admin-tutor-review-evidence-summary div:last-child {
+  border-right: 0;
+}
+
+.admin-tutor-review-evidence-summary span,
+.admin-tutor-review-evidence-summary strong {
+  display: block;
+}
+
+.admin-tutor-review-evidence-summary span {
+  color: var(--review-muted);
+  font-size: 0.62rem;
+}
+
+.admin-tutor-review-evidence-summary strong {
+  margin-top: 3px;
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-tutor-review-missing {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 15px 15px 0;
+  border: 1px solid #efc89f;
+  padding: 11px 12px;
+  background: #fff7ef;
+  color: #8d4300;
+}
+
+.admin-tutor-review-missing strong,
+.admin-tutor-review-missing p {
+  margin: 0;
+}
+
+.admin-tutor-review-missing strong {
+  font-size: 0.75rem;
+}
+
+.admin-tutor-review-missing p {
+  margin-top: 3px;
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.admin-tutor-review-documents,
+.admin-tutor-review-decision {
+  padding: 18px;
+}
+
+.admin-tutor-review-documents {
+  border-bottom: 1px solid var(--review-line);
+}
+
+.admin-tutor-review-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-tutor-review-section-head p,
+.admin-tutor-review-section-head h2 {
+  margin: 0;
+}
+
+.admin-tutor-review-section-head h2 {
+  margin-top: 3px;
+  font-size: 0.95rem;
+}
+
+.admin-tutor-review-section-head > span {
+  padding: 5px 8px;
+  background: #efefec;
+  color: #666662;
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+
+.admin-tutor-reviews-page .admin-document-list {
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.admin-tutor-reviews-page .admin-document-card {
+  border: 1px solid var(--review-line);
+  padding: 14px;
+  background: #fafaf8;
+}
+
+.admin-tutor-reviews-page .admin-document-card h3 {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.admin-tutor-reviews-page .admin-document-card .supporting-text {
+  margin: 4px 0 0;
+  color: var(--review-muted);
+  font-size: 0.68rem;
+}
+
+.admin-tutor-reviews-page .admin-document-card .document-meta-row {
+  margin-block: 10px;
+  font-size: 0.68rem;
+}
+
+.admin-tutor-reviews-page .admin-document-card .document-meta-row a {
+  color: var(--review-orange);
+  font-weight: 750;
+}
+
+.admin-tutor-reviews-page .document-review-fields select,
+.admin-tutor-reviews-page .document-review-fields textarea,
+.admin-tutor-review-decision textarea {
+  border: 1px solid #d7d7d3;
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--review-ink);
+  font: inherit;
+  font-size: 0.72rem;
+}
+
+.admin-tutor-reviews-page .document-review-fields select:focus,
+.admin-tutor-reviews-page .document-review-fields textarea:focus,
+.admin-tutor-review-decision textarea:focus {
+  border-color: var(--review-orange);
+  outline: 2px solid rgba(180, 83, 9, 0.12);
+}
+
+.admin-tutor-reviews-page .document-review-actions {
+  gap: 7px;
+}
+
+.admin-tutor-reviews-page .document-review-actions button {
+  min-height: 34px;
+  border-radius: 0;
+  padding-inline: 10px;
+  font-size: 0.66rem;
+}
+
+.admin-tutor-review-no-documents {
+  min-height: 180px;
+  margin-top: 14px;
+  border: 1px dashed #d4d4d0;
+}
+
+.admin-tutor-review-decision > label {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.admin-tutor-review-decision > label > span {
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.admin-tutor-review-decision textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 10px;
+}
+
+.admin-tutor-review-decision label small {
+  color: var(--review-muted);
+  font-size: 0.64rem;
+}
+
+.admin-tutor-review-approval-note {
+  margin: 12px 0 0;
+  border-left: 2px solid var(--review-orange);
+  padding: 7px 9px;
+  background: var(--review-orange-soft);
+  color: #784000;
+  font-size: 0.66rem;
+}
+
+.admin-tutor-review-decision > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.admin-tutor-review-decision button {
+  min-height: 39px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  padding: 0 13px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-tutor-review-decision button.is-approve {
+  border-color: var(--review-orange);
+  background: var(--review-orange);
+  color: #ffffff;
+}
+
+.admin-tutor-review-decision button.is-reject {
+  border-color: #c9c9c5;
+  background: #ffffff;
+  color: #333333;
+}
+
+.admin-tutor-review-decision button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.admin-tutor-review-error {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+}
+
+.admin-tutor-review-error > span {
+  color: var(--review-orange);
+}
+
+.admin-tutor-review-error h2,
+.admin-tutor-review-error p {
+  margin: 0;
+}
+
+.admin-tutor-review-error h2 {
+  font-size: 0.85rem;
+}
+
+.admin-tutor-review-error p {
+  margin-top: 3px;
+  color: var(--review-muted);
+  font-size: 0.7rem;
+}
+
+.admin-tutor-review-error button {
+  border: 1px solid var(--review-orange);
+  padding: 8px 12px;
+  background: #ffffff;
+  color: var(--review-orange);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.admin-tutor-review-detail-empty {
+  min-height: 460px;
+}
+
+.admin-tutor-review-detail-empty > span {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  background: var(--review-orange-soft);
+  color: var(--review-orange);
+}
+
+.admin-tutor-review-detail-empty h2,
+.admin-tutor-review-detail-empty p {
+  margin: 0;
+}
+
+.admin-tutor-review-detail-empty h2 {
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.admin-tutor-review-detail-empty p {
+  margin-top: 5px;
+  font-size: 0.72rem;
+}
+
+.admin-tutor-review-detail-loading {
+  display: grid;
+  gap: 14px;
+  min-height: 460px;
+  padding: 20px;
+}
+
+.admin-tutor-review-detail-loading span,
+.admin-tutor-review-queue-skeleton i {
+  display: block;
+  background: #ececea;
+  animation: admin-review-pulse 1.2s ease-in-out infinite;
+}
+
+.admin-tutor-review-detail-loading span:first-child {
+  width: 45%;
+  height: 58px;
+}
+
+.admin-tutor-review-detail-loading span:not(:first-child) {
+  width: 100%;
+  height: 92px;
+}
+
+.admin-tutor-review-queue-skeleton {
+  display: grid;
+}
+
+.admin-tutor-review-queue-skeleton > span {
+  display: grid;
+  gap: 7px;
+  border-bottom: 1px solid #ecece9;
+  padding: 15px;
+}
+
+.admin-tutor-review-queue-skeleton i {
+  width: 62%;
+  height: 7px;
+}
+
+.admin-tutor-review-queue-skeleton i:nth-child(2) {
+  width: 90%;
+}
+
+.admin-tutor-review-queue-skeleton i:nth-child(3) {
+  width: 40%;
+}
+
+@keyframes admin-review-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (max-width: 980px) {
+  .admin-tutor-review-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-tutor-review-queue {
+    position: static;
+    max-height: none;
+  }
+
+  .admin-tutor-review-queue-list {
+    max-height: 340px;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-tutor-reviews-header,
+  .admin-tutor-review-error {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .admin-tutor-reviews-back {
+    width: fit-content;
+  }
+
+  .admin-tutor-review-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-tutor-review-evidence-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-tutor-review-evidence-summary div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .admin-tutor-review-evidence-summary div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--review-line);
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-tutor-reviews-page {
+    padding: 10px;
+  }
+
+  .admin-tutor-reviews-header {
+    padding: 16px;
+  }
+
+  .admin-tutor-reviews-header div > span {
+    display: none;
+  }
+
+  .admin-tutor-review-identity {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .admin-tutor-review-identity .user-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .admin-tutor-review-identity > i {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .admin-tutor-review-queue-list > button {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .admin-tutor-review-queue-list button > i {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .admin-tutor-review-documents,
+  .admin-tutor-review-decision {
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-tutor-review-detail-loading span,
+  .admin-tutor-review-queue-skeleton i {
+    animation: none;
+  }
+}
