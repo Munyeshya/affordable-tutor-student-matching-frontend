@@ -1,42 +1,70 @@
-import React, { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getApiErrorMessage } from '../api/errors'
-import { getTutorEarnings, listPayouts, requestPayout } from '../api/services/payments'
-import { useAuth } from '../context/AuthContext.jsx'
-import { queryKeys } from '../api/queryKeys'
-import { StatusBadge } from '../components/ui/StatusBadge.jsx'
 
-function SummaryCard({ label, value }) {
+import { getApiErrorMessage } from '../api/errors.js'
+import { queryKeys } from '../api/queryKeys.js'
+import { getTutorEarnings, listPayouts, requestPayout } from '../api/services/payments.js'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
+import { EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
+import { StatusBadge } from '../components/ui/StatusBadge.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
+import './TutorEarningsPage.css'
+
+function formatMoney(value, currency = 'RWF') {
+  const amount = Number(value || 0)
+  return `${new Intl.NumberFormat('en-RW', {
+    minimumFractionDigits: amount % 1 ? 2 : 0,
+    maximumFractionDigits: 2,
+  }).format(amount)} ${currency}`
+}
+
+function formatDate(value) {
+  if (!value) return 'Date unavailable'
+  return new Intl.DateTimeFormat('en-RW', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value))
+}
+
+function payoutTone(status) {
+  if (['PAID', 'APPROVED'].includes(status)) return 'success'
+  if (status === 'REJECTED') return 'danger'
+  return 'warning'
+}
+
+function SummaryCard({ icon, label, value, detail, emphasis = false }) {
   return (
-    <article className="stat-card">
-      <strong>{value}</strong>
-      <span>{label}</span>
+    <article className={emphasis ? 'is-emphasis' : ''}>
+      <span><DashboardIcon name={icon} /></span>
+      <div>
+        <small>{label}</small>
+        <strong>{value}</strong>
+        <em>{detail}</em>
+      </div>
     </article>
   )
 }
 
-function PayoutCard({ payout }) {
+function PayoutRow({ payout }) {
   return (
-    <article className="panel payout-card">
-      <div className="review-head">
-        <div>
-          <p className="eyebrow">Payout</p>
-          <h3>{payout.amount} {payout.status}</h3>
-          <p className="supporting-text">Requested on {payout.created_at ? new Date(payout.created_at).toLocaleString() : 'unknown date'}</p>
-        </div>
-        <StatusBadge
-          className="status-pill"
-          tone={['PAID', 'COMPLETED', 'APPROVED'].includes(payout.status) ? 'success' : ['REJECTED', 'CANCELLED'].includes(payout.status) ? 'danger' : 'warning'}
-        >
-          {payout.status}
-        </StatusBadge>
+    <article className="tutor-payout-row">
+      <span><DashboardIcon name="earnings" /></span>
+      <div>
+        <strong>Payout request #{payout.id}</strong>
+        <small>Submitted {formatDate(payout.created_at)}</small>
       </div>
-      <div className="review-meta">
-        <span>{payout.paid_at ? `Paid ${new Date(payout.paid_at).toLocaleDateString()}` : 'Not paid yet'}</span>
-        <span>{payout.decisions?.length || 0} decisions</span>
+      <div>
+        <strong>{formatMoney(payout.amount)}</strong>
+        <small>{payout.paid_at ? `Paid ${formatDate(payout.paid_at)}` : 'Awaiting final processing'}</small>
       </div>
+      <StatusBadge tone={payoutTone(payout.status)}>
+        {String(payout.status || 'REQUESTED').toLowerCase()}
+      </StatusBadge>
     </article>
   )
 }
@@ -45,52 +73,47 @@ export function TutorEarningsPage() {
   const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
   const [payoutAmount, setPayoutAmount] = useState('')
-  const [message, setMessage] = useState('')
+  const [formMessage, setFormMessage] = useState('')
 
+  const isTutor = isAuthenticated && user?.role === 'TUTOR'
   const earningsQuery = useQuery({
     queryKey: queryKeys.payments.tutorEarnings,
     queryFn: () => getTutorEarnings().then((response) => response.data),
-    enabled: isAuthenticated && user?.role === 'TUTOR',
+    enabled: isTutor,
   })
-
   const payoutsQuery = useQuery({
     queryKey: queryKeys.payments.tutorPayouts,
     queryFn: () => listPayouts().then((response) => response.data),
-    enabled: isAuthenticated && user?.role === 'TUTOR',
+    enabled: isTutor,
   })
 
   const payoutMutation = useMutation({
     mutationFn: requestPayout,
     onSuccess: async () => {
       setPayoutAmount('')
-      setMessage('Payout request submitted.')
+      setFormMessage('Your payout request was submitted for review.')
       toast.success('Payout request submitted.')
-      await queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorPayouts })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorPayouts }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings }),
+      ])
     },
     onError: (error) => {
-      const errorMessage = getApiErrorMessage(error, 'We could not submit the payout request. Please try again.')
-      setMessage(errorMessage)
-      toast.error(errorMessage)
+      const message = getApiErrorMessage(
+        error,
+        'We could not submit the payout request. Please try again.',
+      )
+      setFormMessage(message)
+      toast.error(message)
     },
   })
 
-  const summary = useMemo(() => ({
-    bookingRevenue: earningsQuery.data?.booking_revenue ?? 0,
-    courseRevenue: earningsQuery.data?.course_revenue ?? 0,
-    totalEarnings: earningsQuery.data?.total_earnings ?? 0,
-    availableBalance: earningsQuery.data?.available_balance ?? 0,
-    pendingPayouts: earningsQuery.data?.pending_payouts ?? 0,
-    approvedPayouts: earningsQuery.data?.approved_payouts ?? 0,
-    paidPayouts: earningsQuery.data?.paid_payouts ?? 0,
-  }), [earningsQuery.data])
-
-  if (!isAuthenticated || user?.role !== 'TUTOR') {
+  if (!isTutor) {
     return (
       <section className="page-card card">
-        <p className="eyebrow">Earnings</p>
+        <p className="eyebrow">Tutor earnings</p>
         <h1>Only tutor accounts can view earnings.</h1>
-        <p className="supporting-text">Sign in with a tutor account to manage payouts and earnings.</p>
+        <p className="supporting-text">Sign in with a tutor account to manage income and payouts.</p>
         <div className="hero-actions">
           <Link className="primary-button" to="/sign-in">Sign in</Link>
           <Link className="secondary-button" to="/join">Create account</Link>
@@ -99,63 +122,203 @@ export function TutorEarningsPage() {
     )
   }
 
+  const summary = earningsQuery.data || {}
+  const availableBalance = Number(summary.available_balance || 0)
+  const recentEarnings = Array.isArray(summary.recent_earnings) ? summary.recent_earnings : []
+  const payouts = Array.isArray(payoutsQuery.data) ? payoutsQuery.data : []
+
   function handleSubmit(event) {
     event.preventDefault()
-    setMessage('')
+    setFormMessage('')
+    const amount = Number(payoutAmount)
+    if (!Number.isFinite(amount) || amount <= 0) {
+      const message = 'Enter a payout amount greater than zero.'
+      setFormMessage(message)
+      toast.error(message)
+      return
+    }
+    if (amount > availableBalance) {
+      const message = `You can request up to ${formatMoney(availableBalance)}.`
+      setFormMessage(message)
+      toast.error(message)
+      return
+    }
     payoutMutation.mutate({ amount: payoutAmount })
   }
 
   return (
-    <section className="earnings-page">
-      <section className="page-card card earnings-hero">
+    <section className="tutor-earnings-page">
+      <header className="tutor-earnings-header">
         <div>
           <p className="eyebrow">Tutor earnings</p>
-          <h1>Track your revenue and payout requests</h1>
-          <p className="supporting-text">
-            Keep an eye on booking revenue, course revenue, and the balance available for payout.
-          </p>
+          <h1>Your teaching income, in one clear view.</h1>
+          <p>Review lesson and course revenue, understand reserved funds, and request only what is available.</p>
         </div>
+        <span><DashboardIcon name="earnings" size={24} /></span>
+      </header>
 
-        <div className="earnings-summary-grid">
-          <SummaryCard label="Booking revenue" value={summary.bookingRevenue} />
-          <SummaryCard label="Course revenue" value={summary.courseRevenue} />
-          <SummaryCard label="Total earnings" value={summary.totalEarnings} />
-          <SummaryCard label="Available balance" value={summary.availableBalance} />
-        </div>
+      {earningsQuery.isError ? (
+        <ErrorState
+          className="tutor-earnings-error"
+          title="Your earnings could not be loaded."
+          message={getApiErrorMessage(earningsQuery.error)}
+          onRetry={() => earningsQuery.refetch()}
+          retryLabel="Refresh earnings"
+        />
+      ) : null}
+
+      <section className="tutor-earnings-summary" aria-label="Earnings summary">
+        <SummaryCard
+          icon="earnings"
+          label="Withdrawable now"
+          value={earningsQuery.isLoading ? '--' : formatMoney(summary.available_balance)}
+          detail="Available for a new request"
+          emphasis
+        />
+        <SummaryCard
+          icon="reports"
+          label="Total earned"
+          value={earningsQuery.isLoading ? '--' : formatMoney(summary.total_earnings)}
+          detail="Paid lessons and courses"
+        />
+        <SummaryCard
+          icon="schedule"
+          label="Reserved"
+          value={earningsQuery.isLoading ? '--' : formatMoney(summary.reserved_payouts)}
+          detail="Requested or approved"
+        />
+        <SummaryCard
+          icon="verification"
+          label="Paid out"
+          value={earningsQuery.isLoading ? '--' : formatMoney(summary.paid_payouts)}
+          detail="Completed withdrawals"
+        />
       </section>
 
-      <section className="earnings-actions-grid">
-        <form className="page-card card payout-form" onSubmit={handleSubmit}>
-          <p className="eyebrow">Request payout</p>
-          <label className="account-field">
-            <span>Amount</span>
-            <input type="number" step="0.01" min="0" value={payoutAmount} onChange={(event) => setPayoutAmount(event.target.value)} placeholder="Enter amount" required />
+      <section className="tutor-earnings-main-grid">
+        <section className="tutor-earnings-panel tutor-income-panel">
+          <header>
+            <div><p className="eyebrow">Income sources</p><h2>Where your earnings came from</h2></div>
+            <small>Only successful payments are counted.</small>
+          </header>
+          {earningsQuery.isLoading ? <SkeletonLoader className="tutor-earnings-skeleton" rows={2} /> : (
+            <div className="tutor-income-sources">
+              <article>
+                <span><DashboardIcon name="bookings" /></span>
+                <div><strong>Lesson bookings</strong><small>{summary.paid_bookings_count || 0} paid bookings</small></div>
+                <b>{formatMoney(summary.booking_revenue)}</b>
+              </article>
+              <article>
+                <span><DashboardIcon name="courses" /></span>
+                <div><strong>Course purchases</strong><small>{summary.paid_course_purchases_count || 0} paid purchases</small></div>
+                <b>{formatMoney(summary.course_revenue)}</b>
+              </article>
+            </div>
+          )}
+        </section>
+
+        <form className="tutor-earnings-panel tutor-payout-form" onSubmit={handleSubmit} noValidate>
+          <header>
+            <div><p className="eyebrow">Withdraw funds</p><h2>Request a payout</h2></div>
+            <span><DashboardIcon name="payments" /></span>
+          </header>
+          <p>Requested funds are reserved immediately while an administrator reviews the payout.</p>
+          <label>
+            <span>Payout amount (RWF)</span>
+            <div>
+              <input
+                aria-label="Payout amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                max={availableBalance}
+                value={payoutAmount}
+                onChange={(event) => setPayoutAmount(event.target.value)}
+                placeholder="0"
+                disabled={payoutMutation.isPending || availableBalance <= 0}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setPayoutAmount(String(availableBalance))}
+                disabled={availableBalance <= 0 || payoutMutation.isPending}
+              >
+                Use full balance
+              </button>
+            </div>
           </label>
-          <button className="primary-button" type="submit" disabled={payoutMutation.isPending}>
-            {payoutMutation.isPending ? 'Submitting...' : 'Request payout'}
+          <div className="tutor-payout-available">
+            <span>Maximum available</span>
+            <strong>{formatMoney(availableBalance)}</strong>
+          </div>
+          <button
+            className="primary-button"
+            type="submit"
+            disabled={payoutMutation.isPending || availableBalance <= 0}
+          >
+            {payoutMutation.isPending ? 'Submitting request...' : 'Request payout'}
           </button>
-          <p className="account-status" aria-live="polite">{message}</p>
+          {availableBalance <= 0 && !earningsQuery.isLoading ? (
+            <small>There is no withdrawable balance yet. Completed lesson and course payments will appear here.</small>
+          ) : null}
+          <p className="tutor-payout-message" aria-live="polite">{formMessage}</p>
         </form>
-
-        <div className="earnings-stats-grid">
-          <SummaryCard label="Pending payouts" value={summary.pendingPayouts} />
-          <SummaryCard label="Approved payouts" value={summary.approvedPayouts} />
-          <SummaryCard label="Paid payouts" value={summary.paidPayouts} />
-        </div>
       </section>
 
-      <section className="page-card card">
-        <p className="eyebrow">Payout history</p>
-        {payoutsQuery.isLoading ? (
-          <p className="supporting-text">Loading payouts...</p>
-        ) : payoutsQuery.data?.length ? (
-          <div className="payout-list">
-            {payoutsQuery.data.map((payout) => (
-              <PayoutCard key={payout.id} payout={payout} />
+      <section className="tutor-earnings-panel">
+        <header>
+          <div><p className="eyebrow">Recent income</p><h2>Latest successful earnings</h2></div>
+          <small>Lesson bookings and course sales together.</small>
+        </header>
+        {earningsQuery.isLoading ? (
+          <SkeletonLoader className="tutor-earnings-skeleton" rows={3} />
+        ) : recentEarnings.length ? (
+          <div className="tutor-income-list">
+            {recentEarnings.map((earning) => (
+              <article key={`${earning.kind}-${earning.id}`}>
+                <span><DashboardIcon name={earning.kind === 'COURSE' ? 'courses' : 'bookings'} /></span>
+                <div>
+                  <strong>{earning.title}</strong>
+                  <small>{earning.kind === 'COURSE' ? 'Course purchase' : 'Lesson booking'} / {formatDate(earning.earned_at)}</small>
+                </div>
+                <b>+ {formatMoney(earning.amount, earning.currency)}</b>
+              </article>
             ))}
           </div>
         ) : (
-          <p className="supporting-text">No payout requests yet.</p>
+          <EmptyState
+            className="tutor-earnings-empty"
+            icon={<DashboardIcon name="earnings" size={26} />}
+            title="No completed earnings yet"
+            description="Income will appear after a lesson or course payment succeeds."
+          />
+        )}
+      </section>
+
+      <section className="tutor-earnings-panel">
+        <header>
+          <div><p className="eyebrow">Payout history</p><h2>Requests and decisions</h2></div>
+          <small>{payouts.length} total requests</small>
+        </header>
+        {payoutsQuery.isError ? (
+          <ErrorState
+            className="tutor-earnings-error"
+            title="Payout history could not be loaded."
+            message={getApiErrorMessage(payoutsQuery.error)}
+            onRetry={() => payoutsQuery.refetch()}
+          />
+        ) : payoutsQuery.isLoading ? (
+          <SkeletonLoader className="tutor-earnings-skeleton" rows={3} />
+        ) : payouts.length ? (
+          <div className="tutor-payout-list">
+            {payouts.map((payout) => <PayoutRow key={payout.id} payout={payout} />)}
+          </div>
+        ) : (
+          <EmptyState
+            className="tutor-earnings-empty"
+            title="No payout requests yet"
+            description="Your submitted requests and administrator decisions will be recorded here."
+          />
         )}
       </section>
     </section>

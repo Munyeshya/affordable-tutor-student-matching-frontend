@@ -1,0 +1,390 @@
+.tutor-earnings-page {
+  --earnings-ink: #1b1917;
+  --earnings-muted: #716a64;
+  --earnings-line: #e8e1da;
+  --earnings-orange: #ad5200;
+  display: grid;
+  gap: 1rem;
+  color: var(--earnings-ink);
+}
+
+.tutor-earnings-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--earnings-line);
+  padding: 0.25rem 0 1.1rem;
+}
+
+.tutor-earnings-header h1 {
+  margin: 0.3rem 0 0.4rem;
+  font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+}
+
+.tutor-earnings-header p:last-child {
+  max-width: 700px;
+  margin: 0;
+  color: var(--earnings-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.tutor-earnings-header > span {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  background: #fff0e2;
+  color: var(--earnings-orange);
+}
+
+.tutor-earnings-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.tutor-earnings-summary article {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--earnings-line);
+  background: #fff;
+  padding: 0.9rem;
+}
+
+.tutor-earnings-summary article.is-emphasis {
+  border-left: 3px solid var(--earnings-orange);
+}
+
+.tutor-earnings-summary article > span,
+.tutor-income-sources article > span,
+.tutor-income-list article > span,
+.tutor-payout-row > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  background: #fff3e8;
+  color: var(--earnings-orange);
+}
+
+.tutor-earnings-summary article > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.14rem;
+}
+
+.tutor-earnings-summary small {
+  overflow: hidden;
+  color: var(--earnings-muted);
+  font-size: 0.67rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-earnings-summary strong {
+  overflow: hidden;
+  font-size: 0.96rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-earnings-summary em {
+  overflow: hidden;
+  color: #8a817a;
+  font-size: 0.6rem;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-earnings-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(290px, 0.7fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.tutor-earnings-panel {
+  border: 1px solid var(--earnings-line);
+  background: #fff;
+  padding: 1rem;
+}
+
+.tutor-earnings-panel > header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.tutor-earnings-panel h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.tutor-earnings-panel > header > small {
+  color: var(--earnings-muted);
+  font-size: 0.67rem;
+  text-align: right;
+}
+
+.tutor-income-sources,
+.tutor-income-list,
+.tutor-payout-list {
+  display: grid;
+}
+
+.tutor-income-sources article,
+.tutor-income-list article,
+.tutor-payout-row {
+  display: grid;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid var(--earnings-line);
+  padding: 0.82rem 0;
+}
+
+.tutor-income-sources article {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+}
+
+.tutor-income-list article {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+}
+
+.tutor-payout-row {
+  grid-template-columns: 38px minmax(0, 1fr) minmax(170px, auto) auto;
+}
+
+.tutor-income-sources article > div,
+.tutor-income-list article > div,
+.tutor-payout-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.tutor-income-sources strong,
+.tutor-income-list strong,
+.tutor-payout-row strong {
+  overflow: hidden;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-income-sources small,
+.tutor-income-list small,
+.tutor-payout-row small {
+  color: var(--earnings-muted);
+  font-size: 0.65rem;
+}
+
+.tutor-income-sources b,
+.tutor-income-list b {
+  color: #2f2b27;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.tutor-income-list b {
+  color: #27613b;
+}
+
+.tutor-payout-row > div:nth-child(3) {
+  text-align: right;
+}
+
+.tutor-payout-row .ui-status-badge {
+  width: fit-content;
+  text-transform: capitalize;
+}
+
+.tutor-payout-form {
+  display: grid;
+  align-content: start;
+}
+
+.tutor-payout-form > header > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  background: #fff3e8;
+  color: var(--earnings-orange);
+}
+
+.tutor-payout-form > p:first-of-type {
+  margin: 0 0 0.85rem;
+  color: var(--earnings-muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.tutor-payout-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #4f4944;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.tutor-payout-form label > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  border: 1px solid #dcd4cd;
+}
+
+.tutor-payout-form input {
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  outline: 0;
+  background: #fff;
+  padding: 0.65rem 0.75rem;
+  color: var(--earnings-ink);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.tutor-payout-form label > div:focus-within {
+  border-color: var(--earnings-orange);
+  outline: 2px solid rgba(173, 82, 0, 0.12);
+}
+
+.tutor-payout-form label button {
+  border: 0;
+  border-left: 1px solid #ded7d0;
+  background: #faf7f4;
+  padding: 0.55rem 0.7rem;
+  color: var(--earnings-orange);
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tutor-payout-available {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--earnings-line);
+  padding: 0.7rem 0;
+}
+
+.tutor-payout-available span {
+  color: var(--earnings-muted);
+  font-size: 0.67rem;
+}
+
+.tutor-payout-available strong {
+  font-size: 0.72rem;
+}
+
+.tutor-payout-form > .primary-button {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.85rem;
+  border-radius: 2px;
+}
+
+.tutor-payout-form button:disabled,
+.tutor-payout-form input:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.tutor-payout-form > small,
+.tutor-payout-message {
+  color: var(--earnings-muted);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.tutor-payout-form > small {
+  margin-top: 0.6rem;
+}
+
+.tutor-payout-message {
+  min-height: 0.9rem;
+  margin: 0.55rem 0 0;
+}
+
+.tutor-earnings-empty {
+  border-top: 1px solid var(--earnings-line);
+  padding: 1.3rem 0 0.35rem;
+}
+
+.tutor-earnings-error {
+  border-left: 3px solid var(--earnings-orange);
+  background: #fff7f0;
+  padding: 0.9rem;
+}
+
+.tutor-earnings-skeleton {
+  display: grid;
+  gap: 0.6rem;
+  border-top: 1px solid var(--earnings-line);
+  padding-top: 0.75rem;
+}
+
+.tutor-earnings-skeleton span {
+  height: 48px;
+  background: #f2efec;
+  animation: tutor-earnings-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes tutor-earnings-pulse {
+  to { opacity: 0.5; }
+}
+
+@media (max-width: 1050px) {
+  .tutor-earnings-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tutor-earnings-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .tutor-earnings-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .tutor-earnings-panel > header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tutor-earnings-panel > header > small {
+    text-align: left;
+  }
+
+  .tutor-income-list article,
+  .tutor-payout-row {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .tutor-income-list b,
+  .tutor-payout-row > div:nth-child(3),
+  .tutor-payout-row .ui-status-badge {
+    grid-column: 2;
+    width: fit-content;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutor-earnings-skeleton span {
+    animation: none;
+  }
+}
