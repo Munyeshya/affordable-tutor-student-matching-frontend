@@ -1,49 +1,86 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { listParentLinks } from '../api/services/parents'
+
 import { apiClient } from '../api/client'
 import { API_ENDPOINTS } from '../api/endpoints'
-import { useAuth } from '../context/AuthContext.jsx'
 import { getApiErrorMessage } from '../api/errors'
 import { queryKeys } from '../api/queryKeys'
-import { StatusBadge } from '../components/ui/StatusBadge.jsx'
+import { getParentDashboard } from '../api/services/parents'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
+import { EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
+import { UserAvatar } from '../components/ui/UserAvatar.jsx'
+import './ParentStudentsPage.css'
 
-function StudentLinkCard({ link }) {
+const EMPTY_STUDENTS = []
+
+function formatImprovement(value) {
+  const number = Number(value)
+  return Number.isFinite(number) ? number.toFixed(1) : '0.0'
+}
+
+function StudentDirectoryCard({ item }) {
+  const { student, link, booking_stats: bookings, learning_stats: learning } = item
+  const subjects = student.subjects_needing_help_names || []
+  const improvement = formatImprovement(learning.average_improvement)
+
   return (
-    <article className="panel parent-link-card">
-      <div className="parent-link-head">
+    <article className="parent-directory-card">
+      <header>
+        <UserAvatar
+          className="parent-directory-avatar"
+          src={student.profile_image_url}
+          name={student.full_name || student.email}
+          fallback="ST"
+        />
         <div>
-          <p className="eyebrow">Linked student</p>
-          <h3>{link.student_name || 'Student'}</h3>
-          <p className="supporting-text">{link.student_email}</p>
+          <span>{link.label || 'Linked learner'}</span>
+          <h2>{student.full_name || student.email}</h2>
+          <p>{student.level || 'Level not added'} / {student.school_name || 'School not added'}</p>
         </div>
-        <StatusBadge className="status-pill" tone={link.is_primary ? 'warning' : 'neutral'}>
-          {link.is_primary ? 'Primary' : 'Linked'}
-        </StatusBadge>
+        {link.is_primary ? <strong className="parent-directory-primary">Primary</strong> : null}
+      </header>
+
+      <div className="parent-directory-subjects" aria-label="Subjects needing support">
+        {subjects.length
+          ? subjects.slice(0, 3).map((subject) => <span key={subject}>{subject}</span>)
+          : <span>Learning subjects not added</span>}
+        {subjects.length > 3 ? <span>+{subjects.length - 3}</span> : null}
       </div>
 
-      <div className="parent-link-meta">
-        <span><strong>Label:</strong> {link.label || 'No label'}</span>
-        <span><strong>Created:</strong> {link.created_at ? new Date(link.created_at).toLocaleDateString() : 'Unknown'}</span>
-      </div>
+      <dl className="parent-directory-metrics">
+        <div><dt>Bookings</dt><dd>{bookings.total_bookings || 0}</dd></div>
+        <div><dt>Active</dt><dd>{bookings.confirmed_bookings || 0}</dd></div>
+        <div><dt>Completed</dt><dd>{bookings.completed_bookings || 0}</dd></div>
+        <div><dt>Improvement</dt><dd>{improvement}%</dd></div>
+      </dl>
+
+      <footer>
+        <div>
+          <DashboardIcon name="verification" size={18} />
+          <span>{learning.confirmed_results || 0} confirmed learning outcomes</span>
+        </div>
+        <Link to={`/parent-students/${link.student}`}>
+          View student <span aria-hidden="true">→</span>
+        </Link>
+      </footer>
     </article>
   )
 }
 
 export function ParentStudentsPage() {
-  const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
+  const [search, setSearch] = useState('')
+  const [showLinkForm, setShowLinkForm] = useState(false)
   const [studentEmail, setStudentEmail] = useState('')
   const [label, setLabel] = useState('')
   const [isPrimary, setIsPrimary] = useState(false)
-  const [message, setMessage] = useState('')
 
-  const linksQuery = useQuery({
-    queryKey: queryKeys.parents.links,
-    queryFn: () => listParentLinks().then((response) => response.data),
-    enabled: isAuthenticated && user?.role === 'PARENT',
+  const dashboardQuery = useQuery({
+    queryKey: queryKeys.parents.dashboard,
+    queryFn: () => getParentDashboard().then((response) => response.data),
+    staleTime: 30_000,
   })
 
   const createMutation = useMutation({
@@ -52,35 +89,48 @@ export function ParentStudentsPage() {
       setStudentEmail('')
       setLabel('')
       setIsPrimary(false)
-      setMessage('Student linked successfully.')
+      setShowLinkForm(false)
       toast.success('Student linked successfully.')
-      await queryClient.invalidateQueries({ queryKey: queryKeys.parents.links })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.parents.links }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard }),
+      ])
     },
-    onError: (error) => {
-      const errorMessage = getApiErrorMessage(error, 'Could not link the student.')
-      setMessage(errorMessage)
-      toast.error(errorMessage)
-    },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not link this student.')),
   })
 
-  if (!isAuthenticated || user?.role !== 'PARENT') {
-    return (
-      <section className="page-card card">
-        <p className="eyebrow">Parent students</p>
-        <h1>Only parent accounts can manage student links.</h1>
-        <p className="supporting-text">Sign in with a parent account to link students to your profile.</p>
-        <div className="hero-actions">
-          <Link className="primary-button" to="/sign-in">Sign in</Link>
-          <Link className="secondary-button" to="/join">Create account</Link>
-        </div>
-      </section>
-    )
-  }
+  const students = dashboardQuery.data?.linked_students || EMPTY_STUDENTS
+  const normalizedSearch = search.trim().toLowerCase()
+  const visibleStudents = useMemo(() => students.filter((item) => {
+    if (!normalizedSearch) return true
+    const searchable = [
+      item.student.full_name,
+      item.student.email,
+      item.student.school_name,
+      item.student.level,
+      item.link.label,
+      ...(item.student.subjects_needing_help_names || []),
+    ].join(' ').toLowerCase()
+    return searchable.includes(normalizedSearch)
+  }), [students, normalizedSearch])
 
-  function handleSubmit(event) {
+  const activeBookings = students.reduce(
+    (total, item) => total + Number(item.booking_stats?.confirmed_bookings || 0),
+    0,
+  )
+  const completedBookings = students.reduce(
+    (total, item) => total + Number(item.booking_stats?.completed_bookings || 0),
+    0,
+  )
+  const averageImprovement = students.length
+    ? students.reduce(
+      (total, item) => total + Number(item.learning_stats?.average_improvement || 0),
+      0,
+    ) / students.length
+    : 0
+
+  function handleLinkStudent(event) {
     event.preventDefault()
-    setMessage('')
     createMutation.mutate({
       student_email: studentEmail.trim(),
       label: label.trim(),
@@ -89,54 +139,88 @@ export function ParentStudentsPage() {
   }
 
   return (
-    <section className="dashboard-page">
-      <section className="page-card card dashboard-hero">
+    <section className="parent-students-page">
+      <header className="parent-students-header">
         <div>
-          <p className="eyebrow">Parent students</p>
-          <h1>Manage linked students</h1>
-          <p className="supporting-text">
-            Add students by email so you can monitor bookings and outcomes from your parent account.
-          </p>
+          <p className="eyebrow">Family learners</p>
+          <h1>Students in your care</h1>
+          <p>Open each learner’s profile to follow lessons, tutor updates, and confirmed academic progress.</p>
         </div>
+        <button className="primary-button" type="button" onClick={() => setShowLinkForm((current) => !current)}>
+          <DashboardIcon name={showLinkForm ? 'close' : 'students'} size={17} />
+          {showLinkForm ? 'Close form' : 'Link a student'}
+        </button>
+      </header>
+
+      <section className="parent-students-summary" aria-label="Linked student summary">
+        <article><DashboardIcon name="students" /><div><span>Linked students</span><strong>{students.length}</strong></div></article>
+        <article><DashboardIcon name="bookings" /><div><span>Active bookings</span><strong>{activeBookings}</strong></div></article>
+        <article><DashboardIcon name="verification" /><div><span>Completed lessons</span><strong>{completedBookings}</strong></div></article>
+        <article><DashboardIcon name="reports" /><div><span>Average improvement</span><strong>{formatImprovement(averageImprovement)}%</strong></div></article>
       </section>
 
-      <section className="page-card card">
-        <p className="eyebrow">Link a student</p>
-        <form className="parent-link-form" onSubmit={handleSubmit}>
-          <label className="account-field">
-            <span>Student email</span>
-            <input type="email" value={studentEmail} onChange={(event) => setStudentEmail(event.target.value)} required />
-          </label>
-          <label className="account-field">
-            <span>Label</span>
-            <input type="text" value={label} onChange={(event) => setLabel(event.target.value)} placeholder="e.g. Primary learner" />
-          </label>
-          <label className="account-check">
-            <input type="checkbox" checked={isPrimary} onChange={() => setIsPrimary((current) => !current)} />
-            <span>Mark as primary student</span>
-          </label>
-          <div className="account-actions">
-            <button className="primary-button" type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Linking...' : 'Link student'}
-            </button>
-            <p className="account-status" aria-live="polite">{message}</p>
+      {showLinkForm ? (
+        <section className="parent-link-panel">
+          <div>
+            <p className="eyebrow">Add a learner</p>
+            <h2>Link an existing student account</h2>
+            <p>The student must already have an Isomo student account. Their private data remains available only to linked parents.</p>
           </div>
-        </form>
-      </section>
+          <form onSubmit={handleLinkStudent}>
+            <label>
+              <span>Student email</span>
+              <input type="email" value={studentEmail} onChange={(event) => setStudentEmail(event.target.value)} placeholder="student@example.com" required />
+            </label>
+            <label>
+              <span>Relationship label <small>Optional</small></span>
+              <input type="text" value={label} onChange={(event) => setLabel(event.target.value)} placeholder="For example: My daughter" />
+            </label>
+            <label className="parent-link-checkbox">
+              <input type="checkbox" checked={isPrimary} onChange={(event) => setIsPrimary(event.target.checked)} />
+              <span>Use as the primary learner when booking</span>
+            </label>
+            <button className="primary-button" type="submit" disabled={createMutation.isPending}>
+              {createMutation.isPending ? 'Linking student...' : 'Link student account'}
+            </button>
+          </form>
+        </section>
+      ) : null}
 
-      <section className="dashboard-students-grid">
-        {linksQuery.isLoading ? (
-          <article className="page-card card">
-            <p className="supporting-text">Loading linked students...</p>
-          </article>
-        ) : linksQuery.data?.length ? (
-          linksQuery.data.map((link) => <StudentLinkCard key={link.id} link={link} />)
+      <section className="parent-directory-panel">
+        <header>
+          <div><p className="eyebrow">Student directory</p><h2>All linked learners</h2></div>
+          <label className="parent-directory-search">
+            <DashboardIcon name="search" size={17} />
+            <span className="sr-only">Search linked students</span>
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search name, school, level, or subject"
+            />
+          </label>
+        </header>
+
+        {dashboardQuery.isLoading ? (
+          <SkeletonLoader rows={5} className="parent-directory-skeleton" />
+        ) : dashboardQuery.isError ? (
+          <ErrorState
+            title="Linked students could not be loaded."
+            message={getApiErrorMessage(dashboardQuery.error)}
+            onRetry={dashboardQuery.refetch}
+          />
+        ) : visibleStudents.length ? (
+          <div className="parent-directory-grid">
+            {visibleStudents.map((item) => <StudentDirectoryCard key={item.link.id} item={item} />)}
+          </div>
         ) : (
-          <article className="page-card card">
-            <p className="eyebrow">Linked students</p>
-            <h2>No linked students yet</h2>
-            <p className="supporting-text">Link a student to start seeing booking and learning summaries.</p>
-          </article>
+          <EmptyState
+            icon={<DashboardIcon name={normalizedSearch ? 'search' : 'students'} size={28} />}
+            title={normalizedSearch ? 'No students match your search' : 'No students linked yet'}
+            description={normalizedSearch ? 'Try a different name, school, level, or subject.' : 'Link an existing student account to begin managing their learning.'}
+          >
+            {normalizedSearch ? <button type="button" onClick={() => setSearch('')}>Clear search</button> : null}
+          </EmptyState>
         )}
       </section>
     </section>

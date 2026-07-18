@@ -7,7 +7,7 @@ import { queryKeys } from '../api/queryKeys'
 import { listPayments } from '../api/services/payments'
 import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
-import { updateBookingAction } from '../api/services/bookings'
+import { updateBookingAction, updateBookingProgress } from '../api/services/bookings'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery } from '../hooks/useCommonQueries'
 import './BookingsPage.css'
@@ -96,7 +96,36 @@ function BookingTimeline({ booking }) {
   )
 }
 
-function BookingCard({ booking, payment, user, onAction, onPay, busyAction }) {
+function BookingProgressPanel({ booking }) {
+  const progress = booking.progress
+  const percent = Number(progress?.progress_percent || 0)
+
+  return (
+    <section className="booking-progress-panel">
+      <header>
+        <div>
+          <span>Learning progress</span>
+          <strong>{progress?.summary || 'No tutor update yet'}</strong>
+        </div>
+        <b>{percent}%</b>
+      </header>
+      <div className="booking-progress-track" role="progressbar" aria-label="Booking learning progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={percent}>
+        <span style={{ width: `${Math.max(0, Math.min(100, percent))}%` }} />
+      </div>
+      {progress ? (
+        <div className="booking-progress-details">
+          <div><span>Topics covered</span><p>{progress.topics_covered || 'Not added yet'}</p></div>
+          <div><span>Next steps</span><p>{progress.next_steps || 'Not added yet'}</p></div>
+          <small>Updated by {progress.updated_by_name} / {formatDateTime(progress.updated_at)}</small>
+        </div>
+      ) : (
+        <p className="booking-progress-empty">The tutor will add progress notes as this lesson moves forward.</p>
+      )}
+    </section>
+  )
+}
+
+function BookingCard({ booking, payment, user, onAction, onPay, onProgress, busyAction }) {
   const role = user?.role
   const status = STATUS_COPY[booking.status] || { label: booking.status, detail: 'Booking status updated.' }
   const actions = getBookingActions(booking, role)
@@ -134,6 +163,7 @@ function BookingCard({ booking, payment, user, onAction, onPay, busyAction }) {
 
       <p className="booking-status-detail">{status.detail}</p>
       {booking.notes ? <div className="booking-lifecycle-note"><span>Lesson note</span><p>{booking.notes}</p></div> : null}
+      {['CONFIRMED', 'COMPLETED'].includes(booking.status) ? <BookingProgressPanel booking={booking} /> : null}
 
       <details className="booking-history">
         <summary>View activity history</summary>
@@ -152,6 +182,11 @@ function BookingCard({ booking, payment, user, onAction, onPay, busyAction }) {
             {ACTION_COPY[action].label}
           </button>
         ))}
+        {role === 'TUTOR' && ['CONFIRMED', 'COMPLETED'].includes(booking.status) ? (
+          <button className="secondary-button" type="button" onClick={() => onProgress(booking)}>
+            {booking.progress ? 'Update progress' : 'Add progress'}
+          </button>
+        ) : null}
         {canMessage ? <Link className="secondary-button" to={'/messages?booking=' + booking.id}>Message</Link> : null}
         {canReview ? <Link className="secondary-button" to={'/reviews?booking=' + booking.id}>Leave review</Link> : null}
         {canPay ? <button className="primary-button" type="button" onClick={() => onPay(booking)}>Pay securely</button> : null}
@@ -204,6 +239,78 @@ function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, 
   )
 }
 
+function ProgressDialog({ booking, form, setForm, onClose, onSave, busy }) {
+  if (!booking) return null
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  return (
+    <ConfirmationDialog
+      open={Boolean(booking)}
+      onClose={onClose}
+      labelledBy="booking-progress-title"
+      backdropClassName="booking-dialog-backdrop"
+      dialogClassName="booking-action-dialog booking-progress-dialog"
+    >
+      <p className="eyebrow">Booking #{booking.id}</p>
+      <h2 id="booking-progress-title">Update learning progress</h2>
+      <p>Give the learner and parent a clear, evidence-based update for {booking.subject_name || 'this lesson'}.</p>
+
+      <label className="booking-progress-range">
+        <span><strong>Overall progress</strong><b>{form.progress_percent}%</b></span>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="5"
+          value={form.progress_percent}
+          onChange={(event) => updateField('progress_percent', event.target.value)}
+        />
+      </label>
+      <label className="booking-field">
+        <span>Progress summary</span>
+        <textarea
+          rows="3"
+          maxLength="1000"
+          value={form.summary}
+          onChange={(event) => updateField('summary', event.target.value)}
+          placeholder="What can the learner now understand or do?"
+        />
+      </label>
+      <div className="booking-progress-field-grid">
+        <label className="booking-field">
+          <span>Topics covered</span>
+          <textarea
+            rows="4"
+            maxLength="1500"
+            value={form.topics_covered}
+            onChange={(event) => updateField('topics_covered', event.target.value)}
+            placeholder={'One topic per line\nEquivalent fractions\nComparing fractions'}
+          />
+        </label>
+        <label className="booking-field">
+          <span>Next steps</span>
+          <textarea
+            rows="4"
+            maxLength="1500"
+            value={form.next_steps}
+            onChange={(event) => updateField('next_steps', event.target.value)}
+            placeholder="What should happen before or during the next lesson?"
+          />
+        </label>
+      </div>
+      <div className="booking-review-actions">
+        <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Cancel</button>
+        <button className="primary-button" type="button" onClick={onSave} disabled={busy || !form.summary.trim()}>
+          {busy ? 'Saving update...' : 'Share progress update'}
+        </button>
+      </div>
+    </ConfirmationDialog>
+  )
+}
+
 export function BookingsPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -211,6 +318,13 @@ export function BookingsPage() {
   const [pendingAction, setPendingAction] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
   const [paymentBooking, setPaymentBooking] = useState(null)
+  const [progressBooking, setProgressBooking] = useState(null)
+  const [progressForm, setProgressForm] = useState({
+    progress_percent: 0,
+    summary: '',
+    topics_covered: '',
+    next_steps: '',
+  })
 
   const bookingsQuery = useBookingsQuery()
   const paymentsQuery = useQuery({
@@ -236,6 +350,22 @@ export function BookingsPage() {
     onError: (error) => toast.error(getApiErrorMessage(error, 'Could not update this booking.')),
   })
 
+  const progressMutation = useMutation({
+    mutationFn: async ({ bookingId, payload }) => (
+      await updateBookingProgress(bookingId, payload)
+    ).data,
+    onSuccess: async () => {
+      toast.success('Learning progress shared successfully.')
+      setProgressBooking(null)
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.parents.all }),
+      ])
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not save this progress update.')),
+  })
+
   const bookings = bookingsQuery.data || []
   const paymentsByBooking = new Map(
     (paymentsQuery.data || []).map((payment) => [String(payment.booking_id), payment]),
@@ -251,6 +381,17 @@ export function BookingsPage() {
   function openAction(booking, action) {
     setActionMessage('')
     setPendingAction({ booking, action })
+  }
+
+  function openProgress(booking) {
+    const progress = booking.progress || {}
+    setProgressBooking(booking)
+    setProgressForm({
+      progress_percent: Number(progress.progress_percent || 0),
+      summary: progress.summary || '',
+      topics_covered: progress.topics_covered || '',
+      next_steps: progress.next_steps || '',
+    })
   }
 
   return (
@@ -305,6 +446,7 @@ export function BookingsPage() {
               key={booking.id}
               onAction={openAction}
               onPay={setPaymentBooking}
+              onProgress={openProgress}
               busyAction={actionMutation.isPending && pendingAction?.booking.id === booking.id}
             />
           ))
@@ -348,6 +490,25 @@ export function BookingsPage() {
             queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
           ])
         }}
+      />
+      <ProgressDialog
+        booking={progressBooking}
+        form={progressForm}
+        setForm={setProgressForm}
+        onClose={() => {
+          if (!progressMutation.isPending) setProgressBooking(null)
+        }}
+        onSave={() => progressMutation.mutate({
+          bookingId: progressBooking.id,
+          payload: {
+            ...progressForm,
+            progress_percent: Number(progressForm.progress_percent),
+            summary: progressForm.summary.trim(),
+            topics_covered: progressForm.topics_covered.trim(),
+            next_steps: progressForm.next_steps.trim(),
+          },
+        })}
+        busy={progressMutation.isPending}
       />
     </section>
   )

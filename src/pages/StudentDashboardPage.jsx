@@ -207,7 +207,7 @@ export function StudentDashboardPage() {
             <SectionHeading eyebrow="Quick access" title="Keep moving" />
             <nav className="student-quick-links" aria-label="Student shortcuts">
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Find tutors</strong><small>Compare topics and prices</small></span></Link>
-              <Link to="/book"><DashboardIcon name="bookings" /><span><strong>Request a lesson</strong><small>Send your learning needs</small></span></Link>
+              <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Request a lesson</strong><small>Choose a tutor and send your learning needs</small></span></Link>
               <Link to="/messages"><DashboardIcon name="messages" /><span><strong>Messages</strong><small>Talk with your tutors</small></span></Link>
             </nav>
           </section>

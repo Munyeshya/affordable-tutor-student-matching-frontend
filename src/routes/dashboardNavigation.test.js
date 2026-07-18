@@ -28,7 +28,9 @@ describe('role navigation', () => {
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/assessments')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/schedule-proposals')
+    expect(getDashboardNavigationPaths('STUDENT')).not.toContain('/book')
     expect(getDashboardNavigationPaths('PARENT')).toContain('/parent-students')
+    expect(getDashboardNavigationPaths('PARENT')).not.toContain('/book')
   })
 
   it('returns readable page titles and safe fallbacks', () => {

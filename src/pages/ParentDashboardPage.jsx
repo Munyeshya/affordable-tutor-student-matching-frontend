@@ -118,7 +118,7 @@ function StudentCard({ item, bookings }) {
               : 'No upcoming lesson'}
           </strong>
         </div>
-        <Link to={nextBooking ? '/bookings' : '/book?student=' + link.student}>{nextBooking ? 'View' : 'Book'}</Link>
+        <Link to={nextBooking ? '/bookings' : '/tutors'}>{nextBooking ? 'View' : 'Find tutor'}</Link>
       </div>
     </article>
   )
@@ -261,7 +261,7 @@ export function ParentDashboardPage() {
             <SectionHeading eyebrow="Quick access" title="Support your learners" />
             <nav className="parent-quick-links" aria-label="Parent shortcuts">
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Find tutors</strong><small>Compare subjects, levels, and prices</small></span></Link>
-              <Link to="/book"><DashboardIcon name="bookings" /><span><strong>Request a lesson</strong><small>Choose one of your linked students</small></span></Link>
+              <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Request a lesson</strong><small>Choose a tutor, then select the learner</small></span></Link>
               <Link to="/reports"><DashboardIcon name="reports" /><span><strong>Learning reports</strong><small>Review family learning outcomes</small></span></Link>
               <Link to="/messages"><DashboardIcon name="messages" /><span><strong>Messages</strong><small>Talk with your students' tutors</small></span></Link>
             </nav>

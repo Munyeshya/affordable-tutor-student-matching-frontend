@@ -58,6 +58,7 @@ export const queryKeys = {
     all: ['parents'],
     dashboard: ['parents', 'dashboard'],
     links: ['parents', 'links'],
+    student: (id) => ['parents', 'students', id],
   },
   payments: {
     all: ['payments'],

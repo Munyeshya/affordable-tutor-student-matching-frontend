@@ -67,7 +67,6 @@ const navigationByRole = {
       label: 'Learning',
       items: [
         { label: 'Find tutors', to: '/tutors', icon: 'search' },
-        { label: 'Request a tutor', to: '/book', icon: 'courses' },
         { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Assessments', to: '/assessments', icon: 'assessments' },
@@ -98,7 +97,6 @@ const navigationByRole = {
       label: 'Family learning',
       items: [
         { label: 'Find tutors', to: '/tutors', icon: 'search' },
-        { label: 'Request a tutor', to: '/book', icon: 'courses' },
         { label: 'Linked students', to: '/parent-students', icon: 'students' },
         { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },

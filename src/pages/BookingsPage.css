@@ -198,6 +198,111 @@
   white-space: pre-line;
 }
 
+.booking-progress-panel {
+  margin: 1rem 0;
+  border: 1px solid #eadfd7;
+  background: #fcfaf8;
+  padding: 0.9rem;
+}
+
+.booking-progress-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-progress-panel > header > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.booking-progress-panel header span,
+.booking-progress-details span {
+  color: #81756e;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.booking-progress-panel header strong {
+  font-size: 0.8rem;
+}
+
+.booking-progress-panel header b {
+  color: #9b4d00;
+  font-size: 1rem;
+}
+
+.booking-progress-track {
+  height: 7px;
+  margin: 0.75rem 0;
+  background: #eee6df;
+}
+
+.booking-progress-track span {
+  display: block;
+  height: 100%;
+  background: #b45309;
+}
+
+.booking-progress-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.booking-progress-details > div {
+  min-width: 0;
+}
+
+.booking-progress-details p,
+.booking-progress-empty {
+  margin: 0.25rem 0 0;
+  color: #5e5651;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.booking-progress-details small {
+  grid-column: 1 / -1;
+  color: #81756e;
+  font-size: 0.63rem;
+}
+
+.booking-progress-range {
+  display: grid;
+  gap: 0.55rem;
+  margin: 1rem 0;
+}
+
+.booking-progress-range > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.75rem;
+}
+
+.booking-progress-range b {
+  color: #9b4d00;
+}
+
+.booking-progress-range input {
+  width: 100%;
+  accent-color: #b45309;
+}
+
+.booking-progress-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.booking-progress-dialog {
+  width: min(680px, 100%);
+}
+
 .booking-history {
   margin-top: 1rem;
   border-top: 1px solid #eadfd7;
@@ -365,6 +470,11 @@
   .booking-lifecycle-facts > div:first-child {
     border-right: 0;
     padding: 0.75rem 0;
+  }
+
+  .booking-progress-details,
+  .booking-progress-field-grid {
+    grid-template-columns: 1fr;
   }
 }
 

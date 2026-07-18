@@ -17,3 +17,7 @@ export function updateParentProfile(data) {
 export function listParentLinks() {
   return apiClient.get(API_ENDPOINTS.parents.links).then(normalizeListResponse)
 }
+
+export function getParentStudent(id) {
+  return apiClient.get(API_ENDPOINTS.parents.studentDetail(id))
+}

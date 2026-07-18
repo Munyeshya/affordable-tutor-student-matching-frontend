@@ -14,6 +14,10 @@ export function updateBookingAction(id, payload) {
   return apiClient.patch(API_ENDPOINTS.bookings.action(id), payload)
 }
 
+export function updateBookingProgress(id, payload) {
+  return apiClient.patch(API_ENDPOINTS.bookings.progress(id), payload)
+}
+
 export function createScheduleProposal(payload) {
   return apiClient.post(API_ENDPOINTS.bookings.proposalCreate, payload)
 }

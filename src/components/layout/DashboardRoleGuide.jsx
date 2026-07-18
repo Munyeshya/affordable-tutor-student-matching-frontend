@@ -10,7 +10,7 @@ const guides = {
     summary: 'Find affordable tutors, manage your lessons, and keep track of your learning progress.',
     actions: [
       ['Find a tutor', 'Search by tutor name, subject, lesson, topic, level, location, price, or teaching mode.', '/tutors'],
-      ['Request lessons', 'Book an approved tutor and choose a suitable schedule and learning mode.', '/book'],
+      ['Request lessons', 'Choose an approved tutor, then select a suitable schedule and learning mode.', '/tutors'],
       ['Manage learning', 'Follow bookings, complete assessments, access purchased courses, and review completed lessons.', '/bookings'],
       ['Communicate safely', 'Message tutors connected to your bookings and receive account notifications.', '/messages'],
     ],
