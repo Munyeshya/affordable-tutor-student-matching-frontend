@@ -48,6 +48,12 @@
   font-size: 0.84rem;
   line-height: 1.65;
 }
+.dashboard-guide-body aside > p + p {
+  margin-top: 14px;
+  border-top: 1px solid #e5ddd6;
+  padding-top: 14px;
+}
+.dashboard-guide-body aside > p strong { color: #8e4500; }
 .dashboard-guide-header button {
   width: 42px;
   height: 42px;
