@@ -5,6 +5,7 @@ import { Page } from '../App'
 import { MinimalList } from '../components/ui/PagePrimitives.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { getRoleHomePath } from '../routes/rolePaths.js'
+import './SignInPage.css'
 
 const signInRoles = [
   'Student dashboard access',
@@ -54,7 +55,7 @@ export function SignInPage() {
         <article className="panel card">
           <p className="eyebrow">Welcome back</p>
           <h2>Sign in to manage your activity.</h2>
-          <form className="steps-list" onSubmit={handleSubmit}>
+          <form className="steps-list sign-in-form" onSubmit={handleSubmit}>
             <input
               type="email"
               placeholder="Email address"

@@ -1,0 +1,4 @@
+.sign-in-form input[type='email'],
+.sign-in-form input[type='password'] {
+  border-radius: 0;
+}
