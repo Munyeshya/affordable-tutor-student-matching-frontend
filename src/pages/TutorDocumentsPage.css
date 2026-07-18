@@ -1,0 +1,634 @@
+.tutor-documents-page {
+  display: grid;
+  gap: 18px;
+  color: #27231f;
+}
+
+.tutor-documents-header,
+.tutor-verification-progress,
+.tutor-documents-summary article,
+.tutor-documents-page .verification-actions,
+.tutor-document-form-card,
+.tutor-uploaded-documents {
+  border: 1px solid #e8e2dc;
+  background: #ffffff;
+}
+
+.tutor-documents-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 3px solid #d86400;
+  padding: 28px 30px;
+}
+
+.tutor-documents-eyebrow,
+.tutor-verification-progress header p,
+.tutor-document-form-card header p,
+.tutor-uploaded-documents > header p {
+  margin: 0;
+  color: #d86400;
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tutor-documents-header h1 {
+  margin: 5px 0 8px;
+  color: #181614;
+  font-size: clamp(1.65rem, 2.5vw, 2.15rem);
+}
+
+.tutor-documents-header > div:first-child > p:last-child {
+  max-width: 700px;
+  margin: 0;
+  color: #6c655f;
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.tutor-documents-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 9px;
+}
+
+.tutor-documents-header-actions .primary-button,
+.tutor-documents-header-actions .secondary-button,
+.tutor-documents-page .verification-actions .primary-button,
+.tutor-documents-page .verification-actions .secondary-button {
+  border-radius: 4px;
+  font-size: 0.73rem;
+}
+
+.tutor-documents-notice {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #efd1b6;
+  border-left: 3px solid #d86400;
+  background: #fffaf5;
+  padding: 12px 15px;
+  color: #6d5c4e;
+  font-size: 0.75rem;
+}
+
+.tutor-documents-notice svg {
+  flex: 0 0 auto;
+  color: #d86400;
+}
+
+.tutor-verification-progress {
+  padding: 22px 24px;
+}
+
+.tutor-verification-progress > header,
+.tutor-uploaded-documents > header,
+.tutor-documents-page .verification-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.tutor-verification-progress header h2,
+.tutor-uploaded-documents > header h2 {
+  margin: 4px 0 0;
+  color: #282420;
+  font-size: 1.15rem;
+}
+
+.tutor-verification-state,
+.tutor-document-status {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.tutor-verification-state {
+  background: #fff3e7;
+  color: #9d4b00;
+}
+
+.tutor-verification-state.is-ready,
+.tutor-document-status.is-approved {
+  background: #edf8f1;
+  color: #176540;
+}
+
+.tutor-verification-progress-bar {
+  height: 7px;
+  margin-top: 18px;
+  overflow: hidden;
+  background: #eee9e4;
+}
+
+.tutor-verification-progress-bar span {
+  display: block;
+  height: 100%;
+  background: #d86400;
+  transition: width 260ms ease;
+}
+
+.tutor-verification-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 17px;
+  border: 1px solid #ebe5df;
+  background: #ebe5df;
+}
+
+.tutor-verification-steps article {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  background: #fff;
+  padding: 12px;
+}
+
+.tutor-verification-steps article > span {
+  display: grid;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid #ddd5ce;
+  color: #79716a;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.tutor-verification-steps article.is-complete > span {
+  border-color: #b9ddc7;
+  background: #edf8f1;
+  color: #176540;
+}
+
+.tutor-verification-steps article > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.tutor-verification-steps strong {
+  overflow: hidden;
+  color: #39342f;
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-verification-steps small {
+  color: #817972;
+  font-size: 0.62rem;
+}
+
+.tutor-verification-steps .is-complete small {
+  color: #176540;
+}
+
+.tutor-documents-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.tutor-documents-summary article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  border-left: 3px solid #d86400;
+  padding: 17px 18px;
+}
+
+.tutor-documents-summary article > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  background: #fff4e9;
+  color: #c75c00;
+}
+
+.tutor-documents-summary article div {
+  display: grid;
+  gap: 3px;
+}
+
+.tutor-documents-summary small {
+  color: #7b746d;
+  font-size: 0.64rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.tutor-documents-summary strong {
+  color: #292521;
+  font-size: 0.95rem;
+}
+
+.tutor-documents-summary p {
+  margin: 0;
+  color: #817970;
+  font-size: 0.65rem;
+}
+
+.tutor-documents-page .verification-actions {
+  margin: 0;
+  padding: 22px 24px;
+}
+
+.tutor-documents-page .verification-actions .eyebrow {
+  color: #d86400;
+  font-size: 0.66rem;
+}
+
+.tutor-documents-page .verification-actions h2 {
+  margin-top: 4px;
+  font-size: 1.1rem;
+}
+
+.tutor-documents-page .verification-action-grid {
+  gap: 10px;
+}
+
+.tutor-documents-page .verification-action-card {
+  border: 1px solid #eadfd5;
+  background: #fffaf5;
+  padding: 14px;
+}
+
+.tutor-document-workflow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.tutor-document-form-card > header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid #ece6df;
+  padding: 19px 21px;
+}
+
+.tutor-document-form-card > header > span {
+  display: grid;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid #f0d2b7;
+  background: #fff8f1;
+  color: #c75c00;
+}
+
+.tutor-document-form-card header h2 {
+  margin: 3px 0 4px;
+  color: #292521;
+  font-size: 1rem;
+}
+
+.tutor-document-form-card header small {
+  display: block;
+  color: #78716a;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.tutor-document-form-card form {
+  display: grid;
+  gap: 14px;
+  padding: 20px 21px;
+}
+
+.tutor-document-field {
+  display: grid;
+  gap: 7px;
+}
+
+.tutor-document-field > span {
+  color: #4e4944;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.tutor-document-field input,
+.tutor-document-field select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #dcd5ce;
+  border-radius: 4px;
+  background: #fff;
+  padding: 9px 11px;
+  color: #282420;
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.tutor-document-field input:focus,
+.tutor-document-field select:focus {
+  border-color: #d86400;
+  outline: 2px solid rgba(216, 100, 0, 0.14);
+  outline-offset: 1px;
+}
+
+.tutor-document-file {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  border: 1px dashed #d5c8bc;
+  background: #faf8f6;
+  padding: 19px;
+  color: #c15a00;
+  text-align: center;
+  cursor: pointer;
+}
+
+.tutor-document-file:hover,
+.tutor-document-file:focus-within {
+  border-color: #d86400;
+  background: #fff9f3;
+}
+
+.tutor-document-file > span {
+  max-width: 100%;
+  overflow: hidden;
+  color: #3e3934;
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-document-file small {
+  color: #827a73;
+  font-size: 0.64rem;
+}
+
+.tutor-document-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.tutor-document-form-card form > .primary-button {
+  width: fit-content;
+  min-width: 150px;
+  border-radius: 4px;
+}
+
+.tutor-agreement-download {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 42px);
+  margin: 18px 21px 0;
+  border: 1px solid #ead7c5;
+  background: #fff8f1;
+  padding: 10px 12px;
+  color: #9d4b00;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tutor-agreement-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  border: 1px solid #e6ded7;
+  background: #faf8f6;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.tutor-agreement-check input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: #d86400;
+}
+
+.tutor-agreement-check span {
+  display: grid;
+  gap: 3px;
+}
+
+.tutor-agreement-check strong {
+  color: #3c3732;
+  font-size: 0.72rem;
+}
+
+.tutor-agreement-check small {
+  color: #7e766f;
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.tutor-uploaded-documents {
+  padding: 22px 24px;
+}
+
+.tutor-uploaded-documents > header {
+  border-bottom: 1px solid #ece6df;
+  padding-bottom: 15px;
+}
+
+.tutor-uploaded-documents > header > span {
+  color: #777069;
+  font-size: 0.72rem;
+}
+
+.tutor-document-list {
+  display: grid;
+}
+
+.tutor-document-list article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid #eee8e2;
+  padding: 15px 0;
+}
+
+.tutor-document-list article:last-child {
+  border-bottom: 0;
+}
+
+.tutor-document-list-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  background: #f5f1ed;
+  color: #6f6760;
+}
+
+.tutor-document-list-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.tutor-document-list h3,
+.tutor-document-list p {
+  margin: 0;
+}
+
+.tutor-document-list h3 {
+  color: #312d29;
+  font-size: 0.8rem;
+}
+
+.tutor-document-list p {
+  overflow: hidden;
+  color: #746d66;
+  font-size: 0.69rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-document-list small {
+  color: #8a8179;
+  font-size: 0.63rem;
+}
+
+.tutor-document-status.is-pending {
+  background: #fff3e7;
+  color: #985000;
+}
+
+.tutor-document-status.is-action {
+  background: #fff0eb;
+  color: #9b321c;
+}
+
+.tutor-document-list a {
+  border-bottom: 1px solid #d86400;
+  color: #a34c00;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.tutor-documents-loading {
+  display: grid;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.tutor-documents-loading span {
+  height: 56px;
+  background: #f3f0ec;
+  animation: tutor-documents-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.tutor-documents-empty {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 36px 20px 20px;
+  color: #a14c00;
+  text-align: center;
+}
+
+.tutor-documents-empty h3,
+.tutor-documents-empty p {
+  margin: 0;
+}
+
+.tutor-documents-empty h3 {
+  color: #37322d;
+  font-size: 0.9rem;
+}
+
+.tutor-documents-empty p {
+  color: #79716a;
+  font-size: 0.7rem;
+}
+
+.tutor-documents-empty .secondary-button {
+  margin-top: 6px;
+  border-radius: 4px;
+}
+
+@keyframes tutor-documents-pulse {
+  to { opacity: 0.5; }
+}
+
+@media (max-width: 960px) {
+  .tutor-verification-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tutor-document-workflow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .tutor-documents-header {
+    display: grid;
+    padding: 22px 18px;
+  }
+
+  .tutor-documents-header-actions {
+    display: grid;
+  }
+
+  .tutor-documents-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .tutor-verification-progress,
+  .tutor-documents-page .verification-actions,
+  .tutor-uploaded-documents {
+    padding: 18px;
+  }
+
+  .tutor-document-list article {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .tutor-document-status,
+  .tutor-document-list a {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 500px) {
+  .tutor-verification-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .tutor-documents-page .verification-section-head {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutor-verification-progress-bar span {
+    transition: none;
+  }
+
+  .tutor-documents-loading span {
+    animation: none;
+  }
+}
