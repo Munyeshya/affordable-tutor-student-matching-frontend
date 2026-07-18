@@ -21,6 +21,9 @@ describe('role navigation', () => {
   it('keeps role-specific actions separated', () => {
     expect(getDashboardNavigationPaths('ADMIN')).toContain('/admin/reviews')
     expect(getDashboardNavigationPaths('ADMIN')).not.toContain('/tutor-earnings')
+    expect(getDashboardNavigationPaths('ADMIN')).not.toContain('/bookings')
+    expect(getDashboardNavigationPaths('ADMIN')).not.toContain('/schedule-proposals')
+    expect(getDashboardNavigationPaths('ADMIN')).not.toContain('/messages')
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/tutor-earnings')
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/assessments')

@@ -14,16 +14,8 @@ const navigationByRole = {
         { label: 'Course moderation', to: '/admin/courses', icon: 'courses' },
         { label: 'Review moderation', to: '/admin/reviews', icon: 'reviews' },
         { label: 'Disputes', to: '/admin/disputes', icon: 'disputes' },
-        { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
-        { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Reports', to: '/reports', icon: 'reports' },
         { label: 'Audit trail', to: '/admin/audit', icon: 'audit' },
-      ],
-    },
-    {
-      label: 'Communication',
-      items: [
-        { label: 'Messages', to: '/messages', icon: 'messages' },
       ],
     },
     {

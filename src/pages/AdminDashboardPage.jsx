@@ -120,7 +120,7 @@ export function AdminDashboardPage() {
       <section className="admin-health-strip" aria-label="Administration queues">
         <Link to="/admin/tutor-reviews"><span><DashboardIcon name="verification" /></span><div><small>Tutor reviews</small><strong>{health.pending_verifications || 0}</strong></div></Link>
         <Link to="/admin/disputes"><span><DashboardIcon name="disputes" /></span><div><small>Open disputes</small><strong>{health.open_disputes || 0}</strong></div></Link>
-        <Link to="/bookings"><span><DashboardIcon name="bookings" /></span><div><small>Open bookings</small><strong>{health.open_bookings || 0}</strong></div></Link>
+        <Link to="/reports"><span><DashboardIcon name="bookings" /></span><div><small>Pending requests</small><strong>{health.open_bookings || 0}</strong></div></Link>
         <Link to="/admin/courses"><span><DashboardIcon name="courses" /></span><div><small>Course reviews</small><strong>{health.pending_course_reviews || 0}</strong></div></Link>
         <Link to="/admin/reviews"><span><DashboardIcon name="reviews" /></span><div><small>Review reports</small><strong>{health.open_review_reports || 0}</strong></div></Link>
         <Link to="/notifications"><span><DashboardIcon name="bell" /></span><div><small>Unread notices</small><strong>{health.unread_notifications || 0}</strong></div></Link>
@@ -287,7 +287,6 @@ export function AdminDashboardPage() {
               <Link to="/admin/courses"><DashboardIcon name="courses" /><span><strong>Course moderation</strong><small>Preview lessons and decide submissions</small></span></Link>
               <Link to="/admin/reviews"><DashboardIcon name="reviews" /><span><strong>Review moderation</strong><small>Investigate reported student feedback</small></span></Link>
               <Link to="/admin/disputes"><DashboardIcon name="disputes" /><span><strong>Dispute management</strong><small>Resolve reported booking issues</small></span></Link>
-              <Link to="/bookings"><DashboardIcon name="bookings" /><span><strong>All bookings</strong><small>Monitor platform tutoring activity</small></span></Link>
               <Link to="/reports"><DashboardIcon name="reports" /><span><strong>Printable reports</strong><small>Open the complete platform report</small></span></Link>
             </nav>
           </section>

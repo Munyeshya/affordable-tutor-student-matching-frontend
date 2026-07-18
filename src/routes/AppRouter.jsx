@@ -8,6 +8,7 @@ import { PublicLayout } from '../layouts/PublicLayout.jsx'
 import { adminRoutes } from './adminRoutes.jsx'
 import { authRoutes } from './authRoutes.jsx'
 import { parentRoutes } from './parentRoutes.jsx'
+import { participantRoutes } from './participantRoutes.jsx'
 import { protectedRoutes } from './protectedRoutes.jsx'
 import { publicRoutes } from './publicRoutes.jsx'
 import { studentRoutes } from './studentRoutes.jsx'
@@ -39,6 +40,10 @@ export function AppRouter() {
         <Route element={<RequireAuth />}>
           <Route element={<DashboardLayout />}>
             {renderRoutes(protectedRoutes)}
+
+            <Route element={<RequireRole roles={['STUDENT', 'TUTOR', 'PARENT']} />}>
+              {renderRoutes(participantRoutes)}
+            </Route>
 
             <Route element={<RequireRole roles={['STUDENT']} />}>
               {renderRoutes(studentRoutes)}
