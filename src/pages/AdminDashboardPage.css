@@ -385,33 +385,12 @@
   font-weight: 800;
 }
 
-.admin-impact-total {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  border-top: 1px solid var(--admin-line);
-  padding-top: 0.85rem;
-}
-
-.admin-impact-total strong {
-  color: var(--admin-orange-dark);
-  font-size: 1.8rem;
-}
-
-.admin-impact-total span {
-  max-width: 130px;
-  color: var(--admin-muted);
-  font-size: 0.7rem;
-}
-
-.admin-impact-panel dl,
 .admin-marketplace-list {
   display: grid;
   gap: 0.45rem;
   margin: 0.9rem 0 0;
 }
 
-.admin-impact-panel dl div,
 .admin-marketplace-list div {
   display: flex;
   justify-content: space-between;
@@ -419,14 +398,154 @@
   font-size: 0.7rem;
 }
 
-.admin-impact-panel dt,
 .admin-marketplace-list dt {
   color: var(--admin-muted);
 }
 
-.admin-impact-panel dd,
 .admin-marketplace-list dd {
   margin: 0;
+  font-weight: 800;
+}
+
+.admin-learning-overview {
+  padding: 1.1rem;
+}
+
+.admin-learning-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  border-top: 1px solid var(--admin-line);
+}
+
+.admin-reach-summary,
+.admin-progress-summary {
+  min-width: 0;
+  padding-top: 1rem;
+}
+
+.admin-reach-summary {
+  border-right: 1px solid var(--admin-line);
+  padding-right: 1.1rem;
+}
+
+.admin-progress-summary {
+  padding-left: 1.1rem;
+}
+
+.admin-impact-section-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.admin-impact-section-title > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  background: var(--admin-orange-soft);
+  color: var(--admin-orange-dark);
+}
+
+.admin-impact-section-title h3 {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.admin-impact-section-title p {
+  margin: 0.18rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.admin-period-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0.9rem 0 0;
+}
+
+.admin-period-stats div {
+  border-left: 2px solid var(--admin-orange);
+  background: #faf8f6;
+  padding: 0.65rem 0.7rem;
+}
+
+.admin-period-stats dt,
+.admin-period-stats small,
+.admin-score-comparison small {
+  color: var(--admin-muted);
+  font-size: 0.61rem;
+}
+
+.admin-period-stats dd {
+  margin: 0.12rem 0 0.05rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.admin-period-stats small {
+  display: block;
+}
+
+.admin-score-comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+}
+
+.admin-score-comparison > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.7rem;
+  background: #faf8f6;
+  padding: 0.68rem 0.75rem;
+}
+
+.admin-score-comparison strong {
+  font-size: 1.05rem;
+}
+
+.admin-score-comparison > span {
+  color: var(--admin-orange-dark);
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-outcome-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0.8rem 0 0;
+}
+
+.admin-outcome-stats div {
+  border-right: 1px solid var(--admin-line);
+  padding: 0 0.65rem;
+}
+
+.admin-outcome-stats div:first-child {
+  padding-left: 0;
+}
+
+.admin-outcome-stats div:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.admin-outcome-stats dt {
+  color: var(--admin-muted);
+  font-size: 0.6rem;
+}
+
+.admin-outcome-stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
   font-weight: 800;
 }
 
@@ -551,6 +670,21 @@
     grid-template-columns: 1fr;
   }
 
+  .admin-learning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-reach-summary {
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-line);
+    padding-right: 0;
+    padding-bottom: 1rem;
+  }
+
+  .admin-progress-summary {
+    padding-left: 0;
+  }
+
   .admin-overview-side {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -620,6 +754,29 @@
   .admin-booking-breakdown {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 0.65rem;
+  }
+
+  .admin-period-stats,
+  .admin-outcome-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-period-stats div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .admin-outcome-stats div {
+    border-right: 0;
+    border-top: 1px solid var(--admin-line);
+    padding: 0.55rem 0;
+  }
+
+  .admin-score-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-score-comparison > span {
+    justify-self: center;
   }
 
   .admin-booking-breakdown div:nth-child(2) {

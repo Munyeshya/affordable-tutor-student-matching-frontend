@@ -61,6 +61,7 @@ export function AdminDashboardPage() {
   const tutoring = analytics.tutoring || {}
   const pipeline = analytics.tutor_pipeline || {}
   const impact = analytics.educational_impact || {}
+  const studentsHelped = impact.students_helped_by_period || {}
   const courses = analytics.courses || {}
   const revenue = analytics.revenue || {}
   const health = analytics.platform_health || {}
@@ -123,6 +124,54 @@ export function AdminDashboardPage() {
         <Link to="/admin/courses"><span><DashboardIcon name="courses" /></span><div><small>Course reviews</small><strong>{health.pending_course_reviews || 0}</strong></div></Link>
         <Link to="/admin/reviews"><span><DashboardIcon name="reviews" /></span><div><small>Review reports</small><strong>{health.open_review_reports || 0}</strong></div></Link>
         <Link to="/notifications"><span><DashboardIcon name="bell" /></span><div><small>Unread notices</small><strong>{health.unread_notifications || 0}</strong></div></Link>
+      </section>
+
+      <section className="admin-overview-panel admin-learning-overview">
+        <SectionHeading
+          eyebrow="Educational impact"
+          title="Students reached and verified progress"
+          to="/reports"
+          action="Full report"
+        />
+        {analyticsQuery.isLoading ? <AdminSkeleton rows={3} /> : (
+          <div className="admin-learning-grid">
+            <div className="admin-reach-summary">
+              <div className="admin-impact-section-title">
+                <span><DashboardIcon name="students" /></span>
+                <div>
+                  <h3>Unique students helped</h3>
+                  <p>Students with completed tutoring sessions in each current period.</p>
+                </div>
+              </div>
+              <dl className="admin-period-stats">
+                <div><dt>Today</dt><dd>{studentsHelped.daily || 0}</dd><small>Daily reach</small></div>
+                <div><dt>This week</dt><dd>{studentsHelped.weekly || 0}</dd><small>Since Monday</small></div>
+                <div><dt>This month</dt><dd>{studentsHelped.monthly || 0}</dd><small>Calendar month</small></div>
+              </dl>
+            </div>
+
+            <div className="admin-progress-summary">
+              <div className="admin-impact-section-title">
+                <span><DashboardIcon name="reports" /></span>
+                <div>
+                  <h3>Verified learning improvement</h3>
+                  <p>Only student-confirmed pre-test and post-test outcomes are included.</p>
+                </div>
+              </div>
+              <div className="admin-score-comparison">
+                <div><small>Initial average</small><strong>{Number(impact.average_initial_score || 0).toFixed(1)}%</strong></div>
+                <span aria-hidden="true">to</span>
+                <div><small>Final average</small><strong>{Number(impact.average_final_score || 0).toFixed(1)}%</strong></div>
+              </div>
+              <dl className="admin-outcome-stats">
+                <div><dt>Average gain</dt><dd>+{Number(impact.average_improvement || 0).toFixed(1)}%</dd></div>
+                <div><dt>Students improved</dt><dd>{impact.students_with_improvement || 0}</dd></div>
+                <div><dt>Positive outcomes</dt><dd>{Number(impact.positive_outcome_rate || 0).toFixed(0)}%</dd></div>
+                <div><dt>Confirmed results</dt><dd>{impact.confirmed_improvements || 0}</dd></div>
+              </dl>
+            </div>
+          </div>
+        )}
       </section>
 
       <div className="admin-overview-grid">
@@ -202,14 +251,7 @@ export function AdminDashboardPage() {
           </section>
         </div>
 
-        <aside className="admin-overview-side" aria-label="Platform impact and shortcuts">
-          <section className="admin-overview-panel admin-impact-panel">
-            <SectionHeading eyebrow="Learning impact" title="Verified outcomes" to="/reports" action="Details" />
-            {analyticsQuery.isLoading ? <AdminSkeleton rows={2} /> : (
-              <><div className="admin-impact-total"><strong>{Number(impact.average_improvement || 0).toFixed(1)}%</strong><span>average confirmed improvement</span></div><dl><div><dt>Students helped</dt><dd>{impact.students_helped || 0}</dd></div><div><dt>Confirmed outcomes</dt><dd>{impact.confirmed_improvements || 0}</dd></div><div><dt>Highest improvement</dt><dd>{Number(impact.highest_improvement || 0).toFixed(1)}%</dd></div></dl></>
-            )}
-          </section>
-
+        <aside className="admin-overview-side" aria-label="Platform shortcuts and demand">
           <section className="admin-overview-panel">
             <SectionHeading eyebrow="Marketplace" title="Courses and tutors" />
             <dl className="admin-marketplace-list">
