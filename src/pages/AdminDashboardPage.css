@@ -506,6 +506,108 @@
   font-weight: 800;
 }
 
+.admin-course-performance {
+  padding: 1.1rem;
+}
+
+.admin-course-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--admin-line);
+  border-bottom: 1px solid var(--admin-line);
+  margin: 0;
+}
+
+.admin-course-kpis div {
+  min-width: 0;
+  display: grid;
+  gap: 0.16rem;
+  border-right: 1px solid var(--admin-line);
+  padding: 0.9rem;
+}
+
+.admin-course-kpis div:first-child {
+  padding-left: 0;
+}
+
+.admin-course-kpis div:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.admin-course-kpis dt,
+.admin-course-kpis small,
+.admin-course-rankings small,
+.admin-course-note {
+  color: var(--admin-muted);
+  font-size: 0.63rem;
+}
+
+.admin-course-kpis dd {
+  margin: 0;
+  color: var(--admin-orange-dark);
+  font-size: 1.08rem;
+  font-weight: 850;
+}
+
+.admin-course-rankings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.9rem;
+}
+
+.admin-course-rankings > div {
+  min-width: 0;
+  padding-right: 1rem;
+}
+
+.admin-course-rankings > div + div {
+  border-left: 1px solid var(--admin-line);
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+.admin-course-rankings h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+}
+
+.admin-course-rankings ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-course-rankings li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.08rem 0.75rem;
+  border-top: 1px solid var(--admin-line);
+  padding: 0.55rem 0;
+}
+
+.admin-course-rankings li > span {
+  overflow: hidden;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-course-rankings li > strong {
+  color: var(--admin-orange-dark);
+  font-size: 0.68rem;
+}
+
+.admin-course-rankings li > small {
+  grid-column: 1 / -1;
+}
+
+.admin-course-note {
+  margin: 0.65rem 0 0;
+  line-height: 1.45;
+}
+
 .admin-learning-overview {
   padding: 1.1rem;
 }
@@ -922,6 +1024,18 @@
   .admin-overview-side {
     grid-template-columns: 1fr;
   }
+
+  .admin-course-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-course-kpis div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .admin-course-kpis div:nth-child(n + 3) {
+    border-top: 1px solid var(--admin-line);
+  }
 }
 
 @media (max-width: 560px) {
@@ -949,6 +1063,33 @@
   }
 
   .admin-revenue-breakdown > div + div {
+    margin-top: 0.9rem;
+  }
+
+  .admin-course-kpis,
+  .admin-course-rankings {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-course-kpis div,
+  .admin-course-kpis div:first-child,
+  .admin-course-kpis div:last-child {
+    border-top: 1px solid var(--admin-line);
+    border-right: 0;
+    padding: 0.7rem 0;
+  }
+
+  .admin-course-kpis div:first-child {
+    border-top: 0;
+  }
+
+  .admin-course-rankings > div,
+  .admin-course-rankings > div + div {
+    border-left: 0;
+    padding: 0;
+  }
+
+  .admin-course-rankings > div + div {
     margin-top: 0.9rem;
   }
 

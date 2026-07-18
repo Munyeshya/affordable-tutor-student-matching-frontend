@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { queryKeys } from '../api/queryKeys'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
-import { updateLessonProgress } from '../api/services/payments'
+import { recordLessonView, updateLessonProgress } from '../api/services/payments'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLearningLibraryQuery } from '../hooks/useCommonQueries'
 import './LearningPage.css'
@@ -22,6 +22,20 @@ function LearningSkeleton() {
       <span /><span /><span /><span />
     </div>
   )
+}
+
+function LessonViewTracker({ lessonId }) {
+  const lastRecordedLessonId = useRef(null)
+
+  useEffect(() => {
+    if (!lessonId || lastRecordedLessonId.current === lessonId) return
+    lastRecordedLessonId.current = lessonId
+    recordLessonView(lessonId).catch(() => {
+      lastRecordedLessonId.current = null
+    })
+  }, [lessonId])
+
+  return null
 }
 
 function CourseLibraryCard({ course, selected, onSelect }) {
@@ -186,6 +200,7 @@ export function LearningPage() {
 
       {activeLesson ? (
         <section className="learning-workspace">
+          <LessonViewTracker lessonId={activeLesson.id} />
           <aside className="learning-curriculum" aria-labelledby="curriculum-title">
             <div className="learning-curriculum-head">
               <span>02</span>

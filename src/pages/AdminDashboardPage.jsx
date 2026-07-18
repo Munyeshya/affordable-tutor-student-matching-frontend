@@ -84,6 +84,12 @@ export function AdminDashboardPage() {
   const topRevenueSubjects = Array.isArray(revenue.revenue_by_subject)
     ? revenue.revenue_by_subject.slice(0, 5)
     : []
+  const mostViewedLessons = Array.isArray(courses.most_viewed_lessons)
+    ? courses.most_viewed_lessons.slice(0, 5)
+    : []
+  const mostPurchasedCourses = Array.isArray(courses.most_purchased_courses)
+    ? courses.most_purchased_courses.slice(0, 5)
+    : []
   const firstName = (user?.first_name || user?.username || user?.email || 'Admin').split(/\s|@/)[0]
   const failedQuery = [analyticsQuery, verificationsQuery, disputesQuery].find((query) => query.isError)
 
@@ -222,6 +228,56 @@ export function AdminDashboardPage() {
         )}
       </section>
 
+      <section className="admin-overview-panel admin-course-performance">
+        <SectionHeading
+          eyebrow="Course analytics"
+          title="Course reach and learner activity"
+          to="/reports"
+          action="Printable report"
+        />
+        {analyticsQuery.isLoading ? <AdminSkeleton rows={4} /> : (
+          <>
+            <dl className="admin-course-kpis">
+              <div><dt>Published courses</dt><dd>{courses.published_courses || 0}</dd><small>Available in the marketplace</small></div>
+              <div><dt>Total lessons</dt><dd>{courses.total_lessons || 0}</dd><small>Across every course status</small></div>
+              <div><dt>Lesson views</dt><dd>{courses.total_lesson_views || 0}</dd><small>Purchased lessons opened by learners</small></div>
+              <div><dt>Paid enrollments</dt><dd>{courses.course_purchases || 0}</dd><small>Provider-confirmed course purchases</small></div>
+            </dl>
+            <div className="admin-course-rankings">
+              <div>
+                <h3>Most viewed lessons</h3>
+                {mostViewedLessons.length ? (
+                  <ol>
+                    {mostViewedLessons.map((lesson) => (
+                      <li key={lesson.id}>
+                        <span>{lesson.title}</span>
+                        <strong>{lesson.view_count || 0} view{Number(lesson.view_count) === 1 ? '' : 's'}</strong>
+                        <small>{lesson.course__title}{lesson.topic ? ` / ${lesson.topic}` : ''}</small>
+                      </li>
+                    ))}
+                  </ol>
+                ) : <p className="admin-panel-message">Lesson activity will appear when enrolled learners open course content.</p>}
+              </div>
+              <div>
+                <h3>Most purchased courses</h3>
+                {mostPurchasedCourses.length ? (
+                  <ol>
+                    {mostPurchasedCourses.map((course) => (
+                      <li key={course.course__id}>
+                        <span>{course.course__title}</span>
+                        <strong>{course.count || 0} enrollment{Number(course.count) === 1 ? '' : 's'}</strong>
+                        <small>{formatMoney(course.revenue)} paid course value</small>
+                      </li>
+                    ))}
+                  </ol>
+                ) : <p className="admin-panel-message">Course rankings will appear after paid enrollments.</p>}
+              </div>
+            </div>
+            <p className="admin-course-note">A lesson view is recorded only when a signed-in student opens content from a course they have purchased.</p>
+          </>
+        )}
+      </section>
+
       <div className="admin-overview-grid">
         <div className="admin-overview-main">
           <section className="admin-overview-panel admin-trend-panel">
@@ -350,6 +406,7 @@ export function AdminDashboardPage() {
               <div><dt>Published courses</dt><dd>{courses.published_courses || 0}</dd></div>
               <div><dt>Pending courses</dt><dd>{courses.pending_courses || 0}</dd></div>
               <div><dt>Total lessons</dt><dd>{courses.total_lessons || 0}</dd></div>
+              <div><dt>Lesson views</dt><dd>{courses.total_lesson_views || 0}</dd></div>
               <div><dt>Verified tutors</dt><dd>{users.verified_tutors || 0}</dd></div>
               <div><dt>Signed agreements</dt><dd>{pipeline.tutors_with_signed_agreements || 0}</dd></div>
             </dl>

@@ -82,3 +82,7 @@ export function getPrintablePaymentReceipt(number) {
 export function updateLessonProgress(data) {
   return apiClient.post(API_ENDPOINTS.payments.lessonProgressUpdate, data)
 }
+
+export function recordLessonView(lessonId) {
+  return apiClient.post(API_ENDPOINTS.payments.lessonViewRecord, { lesson_id: lessonId })
+}

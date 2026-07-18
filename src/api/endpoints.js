@@ -107,6 +107,7 @@
     learningLibrary: '/payments/learning-library/',
     lessonProgress: '/payments/lesson-progress/',
     lessonProgressUpdate: '/payments/lesson-progress/update/',
+    lessonViewRecord: '/payments/lesson-progress/view/',
     payouts: '/payments/payouts/',
     payoutSummary: '/payments/payouts/summary/',
     payoutRequest: '/payments/payouts/request/',

@@ -31,7 +31,25 @@ const analytics = {
     employment_profiles_completed: 2,
     total_tutors_registered: 2,
   },
-  courses: { course_purchases: 2 },
+  courses: {
+    published_courses: 3,
+    total_lessons: 12,
+    total_lesson_views: 24,
+    course_purchases: 2,
+    most_viewed_lessons: [{
+      id: 8,
+      title: 'Reading fluency',
+      topic: 'Fluency',
+      course__title: 'Reading confidence',
+      view_count: 14,
+    }],
+    most_purchased_courses: [{
+      course__id: 3,
+      course__title: 'English foundations',
+      count: 2,
+      revenue: 8000,
+    }],
+  },
   revenue: {
     platform_revenue: 16000,
     booking_revenue: 8000,
@@ -72,5 +90,17 @@ describe('AdminDashboardPage revenue analytics', () => {
     expect(screen.getByText('3 paid transactions')).toBeInTheDocument()
     expect(screen.getAllByText('RWF 16,000').length).toBeGreaterThan(0)
     expect(screen.getByText(/gross marketplace activity, not ISOMO net profit/i)).toBeInTheDocument()
+  })
+
+  it('shows lesson views and the course performance rankings', async () => {
+    renderWithProviders(<AdminDashboardPage />)
+
+    expect(await screen.findByRole('heading', { name: 'Course reach and learner activity' })).toBeInTheDocument()
+    expect(await screen.findByText('Reading fluency')).toBeInTheDocument()
+    expect(screen.getByText('14 views')).toBeInTheDocument()
+    expect(screen.getByText('English foundations')).toBeInTheDocument()
+    expect(screen.getByText('2 enrollments')).toBeInTheDocument()
+    expect(screen.getAllByText('24').length).toBeGreaterThan(0)
+    expect(screen.getByText(/only when a signed-in student opens content/i)).toBeInTheDocument()
   })
 })
