@@ -1,4 +1,4 @@
-## Project Descriptio
+## Project Description
 
 This project is an affordable tutor–student matching platform that connects students who need academic support with verified tutors who can teach specific subjects at flexible times and fair prices. The platform includes a student portal to search and book tutors, a tutor portal to create profiles and availability, and an admin dashboard to verify tutors, manage quality, and handle disputes.
 
