@@ -134,8 +134,13 @@ function StudentAssessmentCard({ assessment, attempt, initialCompleted, lessonCo
       <div className="assessment-card-action">
         {attempt ? (
           <><strong>{formatPercent(attempt.percentage)}</strong><span>Submitted {formatDate(attempt.submitted_at)}</span></>
+        ) : awaitingInitial ? (
+          <>
+            <span>Initial assessment required</span>
+            <button type="button" onClick={() => toast.error('Complete the initial assessment first.')}>Start assessment</button>
+          </>
         ) : locked ? (
-          <span>{awaitingInitial ? 'Complete the initial assessment before taking the final assessment.' : assessment.availability_message || 'Complete the learning activity first'}</span>
+          <span>{assessment.availability_message || 'Complete the learning activity first'}</span>
         ) : !hasQuestions ? (
           <span>Questions are being prepared</span>
         ) : (

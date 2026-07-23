@@ -1,6 +1,7 @@
 import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,6 +10,9 @@ import { useLearningLibraryQuery } from '../hooks/useCommonQueries.js'
 import { listAssessmentAttempts, listAssessments } from '../api/services/assessments'
 import { LearningPage } from './LearningPage.jsx'
 
+const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }))
+
+vi.mock('react-toastify', () => ({ toast }))
 vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 vi.mock('../hooks/useCommonQueries.js', () => ({ useLearningLibraryQuery: vi.fn() }))
 vi.mock('../api/services/payments', () => ({
@@ -93,6 +97,7 @@ describe('student course learning hierarchy', () => {
   })
 
   it('locks the final assessment until the initial assessment is submitted', async () => {
+    const user = userEvent.setup()
     listAssessments.mockResolvedValue({
       data: [
         { id: 1, lesson: 12, course_id: 7, context_type: 'COURSE_LESSON', context_title: 'Algebra foundations / Linear equations', attempt_type: 'PRE_TEST', title: 'Initial algebra check', description: 'Starting knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: true, availability_message: '', questions: [{ id: 101, question: '2 + 2?', option_a: '4', option_b: '5' }] },
@@ -102,7 +107,13 @@ describe('student course learning hierarchy', () => {
 
     renderLearningPage('/my-courses/7/lessons/12')
 
-    expect(await screen.findByText('Complete the initial assessment before taking the final assessment.')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: 'Start assessment' })).toHaveLength(1)
+    expect(await screen.findByText('Initial assessment required')).toBeInTheDocument()
+    const startButtons = screen.getAllByRole('button', { name: 'Start assessment' })
+    expect(startButtons).toHaveLength(2)
+
+    await user.click(startButtons[1])
+
+    expect(toast.error).toHaveBeenCalledWith('Complete the initial assessment first.')
+    expect(screen.queryByRole('button', { name: 'Exit quiz' })).not.toBeInTheDocument()
   })
 })
