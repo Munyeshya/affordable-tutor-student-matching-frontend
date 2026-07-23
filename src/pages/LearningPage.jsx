@@ -38,13 +38,9 @@ function LessonViewTracker({ lessonId }) {
   return null
 }
 
-function CourseLibraryCard({ course, selected, onSelect }) {
+function CourseLibraryCard({ course }) {
   return (
-    <button
-      type="button"
-      className={`learning-library-card ${selected ? 'is-selected' : ''}`}
-      onClick={() => onSelect(course)}
-    >
+    <Link className="learning-library-card" to={`/my-courses/${course.course_id}`}>
       <span className="learning-library-thumb">
         {course.thumbnail_url ? <img src={course.thumbnail_url} alt="" /> : course.subject_name?.slice(0, 2).toUpperCase() || 'IS'}
       </span>
@@ -53,8 +49,11 @@ function CourseLibraryCard({ course, selected, onSelect }) {
         <strong>{course.title}</strong>
         <span>{course.completed_lessons} of {course.total_lessons} lessons complete</span>
       </span>
-      <span className="learning-library-percent">{course.progress_percent}%</span>
-    </button>
+      <span className="learning-library-meta">
+        <strong>{course.progress_percent}%</strong>
+        <small>Open course</small>
+      </span>
+    </Link>
   )
 }
 
@@ -101,22 +100,14 @@ export function LearningPage() {
   const courses = Array.isArray(libraryQuery.data) ? libraryQuery.data : []
   const requestedCourseId = courseId || searchParams.get('course')
   const requestedLessonId = lessonId || searchParams.get('lesson')
-  const activeCourse = courses.find((course) => String(course.course_id) === requestedCourseId) || courses[0]
+  const activeCourse = requestedCourseId
+    ? courses.find((course) => String(course.course_id) === requestedCourseId)
+    : null
   const lessons = activeCourse?.lessons || []
   const firstIncompleteLesson = lessons.find((lesson) => !lesson.progress?.is_completed)
   const activeLesson = lessons.find((lesson) => String(lesson.id) === requestedLessonId)
     || firstIncompleteLesson
     || lessons[0]
-  const totalLessons = courses.reduce((total, course) => total + Number(course.total_lessons || 0), 0)
-  const completedLessons = courses.reduce((total, course) => total + Number(course.completed_lessons || 0), 0)
-
-  function chooseCourse(course) {
-    const nextLesson = course.lessons?.find((lesson) => !lesson.progress?.is_completed) || course.lessons?.[0]
-    navigate(nextLesson
-      ? `/my-courses/${course.course_id}/lessons/${nextLesson.id}`
-      : `/my-courses/${course.course_id}`)
-  }
-
   function chooseLesson(lesson) {
     navigate(`/my-courses/${activeCourse.course_id}/lessons/${lesson.id}`)
   }
@@ -155,6 +146,43 @@ export function LearningPage() {
     )
   }
 
+  if (!requestedCourseId) {
+    return (
+      <section className="student-learning learning-library-page">
+        <header className="learning-page-head">
+          <div>
+            <p className="eyebrow">My courses</p>
+            <h1>Your learning library</h1>
+            <p>Choose a purchased course to open its curriculum, lessons, assessments, and learning progress.</p>
+          </div>
+          <Link className="secondary-button" to="/courses">Browse more courses</Link>
+        </header>
+
+        <section className="learning-library-strip" aria-labelledby="course-library-title">
+          <div className="learning-strip-head">
+            <div><span>01</span><h2 id="course-library-title">Purchased courses</h2></div>
+            <span>{courses.length} course{courses.length === 1 ? '' : 's'}</span>
+          </div>
+          <div className="learning-library-list">
+            {courses.map((course) => <CourseLibraryCard key={course.id} course={course} />)}
+          </div>
+        </section>
+      </section>
+    )
+  }
+
+  if (!activeCourse) {
+    return (
+      <section className="student-learning">
+        <section className="learning-error" role="alert">
+          <h1>Course not found in your library</h1>
+          <p>This course was not purchased by your student account or is no longer available.</p>
+          <Link to="/my-courses">Return to my courses</Link>
+        </section>
+      </section>
+    )
+  }
+
   return (
     <section className="student-learning">
       <nav className="learning-breadcrumb" aria-label="Course location">
@@ -166,32 +194,12 @@ export function LearningPage() {
       </nav>
       <header className="learning-page-head">
         <div>
-          <p className="eyebrow">My learning</p>
+          <p className="eyebrow">Course workspace</p>
           <h1>Continue where you left off</h1>
-          <p>Open a course, move through its lessons, and keep your progress in one place.</p>
+          <p>Move through this course curriculum and keep your lesson progress in one place.</p>
         </div>
-        <dl className="learning-overview">
-          <div><dt>Courses</dt><dd>{courses.length}</dd></div>
-          <div><dt>Lessons complete</dt><dd>{completedLessons}/{totalLessons}</dd></div>
-        </dl>
+        <Link className="secondary-button" to="/my-courses">All my courses</Link>
       </header>
-
-      <section className="learning-library-strip" aria-labelledby="course-library-title">
-        <div className="learning-strip-head">
-          <div><span>01</span><h2 id="course-library-title">Your courses</h2></div>
-          <Link to="/courses">Browse more courses</Link>
-        </div>
-        <div className="learning-library-list">
-          {courses.map((course) => (
-            <CourseLibraryCard
-              key={course.id}
-              course={course}
-              selected={course.id === activeCourse.id}
-              onSelect={chooseCourse}
-            />
-          ))}
-        </div>
-      </section>
 
       <section className="learning-course-summary">
         <div>

@@ -131,6 +131,12 @@
   font-weight: 800;
 }
 
+.learning-strip-head > span {
+  color: #706b66;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .learning-library-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -151,17 +157,14 @@
   color: #181818;
   font: inherit;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 
-.learning-library-card:hover,
-.learning-library-card.is-selected {
+.learning-library-card:hover {
   border-color: #b45309;
-}
-
-.learning-library-card.is-selected {
-  background: #fff4e9;
+  background: #fffaf5;
 }
 
 .learning-library-thumb {
@@ -210,10 +213,21 @@
   font-size: 0.58rem;
 }
 
-.learning-library-percent {
+.learning-library-meta {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+}
+
+.learning-library-meta strong {
   color: #b65300;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.76rem;
+}
+
+.learning-library-meta small {
+  color: #4f4b47;
+  font-size: 0.56rem;
+  font-weight: 700;
 }
 
 .learning-course-summary {
@@ -606,7 +620,8 @@
 }
 
 .learning-empty-library a,
-.learning-error button {
+.learning-error button,
+.learning-error a {
   padding: 10px 16px;
   border: 1px solid #b45309;
   background: #b45309;
