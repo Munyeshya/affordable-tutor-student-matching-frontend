@@ -8,7 +8,7 @@ import { createBooking } from '../api/services/bookings'
 import { listParentLinks } from '../api/services/parents'
 import { getTutor } from '../api/services/tutors'
 import { useAuth } from '../context/AuthContext.jsx'
-import { usePublicTutorsQuery, useSubjectsQuery } from '../hooks/useCommonQueries'
+import { useSubjectsQuery } from '../hooks/useCommonQueries'
 
 const BOOKING_STAGES = ['Details', 'Review', 'Submitted']
 
@@ -47,8 +47,6 @@ function getInitialForm(searchParams) {
     student_id: '',
     subject_id: searchParams.get('subject') || '',
     availability_slot_id: searchParams.get('slot') || '',
-    start_datetime: '',
-    end_datetime: '',
     mode: searchParams.get('mode') || 'ONLINE',
     location: '',
     notes: '',
@@ -81,6 +79,7 @@ function BookingSteps({ stage }) {
 
 function BookingSummary({ form, selectedTutor, selectedSubject, selectedStudent, selectedSlot }) {
   const session = getSessionRange(form, selectedSlot)
+  const mode = selectedSlot?.mode || form.mode
   const start = new Date(session.start)
   const end = new Date(session.end)
   const durationHours = Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())
@@ -100,8 +99,8 @@ function BookingSummary({ form, selectedTutor, selectedSubject, selectedStudent,
       <div><span>Subject</span><strong>{selectedSubject?.name || 'Not selected'}</strong></div>
       <div><span>Starts</span><strong>{formatDateTime(session.start)}</strong></div>
       <div><span>Ends</span><strong>{formatDateTime(session.end)}</strong></div>
-      <div><span>Teaching mode</span><strong>{formatMode(form.mode)}</strong></div>
-      {form.mode === 'IN_PERSON' ? (
+      <div><span>Teaching mode</span><strong>{formatMode(mode)}</strong></div>
+      {mode === 'IN_PERSON' ? (
         <div><span>Location</span><strong>{form.location || 'Not provided'}</strong></div>
       ) : null}
       <div><span>Estimated lesson cost</span><strong>{formatMoney(estimatedTotal, selectedTutor?.currency)}</strong></div>
@@ -119,8 +118,6 @@ export function BookingRequestPage() {
   const [submitError, setSubmitError] = useState('')
   const [createdBooking, setCreatedBooking] = useState(null)
 
-  const tutorsQuery = usePublicTutorsQuery({ page_size: 50 })
-
   const selectedTutorQuery = useQuery({
     queryKey: queryKeys.tutors.detail(form.tutor_profile_id),
     queryFn: async () => (await getTutor(form.tutor_profile_id)).data,
@@ -136,10 +133,6 @@ export function BookingRequestPage() {
   })
 
   const selectedTutor = selectedTutorQuery.data || null
-  const listedTutors = tutorsQuery.data?.results || []
-  const tutorOptions = selectedTutor && !listedTutors.some((item) => item.id === selectedTutor.id)
-    ? [selectedTutor, ...listedTutors]
-    : listedTutors
   const allSubjects = subjectsQuery.data || []
   const taughtSubjectNames = new Set(
     (selectedTutor?.subjects || []).map((name) => String(name).toLowerCase()),
@@ -156,6 +149,7 @@ export function BookingRequestPage() {
   const selectedSlot = (selectedTutor?.upcoming_availability || []).find(
     (item) => String(item.id) === String(form.availability_slot_id),
   )
+  const selectedMode = selectedSlot?.mode || form.mode
 
 
   const bookingMutation = useMutation({
@@ -163,18 +157,13 @@ export function BookingRequestPage() {
       const payload = {
         tutor_id: Number(effectiveTutorUserId),
         subject_id: Number(form.subject_id),
-        mode: form.mode,
-        location: form.mode === 'IN_PERSON' ? form.location.trim() : '',
+        mode: selectedMode,
+        location: selectedMode === 'IN_PERSON' ? form.location.trim() : '',
         notes: form.notes.trim(),
       }
       if (user?.role === 'PARENT') payload.student_id = Number(effectiveStudentId)
 
-      if (form.availability_slot_id) {
-        payload.availability_slot_id = Number(form.availability_slot_id)
-      } else {
-        payload.start_datetime = form.start_datetime
-        payload.end_datetime = form.end_datetime
-      }
+      payload.availability_slot_id = Number(form.availability_slot_id)
       return (await createBooking(payload)).data
     },
     onSuccess: async (booking) => {
@@ -201,62 +190,16 @@ export function BookingRequestPage() {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
-  function selectTutor(profileId) {
-    const tutor = tutorOptions.find((item) => String(item.id) === String(profileId))
-    setErrors({})
-    setForm((current) => ({
-      ...current,
-      tutor_profile_id: profileId,
-      tutor_id: tutor?.user_id ? String(tutor.user_id) : '',
-      subject_id: '',
-      availability_slot_id: '',
-      start_datetime: '',
-      end_datetime: '',
-      mode: tutor?.teaches_online ? 'ONLINE' : 'IN_PERSON',
-      location: '',
-    }))
-  }
-
-  function selectSlot(slot) {
-    setErrors((current) => ({ ...current, availability_slot_id: '', start_datetime: '', end_datetime: '' }))
-    setForm((current) => ({
-      ...current,
-      availability_slot_id: String(slot.id),
-      start_datetime: '',
-      end_datetime: '',
-      mode: slot.mode,
-      location: slot.mode === 'ONLINE' ? '' : current.location,
-    }))
-  }
-
-  function selectMode(mode) {
-    setErrors((current) => ({ ...current, mode: '', location: '' }))
-    setForm((current) => ({
-      ...current,
-      mode,
-      location: mode === 'ONLINE' ? '' : current.location,
-    }))
-  }
-
   function validateDetails() {
     const nextErrors = {}
     if (!form.tutor_profile_id || !selectedTutor) nextErrors.tutor_profile_id = 'Choose an available tutor.'
     if (user?.role === 'PARENT' && !effectiveStudentId) nextErrors.student_id = 'Choose the linked student who will attend.'
     if (!form.subject_id) nextErrors.subject_id = 'Choose a subject taught by this tutor.'
-    if (form.mode === 'ONLINE' && selectedTutor && !selectedTutor.teaches_online) nextErrors.mode = 'This tutor does not teach online.'
-    if (form.mode === 'IN_PERSON' && selectedTutor && !selectedTutor.teaches_in_person) nextErrors.mode = 'This tutor does not teach in person.'
-    if (form.mode === 'IN_PERSON' && !form.location.trim()) nextErrors.location = 'Enter where the in-person lesson will take place.'
+    if (selectedMode === 'ONLINE' && selectedTutor && !selectedTutor.teaches_online) nextErrors.mode = 'This tutor does not teach online.'
+    if (selectedMode === 'IN_PERSON' && selectedTutor && !selectedTutor.teaches_in_person) nextErrors.mode = 'This tutor does not teach in person.'
+    if (selectedMode === 'IN_PERSON' && !form.location.trim()) nextErrors.location = 'Enter where the in-person lesson will take place.'
 
-    if (form.availability_slot_id) {
-      if (!selectedSlot) nextErrors.availability_slot_id = 'This time is no longer available. Choose another slot.'
-    } else {
-      const start = new Date(form.start_datetime)
-      const end = new Date(form.end_datetime)
-      if (!form.start_datetime || Number.isNaN(start.getTime())) nextErrors.start_datetime = 'Choose a valid start time.'
-      if (!form.end_datetime || Number.isNaN(end.getTime())) nextErrors.end_datetime = 'Choose a valid end time.'
-      if (!nextErrors.start_datetime && start <= new Date()) nextErrors.start_datetime = 'The lesson must start in the future.'
-      if (!nextErrors.start_datetime && !nextErrors.end_datetime && end <= start) nextErrors.end_datetime = 'End time must be after the start time.'
-    }
+    if (!selectedSlot) nextErrors.availability_slot_id = 'This published time is no longer available. Return to the tutor calendar and choose another highlighted slot.'
 
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) {
@@ -349,9 +292,9 @@ export function BookingRequestPage() {
     <section className="booking-page">
       <BookingSteps stage={stage} />
       <header className="booking-page-heading">
-        <p className="eyebrow">Request a tutor</p>
-        <h1>Plan the lesson in a few clear steps.</h1>
-        <p className="supporting-text">Choose who is learning, what they need, and a time the tutor offers.</p>
+        <p className="eyebrow">Confirm an available lesson</p>
+        <h1>Complete the booking details.</h1>
+        <p className="supporting-text">The tutor and published lesson time came from the public calendar. Choose the learner and subject, then review the request.</p>
       </header>
 
       {noLinkedStudents ? (
@@ -380,17 +323,14 @@ export function BookingRequestPage() {
           ) : null}
 
           <fieldset className="booking-form-card">
-            <legend><span>{user?.role === 'PARENT' ? 2 : 1}</span> Choose the tutor and subject</legend>
+            <legend><span>{user?.role === 'PARENT' ? 2 : 1}</span> Tutor and subject</legend>
             <div className="booking-field-grid">
-              <label className="booking-field">
+              <div className="booking-field">
                 <span>Tutor</span>
-                <select value={form.tutor_profile_id} onChange={(event) => selectTutor(event.target.value)} disabled={tutorsQuery.isLoading}>
-                  <option value="">Choose tutor</option>
-                  {tutorOptions.map((tutor) => <option key={tutor.id} value={tutor.id}>{tutor.full_name}</option>)}
-                </select>
+                <strong>{selectedTutor?.full_name || 'Loading tutor...'}</strong>
                 {errors.tutor_profile_id ? <small className="booking-field-error">{errors.tutor_profile_id}</small> : null}
                 {tutorError ? <small className="booking-field-error">{tutorError}</small> : null}
-              </label>
+              </div>
               <label className="booking-field">
                 <span>Subject</span>
                 <select value={form.subject_id} onChange={(event) => updateForm('subject_id', event.target.value)} disabled={!selectedTutor || subjectsQuery.isLoading}>
@@ -403,51 +343,22 @@ export function BookingRequestPage() {
           </fieldset>
 
           <fieldset className="booking-form-card" disabled={!selectedTutor || tutorLoading}>
-            <legend><span>{user?.role === 'PARENT' ? 3 : 2}</span> Choose when to learn</legend>
+            <legend><span>{user?.role === 'PARENT' ? 3 : 2}</span> Selected lesson time</legend>
             {tutorLoading ? (
               <div className="booking-slot-skeleton" aria-busy="true"><span className="skeleton skeleton-line" /><span className="skeleton skeleton-line" /></div>
             ) : (
               <>
                 <div className="booking-slot-grid">
-                  {(selectedTutor?.upcoming_availability || []).map((slot) => (
-                    <label className={'booking-slot-option ' + (String(slot.id) === String(form.availability_slot_id) ? 'booking-slot-selected' : '')} key={slot.id}>
-                      <input type="radio" name="lesson-time" checked={String(slot.id) === String(form.availability_slot_id)} onChange={() => selectSlot(slot)} />
-                      <strong>{formatDateTime(slot.start_datetime)}</strong>
-                      <span>{formatMode(slot.mode)}</span>
-                    </label>
-                  ))}
-                  <label className={'booking-slot-option ' + (!form.availability_slot_id ? 'booking-slot-selected' : '')}>
-                    <input type="radio" name="lesson-time" checked={!form.availability_slot_id} onChange={() => updateForm('availability_slot_id', '')} />
-                    <strong>Request another time</strong>
-                    <span>Must fit the tutor's availability</span>
-                  </label>
+                  {selectedSlot ? (
+                    <div className="booking-slot-option booking-slot-selected">
+                      <strong>{formatDateTime(selectedSlot.start_datetime)}</strong>
+                      <span>{formatMode(selectedSlot.mode)}</span>
+                    </div>
+                  ) : null}
                 </div>
                 {errors.availability_slot_id ? <small className="booking-field-error">{errors.availability_slot_id}</small> : null}
 
-                {!form.availability_slot_id ? (
-                  <div className="booking-custom-time">
-                    <label className="booking-field">
-                      <span>Teaching mode</span>
-                      <select value={form.mode} onChange={(event) => selectMode(event.target.value)}>
-                        {selectedTutor?.teaches_online ? <option value="ONLINE">Online</option> : null}
-                        {selectedTutor?.teaches_in_person ? <option value="IN_PERSON">In person</option> : null}
-                      </select>
-                      {errors.mode ? <small className="booking-field-error">{errors.mode}</small> : null}
-                    </label>
-                    <label className="booking-field">
-                      <span>Start time</span>
-                      <input type="datetime-local" value={form.start_datetime} onChange={(event) => updateForm('start_datetime', event.target.value)} />
-                      {errors.start_datetime ? <small className="booking-field-error">{errors.start_datetime}</small> : null}
-                    </label>
-                    <label className="booking-field">
-                      <span>End time</span>
-                      <input type="datetime-local" value={form.end_datetime} onChange={(event) => updateForm('end_datetime', event.target.value)} />
-                      {errors.end_datetime ? <small className="booking-field-error">{errors.end_datetime}</small> : null}
-                    </label>
-                  </div>
-                ) : null}
-
-                {form.mode === 'IN_PERSON' ? (
+                {selectedMode === 'IN_PERSON' ? (
                   <label className="booking-field booking-location-field">
                     <span>Lesson location</span>
                     <input

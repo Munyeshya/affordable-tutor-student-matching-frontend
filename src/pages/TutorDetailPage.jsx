@@ -273,7 +273,7 @@ export function TutorDetailPage() {
   }, null)
   const canBook = !isAuthenticated || user?.role === 'STUDENT' || user?.role === 'PARENT'
   const baseBookingPath = `/book?tutor=${tutor.user_id}&profile=${tutor.id}`
-  const bookingLabel = isAuthenticated ? 'Request a lesson' : 'Sign in to request'
+  const bookingLabel = isAuthenticated ? 'Choose an available time' : 'Sign in after choosing a time'
 
   function changeCalendarMonth(offset) {
     const nextMonth = new Date(
@@ -399,7 +399,7 @@ export function TutorDetailPage() {
               <div className="tutor-course-list">
                 {courses.map((course) => {
                   const lessons = Array.isArray(course.lessons) ? course.lessons : []
-                  const courseBookingPath = `${baseBookingPath}&subject=${course.subject}`
+                  const courseAvailabilityPath = '#availability'
                   const hasThumbnail = Boolean(course.thumbnail_url)
 
                   return (
@@ -419,8 +419,8 @@ export function TutorDetailPage() {
                           </div>
                           {course.description ? <p className="supporting-text">{toPlainFormattedText(course.description)}</p> : null}
                           {canBook ? (
-                            <Link className="link-button tutor-course-action" to={courseBookingPath}>
-                              <InlineIcon name="calendar" /> Request lesson
+                            <Link className="link-button tutor-course-action" to={courseAvailabilityPath}>
+                              <InlineIcon name="calendar" /> View available times
                             </Link>
                           ) : null}
                         </div>
@@ -450,7 +450,7 @@ export function TutorDetailPage() {
             )}
           </article>
 
-          <article className="tutor-detail-section">
+          <article className="tutor-detail-section" id="availability">
             <div className="tutor-detail-section-heading">
               <div>
                 <p className="eyebrow"><InlineIcon name="calendar" /> Availability</p>
@@ -460,7 +460,7 @@ export function TutorDetailPage() {
             </div>
 
             {availability.length === 0 ? (
-              <p className="tutor-detail-empty">No open times are published. You can still request a suitable time.</p>
+              <p className="tutor-detail-empty">No open times are currently published. Check this profile again when the tutor adds availability.</p>
             ) : (
               <div className="tutor-availability-calendar">
                 <div className="tutor-calendar-toolbar">
@@ -539,8 +539,7 @@ export function TutorDetailPage() {
                       <div className="tutor-calendar-empty">
                         <InlineIcon name="calendar" size={24} />
                         <h4>No available lesson times</h4>
-                        <p>This tutor has not published an open slot for this date. Choose a highlighted date or send a general lesson request.</p>
-                        {canBook ? <Link to={baseBookingPath}>Request another time</Link> : null}
+                        <p>This tutor has not published an open slot for this date. Choose one of the highlighted dates on the calendar.</p>
                       </div>
                     )}
                   </section>
@@ -661,14 +660,9 @@ export function TutorDetailPage() {
             </div>
           </div>
           {canBook ? (
-            <>
-              <Link className="primary-button tutor-booking-button" to={baseBookingPath}>
-                <InlineIcon name="calendar" /> {bookingLabel}
-              </Link>
-              <Link className="secondary-button tutor-booking-button" to={`/tutors/${tutor.id}/propose`}>
-                <InlineIcon name="calendar" /> Propose a custom schedule
-              </Link>
-            </>
+            <Link className="primary-button tutor-booking-button" to="#availability">
+              <InlineIcon name="calendar" /> {bookingLabel}
+            </Link>
           ) : (
             <p className="tutor-detail-role-note">Booking requests are available to students and parents.</p>
           )}

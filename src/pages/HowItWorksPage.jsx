@@ -177,7 +177,7 @@ export function HowItWorksPage() {
         <div className="how-faq-list">
           <details>
             <summary>Can I explore tutors and courses before creating an account?</summary>
-            <p>Yes. Discovery and course details are public. An account is required when you send a request, propose a schedule, purchase, or manage learning records.</p>
+            <p>Yes. Discovery, tutor availability, and course details are public. An account is required when you confirm a published lesson time, purchase, or manage learning records.</p>
           </details>
           <details>
             <summary>How does Isomo verify tutors?</summary>
@@ -185,7 +185,7 @@ export function HowItWorksPage() {
           </details>
           <details>
             <summary>What happens if the listed availability does not fit?</summary>
-            <p>A logged-in student or parent can propose a custom schedule. The tutor may accept it, reject it, or return a counter-offer without overriding already booked slots.</p>
+            <p>Choose another highlighted date, compare another tutor, or return later when the tutor publishes new openings. Ordinary bookings only use visible, available calendar slots.</p>
           </details>
           <details>
             <summary>Who can see a student’s progress?</summary>

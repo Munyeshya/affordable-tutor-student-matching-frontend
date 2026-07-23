@@ -66,11 +66,10 @@ describe('BookingRequestPage', () => {
 
   it('submits a selected tutor slot and shows the booking reference', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<BookingRequestPage />, { route: '/book?profile=10&tutor=20' })
+    renderWithProviders(<BookingRequestPage />, { route: '/book?profile=10&tutor=20&slot=5&mode=ONLINE' })
 
     await waitFor(() => expect(getTutor).toHaveBeenCalledWith('10'))
     await user.selectOptions(await screen.findByLabelText('Subject'), '3')
-    await user.click(screen.getAllByRole('radio')[0])
     await user.type(screen.getByLabelText(/What should the tutor know/), 'Please revise quadratic equations.')
     await user.click(screen.getByRole('button', { name: 'Review request' }))
 
