@@ -79,4 +79,18 @@ describe('SignInPage', () => {
     expect(screen.getByRole('heading', { name: 'Sign in to manage your activity.' })).toBeInTheDocument()
     expect(screen.queryByText(/Destination/)).not.toBeInTheDocument()
   })
+
+  it('lets the user reveal and hide the password without changing its value', async () => {
+    const user = userEvent.setup()
+    renderSignIn()
+    const password = screen.getByLabelText('Password')
+
+    await user.type(password, 'secure-password')
+    expect(password).toHaveAttribute('type', 'password')
+    await user.click(screen.getByRole('button', { name: 'Show password' }))
+    expect(password).toHaveAttribute('type', 'text')
+    expect(password).toHaveValue('secure-password')
+    await user.click(screen.getByRole('button', { name: 'Hide password' }))
+    expect(password).toHaveAttribute('type', 'password')
+  })
 })
