@@ -107,9 +107,10 @@ function QuizPanel({ assessment, answers, busy, onAnswer, onClose, onSubmit }) {
   )
 }
 
-function StudentAssessmentCard({ assessment, attempt, lessonCompleted, onStart }) {
+function StudentAssessmentCard({ assessment, attempt, initialCompleted, lessonCompleted, onStart }) {
   const isPostTest = assessment.attempt_type === 'POST_TEST'
-  const locked = assessment.can_attempt === false || (
+  const awaitingInitial = isPostTest && !initialCompleted
+  const locked = awaitingInitial || assessment.can_attempt === false || (
     assessment.context_type !== 'BOOKING' && isPostTest && !lessonCompleted
   )
   const hasQuestions = assessment.questions.length > 0
@@ -134,12 +135,7 @@ function StudentAssessmentCard({ assessment, attempt, lessonCompleted, onStart }
         {attempt ? (
           <><strong>{formatPercent(attempt.percentage)}</strong><span>Submitted {formatDate(attempt.submitted_at)}</span></>
         ) : locked ? (
-          <>
-            <span>{assessment.availability_message || 'Complete the learning activity first'}</span>
-            <Link to={assessment.context_type === 'BOOKING' ? '/bookings' : `/my-courses/${assessment.course_id}/lessons/${assessment.lesson}`}>
-              Open {assessment.context_type === 'BOOKING' ? 'booking' : 'lesson'}
-            </Link>
-          </>
+          <span>{awaitingInitial ? 'Complete the initial assessment before taking the final assessment.' : assessment.availability_message || 'Complete the learning activity first'}</span>
         ) : !hasQuestions ? (
           <span>Questions are being prepared</span>
         ) : (
@@ -240,6 +236,7 @@ function StudentAssessments({
                 key={assessment.id}
                 assessment={assessment}
                 attempt={attemptedByAssessment.get(assessment.id)}
+                initialCompleted={Boolean(attemptsByContext[getContextKey(assessment)]?.PRE_TEST)}
                 lessonCompleted={lessonCompletion.get(assessment.lesson)}
                 onStart={onStart}
               />

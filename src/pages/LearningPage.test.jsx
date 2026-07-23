@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLearningLibraryQuery } from '../hooks/useCommonQueries.js'
+import { listAssessmentAttempts, listAssessments } from '../api/services/assessments'
 import { LearningPage } from './LearningPage.jsx'
 
 vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
@@ -67,8 +68,11 @@ function renderLearningPage(entry) {
 
 describe('student course learning hierarchy', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
     useAuth.mockReturnValue({ isAuthenticated: true, user: { role: 'STUDENT' } })
     useLearningLibraryQuery.mockReturnValue({ data: [course], isLoading: false, isError: false })
+    listAssessments.mockResolvedValue({ data: [] })
+    listAssessmentAttempts.mockResolvedValue({ data: [] })
   })
 
   it('shows only the purchased-course library at the index route', () => {
@@ -86,5 +90,19 @@ describe('student course learning hierarchy', () => {
     expect(screen.getByRole('heading', { name: 'Linear equations' })).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Lesson assessments' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Purchased courses' })).not.toBeInTheDocument()
+  })
+
+  it('locks the final assessment until the initial assessment is submitted', async () => {
+    listAssessments.mockResolvedValue({
+      data: [
+        { id: 1, lesson: 12, course_id: 7, context_type: 'COURSE_LESSON', context_title: 'Algebra foundations / Linear equations', attempt_type: 'PRE_TEST', title: 'Initial algebra check', description: 'Starting knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: true, availability_message: '', questions: [{ id: 101, question: '2 + 2?', option_a: '4', option_b: '5' }] },
+        { id: 2, lesson: 12, course_id: 7, context_type: 'COURSE_LESSON', context_title: 'Algebra foundations / Linear equations', attempt_type: 'POST_TEST', title: 'Final algebra check', description: 'Final knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: false, availability_message: 'Complete the initial assessment before taking the final assessment.', questions: [{ id: 102, question: '3 + 3?', option_a: '6', option_b: '7' }] },
+      ],
+    })
+
+    renderLearningPage('/my-courses/7/lessons/12')
+
+    expect(await screen.findByText('Complete the initial assessment before taking the final assessment.')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Start assessment' })).toHaveLength(1)
   })
 })
