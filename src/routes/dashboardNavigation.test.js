@@ -27,6 +27,7 @@ describe('role navigation', () => {
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/tutor-earnings')
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/assessments')
+    expect(getDashboardNavigationPaths('STUDENT')).toContain('/my-courses')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/payments')
     expect(getDashboardNavigationPaths('STUDENT')).not.toContain('/book')
@@ -38,6 +39,7 @@ describe('role navigation', () => {
   it('returns readable page titles and safe fallbacks', () => {
     expect(getDashboardPageTitle('ADMIN', '/admin/reviews')).toBe('Review moderation')
     expect(getDashboardPageTitle('TUTOR', '/tutor-teaching/courses/4/curriculum')).toBe('Courses and lessons')
+    expect(getDashboardPageTitle('STUDENT', '/my-courses/4/lessons/8')).toBe('My courses')
     expect(getDashboardPageTitle('STUDENT', '/unknown')).toBe('Dashboard')
     expect(getDashboardNavigation('UNKNOWN')).toEqual([])
     expect(getRoleHomePath('UNKNOWN')).toBe('/')

@@ -68,6 +68,7 @@ const navigationByRole = {
       label: 'Learning',
       items: [
         { label: 'Find tutors', to: '/tutors', icon: 'search' },
+        { label: 'My courses', to: '/my-courses', icon: 'courses' },
         { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Payments', to: '/payments', icon: 'payments' },
@@ -125,7 +126,7 @@ const navigationByRole = {
 const fallbackTitles = {
   '/notifications': 'Notifications',
   '/tutor-dashboard': 'Overview',
-  '/learning': 'Overview',
+  '/learning': 'My courses',
   '/parent-dashboard': 'Overview',
 }
 

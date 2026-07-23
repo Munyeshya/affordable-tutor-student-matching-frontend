@@ -36,7 +36,7 @@ export const dashboardRoleGuides = {
       {
         title: 'Learn and measure improvement',
         description: 'Access paid courses in your learning library, complete lessons, take initial and final assessments, and confirm whether the recorded outcome reflects your progress.',
-        to: '/learning',
+        to: '/my-courses',
         linkLabel: 'Open learning',
       },
       {

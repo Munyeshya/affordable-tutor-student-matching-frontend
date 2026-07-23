@@ -272,7 +272,7 @@ export function CourseDetailPage() {
           {canPurchase && (purchasesQuery.isLoading || (isParent && parentLinksQuery.isLoading)) ? (
             <button type="button" disabled>Checking your access...</button>
           ) : isOwned ? (
-            <Link className="course-enrollment-primary" to={`/learning?course=${course.id}`}>Continue learning</Link>
+            <Link className="course-enrollment-primary" to={`/my-courses/${course.id}`}>Continue learning</Link>
           ) : isParent && !linkedLearners.length ? (
             <Link className="course-enrollment-primary" to="/parent-students">Link a student before purchasing</Link>
           ) : isParent && !eligibleLearners.length ? (

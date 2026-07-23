@@ -5,6 +5,30 @@
   color: #171717;
 }
 
+.learning-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 18px;
+  color: #77716b;
+  font-size: 0.78rem;
+}
+
+.learning-breadcrumb a {
+  color: #8f420b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.learning-breadcrumb > span:not([aria-hidden]) {
+  max-width: 240px;
+  overflow: hidden;
+  color: #4b4540;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .learning-page-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

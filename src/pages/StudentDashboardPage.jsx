@@ -133,7 +133,7 @@ export function StudentDashboardPage() {
       <div className="student-overview-grid">
         <div className="student-overview-main">
           <section className="student-overview-panel student-continue-panel">
-            <SectionHeading eyebrow="My learning" title="Continue learning" to="/learning" action="Open library" />
+            <SectionHeading eyebrow="My learning" title="Continue learning" to="/my-courses" action="Open library" />
             {libraryQuery.isLoading ? <DashboardSkeleton rows={3} /> : activeCourse ? (
               <div className="student-current-course">
                 <div className="student-course-mark">{activeCourse.subject_name?.slice(0, 2).toUpperCase() || 'IS'}</div>
@@ -147,7 +147,7 @@ export function StudentDashboardPage() {
                 <div className="student-current-course-action">
                   <span>{nextLesson ? 'Up next' : 'Course progress'}</span>
                   <strong>{nextLesson?.title || 'Review completed lessons'}</strong>
-                  <Link to={`/learning?course=${activeCourse.course_id}${nextLesson ? `&lesson=${nextLesson.id}` : ''}`}>{nextLesson ? 'Continue lesson' : 'Open course'}</Link>
+                  <Link to={nextLesson ? `/my-courses/${activeCourse.course_id}/lessons/${nextLesson.id}` : `/my-courses/${activeCourse.course_id}`}>{nextLesson ? 'Continue lesson' : 'Open course'}</Link>
                 </div>
               </div>
             ) : (
@@ -188,11 +188,11 @@ export function StudentDashboardPage() {
           </section>
 
           <section className="student-overview-panel">
-            <SectionHeading eyebrow="Course library" title="Your courses" to="/learning" action="View all" />
+            <SectionHeading eyebrow="Course library" title="Your courses" to="/my-courses" action="View all" />
             {libraryQuery.isLoading ? <DashboardSkeleton /> : courses.length ? (
               <div className="student-course-list">
                 {courses.slice(0, 4).map((course) => (
-                  <Link key={course.id} to={`/learning?course=${course.course_id}`}>
+                  <Link key={course.id} to={`/my-courses/${course.course_id}`}>
                     <span>{course.subject_name?.slice(0, 2).toUpperCase() || 'IS'}</span>
                     <div><strong>{course.title}</strong><small>{course.subject_name || 'Course'} / {course.completed_lessons || 0} of {course.total_lessons || 0} lessons</small></div>
                     <b>{course.progress_percent || 0}%</b>

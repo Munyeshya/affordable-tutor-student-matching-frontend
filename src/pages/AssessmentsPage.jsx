@@ -130,7 +130,7 @@ function StudentAssessmentCard({ assessment, attempt, lessonCompleted, onStart }
         ) : locked ? (
           <>
             <span>{assessment.availability_message || 'Complete the learning activity first'}</span>
-            <Link to={assessment.context_type === 'BOOKING' ? '/bookings' : `/learning?course=${assessment.course_id}&lesson=${assessment.lesson}`}>
+            <Link to={assessment.context_type === 'BOOKING' ? '/bookings' : `/my-courses/${assessment.course_id}/lessons/${assessment.lesson}`}>
               Open {assessment.context_type === 'BOOKING' ? 'booking' : 'lesson'}
             </Link>
           </>
@@ -220,7 +220,7 @@ function StudentAssessments({
       </header>
 
       <section className="assessment-section">
-        <div className="assessment-section-head"><div><span>01</span><div><h2>Your assessments</h2><p>Each assessment can be submitted once.</p></div></div><Link to="/learning">Back to learning</Link></div>
+        <div className="assessment-section-head"><div><span>01</span><div><h2>Your assessments</h2><p>Each assessment can be submitted once.</p></div></div><Link to="/my-courses">Back to my courses</Link></div>
         {loading ? (
           <div className="assessment-card-list"><AssessmentSkeleton /><AssessmentSkeleton /></div>
         ) : error ? (

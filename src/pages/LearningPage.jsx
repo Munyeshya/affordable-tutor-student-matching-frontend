@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { queryKeys } from '../api/queryKeys'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
@@ -61,7 +61,9 @@ function CourseLibraryCard({ course, selected, onSelect }) {
 export function LearningPage() {
   const { user, isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { courseId, lessonId } = useParams()
+  const [searchParams] = useSearchParams()
   const canLearn = isAuthenticated && user?.role === 'STUDENT'
 
   const libraryQuery = useLearningLibraryQuery({ enabled: canLearn })
@@ -97,8 +99,8 @@ export function LearningPage() {
   }
 
   const courses = Array.isArray(libraryQuery.data) ? libraryQuery.data : []
-  const requestedCourseId = searchParams.get('course')
-  const requestedLessonId = searchParams.get('lesson')
+  const requestedCourseId = courseId || searchParams.get('course')
+  const requestedLessonId = lessonId || searchParams.get('lesson')
   const activeCourse = courses.find((course) => String(course.course_id) === requestedCourseId) || courses[0]
   const lessons = activeCourse?.lessons || []
   const firstIncompleteLesson = lessons.find((lesson) => !lesson.progress?.is_completed)
@@ -110,14 +112,13 @@ export function LearningPage() {
 
   function chooseCourse(course) {
     const nextLesson = course.lessons?.find((lesson) => !lesson.progress?.is_completed) || course.lessons?.[0]
-    setSearchParams({
-      course: String(course.course_id),
-      ...(nextLesson ? { lesson: String(nextLesson.id) } : {}),
-    })
+    navigate(nextLesson
+      ? `/my-courses/${course.course_id}/lessons/${nextLesson.id}`
+      : `/my-courses/${course.course_id}`)
   }
 
   function chooseLesson(lesson) {
-    setSearchParams({ course: String(activeCourse.course_id), lesson: String(lesson.id) })
+    navigate(`/my-courses/${activeCourse.course_id}/lessons/${lesson.id}`)
   }
 
   if (libraryQuery.isLoading) {
@@ -156,6 +157,13 @@ export function LearningPage() {
 
   return (
     <section className="student-learning">
+      <nav className="learning-breadcrumb" aria-label="Course location">
+        <Link to="/student">Dashboard</Link>
+        <span aria-hidden="true">/</span>
+        <Link to="/my-courses">My courses</Link>
+        {activeCourse ? <><span aria-hidden="true">/</span><span>{activeCourse.title}</span></> : null}
+        {activeLesson ? <><span aria-hidden="true">/</span><span>{activeLesson.title}</span></> : null}
+      </nav>
       <header className="learning-page-head">
         <div>
           <p className="eyebrow">My learning</p>
