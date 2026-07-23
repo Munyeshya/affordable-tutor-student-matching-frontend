@@ -2,41 +2,73 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { ShellIcon } from './ShellIcon.jsx'
+import './PublicFooter.css'
+
+const footerGroups = [
+  {
+    title: 'Explore',
+    links: [
+      { label: 'Home', to: '/' },
+      { label: 'Find tutors', to: '/tutors' },
+      { label: 'Browse courses', to: '/courses' },
+      { label: 'How it works', to: '/how-it-works' },
+    ],
+  },
+  {
+    title: 'Isomo',
+    links: [
+      { label: 'About us', to: '/about' },
+      { label: 'Contact and support', to: '/contact' },
+    ],
+  },
+  {
+    title: 'Account',
+    links: [
+      { label: 'Sign in', to: '/sign-in' },
+      { label: 'Create an account', to: '/join' },
+    ],
+  },
+]
 
 export function PublicFooter() {
   return (
-    <footer className="site-footer">
-      <div className="footer-brand">
-        <img className="footer-logo" src="/logo-small-white.png" alt="Isomo" />
-        <p>Affordable learning, built for trust.</p>
-        <p>Copyright © 2026 Isomo. All rights reserved.</p>
-      </div>
-
-      <div className="footer-links">
+    <footer className="isomo-footer">
+      <section className="isomo-footer-cta" aria-labelledby="footer-cta-title">
         <div>
-          <h3>Company</h3>
-          <Link to="/about">About us</Link>
-          <Link to="/how-it-works">How it works</Link>
-          <Link to="/contact">Contact us</Link>
+          <p>Start with what you need</p>
+          <h2 id="footer-cta-title">Find learning support that fits your goals and budget.</h2>
+        </div>
+        <div className="isomo-footer-actions">
+          <Link to="/tutors">Find a tutor <ShellIcon name="arrow" /></Link>
+          <Link to="/join">Join Isomo <ShellIcon name="arrow" /></Link>
+        </div>
+      </section>
+
+      <div className="isomo-footer-main">
+        <div className="isomo-footer-brand">
+          <Link to="/" aria-label="Isomo home">
+            <img src="/logo-small-white.png" alt="" />
+          </Link>
+          <div>
+            <strong>Affordable learning, built for trust.</strong>
+            <p>Discover verified tutors, structured courses, and progress you can understand.</p>
+          </div>
+          <p className="isomo-footer-promise"><span aria-hidden="true" /> Verified support. Visible pricing. Clear outcomes.</p>
         </div>
 
-        <div>
-          <h3>Support</h3>
-          <Link to="/contact">Help center</Link>
-          <Link to="/contact">Terms of service</Link>
-          <Link to="/contact">Privacy policy</Link>
-        </div>
+        <nav className="isomo-footer-nav" aria-label="Footer navigation">
+          {footerGroups.map((group) => (
+            <div key={group.title}>
+              <h3>{group.title}</h3>
+              {group.links.map((link) => <Link to={link.to} key={link.to}>{link.label}</Link>)}
+            </div>
+          ))}
+        </nav>
       </div>
 
-      <div className="footer-newsletter">
-        <h3>Stay up to date</h3>
-        <p>Get the latest tutor updates and platform news.</p>
-        <form className="footer-form">
-          <input type="email" placeholder="Your email address" aria-label="Email address" />
-          <button type="submit" aria-label="Subscribe to updates">
-            <ShellIcon name="arrow" />
-          </button>
-        </form>
+      <div className="isomo-footer-bottom">
+        <p>Copyright &copy; 2026 Isomo. All rights reserved.</p>
+        <p>Connecting students, parents, and tutors across Rwanda.</p>
       </div>
     </footer>
   )
