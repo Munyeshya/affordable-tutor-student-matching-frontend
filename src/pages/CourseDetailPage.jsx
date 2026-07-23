@@ -11,6 +11,7 @@ import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDia
 import { FormattedText } from '../components/ui/FormattedText.jsx'
 import { toPlainFormattedText } from '../components/ui/formattedText.js'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
+import { formatEducationLevel } from '../constants/educationLevels.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import './CourseDetailPage.css'
 
@@ -20,9 +21,7 @@ function formatMoney(value) {
 }
 
 function formatLevel(value) {
-  if (!value) return 'All academic levels'
-  const label = String(value).replaceAll('_', ' ').toLowerCase()
-  return label.charAt(0).toUpperCase() + label.slice(1)
+  return formatEducationLevel(value)
 }
 
 function formatDuration(minutes) {

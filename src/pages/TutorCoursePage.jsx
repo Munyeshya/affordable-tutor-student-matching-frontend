@@ -82,7 +82,7 @@ function CourseDetailsSection({ course, form, editable, busy, tutorSubjects, onC
       <form className="course-details-form" onSubmit={onSubmit}>
         <label className="is-wide"><span>Course title</span><input required disabled={!editable} value={form.title} onChange={(event) => onChange('title', event.target.value)} placeholder="For example, Mastering lower secondary algebra" /></label>
         <label><span>Teaching subject</span><select required disabled={!editable} value={form.subject} onChange={(event) => onChange('subject', event.target.value)}><option value="">Choose subject</option>{tutorSubjects.map((item) => <option key={item.id} value={item.subject}>{item.subject_name} / {item.level_display}</option>)}</select></label>
-        <label><span>Academic level</span><input required disabled={!editable} value={form.academic_level} onChange={(event) => onChange('academic_level', event.target.value)} placeholder="Secondary lower level" /></label>
+        <label><span>Academic level</span><input required disabled={!editable} value={form.academic_level} onChange={(event) => onChange('academic_level', event.target.value)} placeholder="Primary, O'Level, A'Level, or University" /></label>
         <label><span>Course price (RWF)</span><input required disabled={!editable} type="number" min="0" value={form.price} onChange={(event) => onChange('price', event.target.value)} /></label>
         <label><span>Marketplace image</span><input disabled={!editable} type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => onFile(event.target.files?.[0] || null)} /><small>JPEG, PNG, or WebP. Maximum 10 MB.</small></label>
         <div className="course-description-field is-wide">

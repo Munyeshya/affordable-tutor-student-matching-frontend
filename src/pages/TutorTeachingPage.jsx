@@ -11,6 +11,7 @@ import {
   listTutorSubjects,
 } from '../api/services/catalog.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
+import { EDUCATION_LEVEL_OPTIONS } from '../constants/educationLevels.js'
 import { useSubjectsQuery } from '../hooks/useCommonQueries'
 import {
   courseCompletion,
@@ -233,10 +234,9 @@ export function TutorTeachingPage() {
               <label>
                 <span>Education level</span>
                 <select value={subjectForm.level} onChange={(event) => setSubjectForm((current) => ({ ...current, level: event.target.value }))}>
-                  <option value="PRIMARY">Primary</option>
-                  <option value="SECONDARY_LOWER">Secondary lower level</option>
-                  <option value="SECONDARY_UPPER">Secondary upper level</option>
-                  <option value="UNIVERSITY">University</option>
+                  {EDUCATION_LEVEL_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
                 </select>
               </label>
               <label>

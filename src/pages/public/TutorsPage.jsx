@@ -7,6 +7,7 @@ import { usePublicTutorsQuery, useSubjectsQuery } from '../../hooks/useCommonQue
 import { InlineIcon } from '../../components/ui/InlineIcon.jsx'
 import { Pagination } from '../../components/ui/Pagination.jsx'
 import { UserAvatar } from '../../components/ui/UserAvatar.jsx'
+import { EDUCATION_LEVEL_OPTIONS, formatEducationLevel } from '../../constants/educationLevels.js'
 import './TutorsPage.css'
 
 const PAGE_SIZE = 9
@@ -29,10 +30,7 @@ const filterParamKeys = [
 
 const levelOptions = [
   { value: '', label: 'Any level' },
-  { value: 'PRIMARY', label: 'Primary' },
-  { value: 'SECONDARY_LOWER', label: 'Secondary lower' },
-  { value: 'SECONDARY_UPPER', label: 'Secondary upper' },
-  { value: 'UNIVERSITY', label: 'University' },
+  ...EDUCATION_LEVEL_OPTIONS,
 ]
 
 const sortOptions = [
@@ -154,11 +152,7 @@ function formatTutorRate(rate, currency = 'RWF') {
 }
 
 function formatLevel(value) {
-  return String(value || '')
-    .toLowerCase()
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
+  return formatEducationLevel(value, 'Not specified')
 }
 
 
