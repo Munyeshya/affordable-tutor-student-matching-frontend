@@ -82,25 +82,48 @@ export function HowItWorksPage() {
     <div className="how-page">
       <section className="how-hero" aria-labelledby="how-title">
         <div className="how-hero-copy">
-          <p className="how-eyebrow">The Isomo journey</p>
-          <h1 id="how-title">Find the right support. Learn with clarity. See the progress.</h1>
+          <p className="how-eyebrow">How Isomo works</p>
+          <h1 id="how-title">One clear path from “I need help” to “I can do this.”</h1>
           <p className="how-hero-text">
-            Isomo connects students with verified tutors and structured courses while keeping price,
-            learning expectations, and outcomes visible from the start.
+            Tell us what you want to learn, compare verified support by fit and price, then follow
+            your progress from the first assessment to the final outcome.
           </p>
           <div className="how-actions">
             <Link className="primary-button" to="/tutors"><DashboardIcon name="search" size={18} /> Find a tutor</Link>
             <Link className="secondary-button" to="/courses"><DashboardIcon name="courses" size={18} /> Browse courses</Link>
           </div>
+          <p className="how-hero-note"><DashboardIcon name="verification" size={17} /> Browse publicly. Sign in only when you are ready to request or buy.</p>
         </div>
 
-        <aside className="how-hero-summary" aria-label="Isomo service summary">
-          <img src="/aking-notes.svg" alt="Student taking learning notes" />
-          <div className="how-summary-list">
-            <p><span>01</span><strong>Compare verified support</strong></p>
-            <p><span>02</span><strong>Choose by fit and price</strong></p>
-            <p><span>03</span><strong>Track learning outcomes</strong></p>
+        <aside className="how-match-visual" aria-label="Example of building a tutor match">
+          <header className="how-match-heading">
+            <span>Start here</span>
+            <strong>Build your match</strong>
+          </header>
+
+          <div className="how-match-step">
+            <span className="how-match-number">01</span>
+            <div><small>I want to learn</small><strong>Mathematics</strong><p>Upper secondary / Algebra</p></div>
+            <DashboardIcon name="courses" size={20} />
           </div>
+
+          <div className="how-match-connector" aria-hidden="true"><span /></div>
+
+          <div className="how-match-step">
+            <span className="how-match-number">02</span>
+            <div><small>My preferred fit</small><strong>Evenings / Online</strong><p>Within my selected budget</p></div>
+            <DashboardIcon name="schedule" size={20} />
+          </div>
+
+          <div className="how-match-connector" aria-hidden="true"><span /></div>
+
+          <div className="how-match-result">
+            <span className="how-result-icon"><DashboardIcon name="verification" size={22} /></span>
+            <div><small>Your result</small><strong>Verified matches</strong><p>Clear prices, availability, and lesson focus.</p></div>
+            <span className="how-result-arrow" aria-hidden="true">→</span>
+          </div>
+
+          <p className="how-match-caption">You stay in control until you choose.</p>
         </aside>
       </section>
 
