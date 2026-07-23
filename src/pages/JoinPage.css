@@ -13,7 +13,6 @@
 }
 
 .join-panel {
-  justify-content: flex-start;
   padding-block: clamp(1.35rem, 2.8vw, 2.2rem);
 }
 
