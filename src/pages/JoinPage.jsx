@@ -206,11 +206,6 @@ export function JoinPage() {
         </article>
       </div>
 
-      <div className="sign-in-assurance" aria-label="Isomo registration assurances">
-        <p><DashboardIcon name="earnings" size={18} /><span><strong>Affordable first</strong>Compare relevant learning support by price and fit.</span></p>
-        <p><DashboardIcon name="verification" size={18} /><span><strong>Verified tutors</strong>Tutor visibility requires documents and administrator approval.</span></p>
-        <p><DashboardIcon name="reports" size={18} /><span><strong>Visible progress</strong>Bookings, courses, and outcomes stay organized by account.</span></p>
-      </div>
     </section>
   )
 }
