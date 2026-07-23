@@ -304,7 +304,17 @@ export function AdminCoursesPage() {
               </form>
             ) : (
               <section className="admin-course-decisions"><h3>Moderation decision</h3><p>Choose the outcome that best reflects the course and lesson preview.</p><div>{Object.entries(DECISION_CONFIG).map(([status, config]) => <button className={config.className} type="button" key={status} onClick={() => chooseDecision(status)}>{config.shortLabel}</button>)}</div></section>
-            ) : null}
+            ) : selectedCourse.status === 'DRAFT' ? (
+              <section className="admin-course-decisions">
+                <h3>Waiting for tutor submission</h3>
+                <p>This course is still a private draft. Moderation actions become available after the tutor completes the review step and submits it.</p>
+              </section>
+            ) : (
+              <section className="admin-course-decisions">
+                <h3>Moderation completed</h3>
+                <p>This course is not awaiting a decision. Its current status and previous decisions are shown above.</p>
+              </section>
+            )}
           </>
         ) : null}
       </ConfirmationDialog>

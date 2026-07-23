@@ -30,6 +30,19 @@ describe('course teaching helpers', () => {
     expect(isCourseEditable('PUBLISHED')).toBe(false)
   })
 
+  it('measures visible description text instead of formatting markup', () => {
+    expect(courseCompletion({
+      title: 'Algebra foundations',
+      subject: 2,
+      academic_level: "O'Level",
+      description: '<h2>Short</h2><p>description</p>',
+    })).toMatchObject({
+      details: false,
+      descriptionLength: 17,
+      missingDetails: ['course description (17/20 visible characters)'],
+    })
+  })
+
   it('formats backend statuses for tutors', () => {
     expect(formatCourseStatus('CHANGES_REQUESTED')).toBe('Changes requested')
   })

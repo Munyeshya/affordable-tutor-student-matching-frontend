@@ -1,3 +1,5 @@
+import { toPlainFormattedText } from '../../components/ui/formattedText.js'
+
 export const EDITABLE_COURSE_STATUSES = new Set(['DRAFT', 'CHANGES_REQUESTED', 'REJECTED'])
 
 export function isCourseEditable(status) {
@@ -20,13 +22,21 @@ export function formatMoney(value) {
 }
 
 export function courseCompletion(course) {
+  const descriptionLength = toPlainFormattedText(course?.description).length
+  const detailRequirements = [
+    { complete: Boolean(String(course?.title || '').trim()), label: 'course title' },
+    { complete: Boolean(course?.subject), label: 'teaching subject' },
+    { complete: Boolean(String(course?.academic_level || '').trim()), label: 'academic level' },
+    {
+      complete: descriptionLength >= 20,
+      label: `course description (${descriptionLength}/20 visible characters)`,
+    },
+  ]
+  const missingDetails = detailRequirements
+    .filter((requirement) => !requirement.complete)
+    .map((requirement) => requirement.label)
   const checks = {
-    details: Boolean(
-      course?.title
-      && course?.subject
-      && course?.academic_level
-      && String(course?.description || '').trim().length >= 20
-    ),
+    details: detailRequirements.every((requirement) => requirement.complete),
     curriculum: Boolean(course?.lessons?.length),
     assessments: Boolean(course?.assessment_readiness?.is_ready),
   }
@@ -34,6 +44,8 @@ export function courseCompletion(course) {
 
   return {
     ...checks,
+    descriptionLength,
+    missingDetails,
     completed,
     percent: Math.round((completed / 3) * 100),
   }

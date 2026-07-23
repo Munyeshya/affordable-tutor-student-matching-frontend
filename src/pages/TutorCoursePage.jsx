@@ -187,7 +187,14 @@ function ReviewSection({ course, lessons, busy, onSubmit }) {
   const editable = isCourseEditable(course.status)
   const canSubmit = editable && completion.details && completion.curriculum && completion.assessments
   const checks = [
-    { complete: completion.details, title: 'Course details', text: 'Title, description, subject, level, and price are present.', to: 'details' },
+    {
+      complete: completion.details,
+      title: 'Course details',
+      text: completion.details
+        ? 'Title, description, subject, level, and price are present.'
+        : `Still needed: ${completion.missingDetails.join(', ')}.`,
+      to: 'details',
+    },
     { complete: completion.curriculum, title: 'Curriculum', text: `${lessons.length} lesson${lessons.length === 1 ? '' : 's'} arranged for students.`, to: 'curriculum' },
     { complete: completion.assessments, title: 'Learning measurement', text: 'Initial and final checks with questions are required.', to: 'assessments' },
   ]
@@ -216,7 +223,12 @@ function ReviewSection({ course, lessons, busy, onSubmit }) {
         </div>
       ) : (
         <div className="course-submit-panel">
-          <div><strong>{canSubmit ? 'Ready for administrator review' : 'Complete the missing steps first'}</strong><p>Submitting locks the course while an administrator checks its content and assessment coverage.</p></div>
+          <div>
+            <strong>{canSubmit ? 'Ready for administrator review' : 'Complete the missing steps first'}</strong>
+            <p>{canSubmit
+              ? 'Submitting locks the course while an administrator checks its content and assessment coverage.'
+              : 'Open each incomplete step above. The course remains a private draft until you explicitly submit it here.'}</p>
+          </div>
           <button type="button" disabled={!canSubmit || busy} onClick={onSubmit}>{busy ? 'Submitting...' : course.status === 'DRAFT' ? 'Submit course for review' : 'Resubmit course for review'}</button>
         </div>
       )}
@@ -255,7 +267,11 @@ export function TutorCoursePage({ section = 'details', isNew = false }) {
     },
     onSuccess: async (response) => {
       const savedCourse = response.data
-      toast.success(isNew ? 'Course created. Add the curriculum next.' : 'Course details saved.')
+      const savedCompletion = courseCompletion(savedCourse)
+      const successMessage = isNew ? 'Course draft created.' : 'Course details saved.'
+      toast.success(savedCompletion.details
+        ? `${successMessage} Continue to the curriculum.`
+        : `${successMessage} Still needed: ${savedCompletion.missingDetails.join(', ')}.`)
       await queryClient.invalidateQueries({ queryKey: queryKeys.catalog.tutorCourses })
       if (isNew) navigate(`/tutor-teaching/courses/${savedCourse.id}/curriculum`, { replace: true })
     },
