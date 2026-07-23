@@ -26,7 +26,7 @@ describe('role navigation', () => {
     expect(getDashboardNavigationPaths('ADMIN')).not.toContain('/messages')
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/tutor-earnings')
     expect(getDashboardNavigationPaths('TUTOR')).toContain('/schedule-proposals')
-    expect(getDashboardNavigationPaths('STUDENT')).toContain('/assessments')
+    expect(getDashboardNavigationPaths('STUDENT')).not.toContain('/assessments')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/my-courses')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/schedule-proposals')
     expect(getDashboardNavigationPaths('STUDENT')).toContain('/payments')

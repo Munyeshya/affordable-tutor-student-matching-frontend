@@ -16,6 +16,7 @@ import {
 } from '../api/services/bookings'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery } from '../hooks/useCommonQueries'
+import { AssessmentsPage } from './AssessmentsPage.jsx'
 import './BookingsPage.css'
 
 const STATUS_FILTERS = ['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'REJECTED', 'CANCELLED']
@@ -223,6 +224,8 @@ function BookingCard({
   onProgress,
   onDispute,
   onOnlineSession,
+  onAssessment,
+  assessmentOpen,
   busyAction,
 }) {
   const role = user?.role
@@ -241,7 +244,7 @@ function BookingCard({
     DISPUTE_ELIGIBLE_STATUSES.includes(booking.status)
 
   return (
-    <article className="booking-lifecycle-card">
+    <article className="booking-lifecycle-card" id={`booking-${booking.id}`}>
       <header className="booking-lifecycle-head">
         <div>
           <p className="eyebrow">Booking #{booking.id}</p>
@@ -292,9 +295,9 @@ function BookingCard({
           </button>
         ) : null}
         {['TUTOR', 'STUDENT'].includes(role) && ['CONFIRMED', 'COMPLETED'].includes(booking.status) ? (
-          <Link className="secondary-button" to={`/assessments?booking=${booking.id}`}>
-            {role === 'TUTOR' ? 'Set assessments' : 'View assessments'}
-          </Link>
+          <button className="secondary-button" type="button" onClick={() => onAssessment(booking)}>
+            {assessmentOpen ? 'Close assessments' : role === 'TUTOR' ? 'Set assessments' : 'View assessments'}
+          </button>
         ) : null}
         {canMessage ? <Link className="secondary-button" to={'/messages?booking=' + booking.id}>Message</Link> : null}
         {canReview ? <Link className="secondary-button" to={'/reviews?booking=' + booking.id}>Leave review</Link> : null}
@@ -310,6 +313,17 @@ function BookingCard({
           </button>
         ) : null}
       </footer>
+      {assessmentOpen ? (
+        <section className="booking-context-assessments">
+          <AssessmentsPage
+            contextType="BOOKING"
+            contextId={booking.id}
+            contextTitle={`${booking.subject_name || 'Lesson'} booking #${booking.id}`}
+            learningCompleted={booking.status === 'COMPLETED'}
+            embedded
+          />
+        </section>
+      ) : null}
     </article>
   )
 }
@@ -630,6 +644,7 @@ export function BookingsPage() {
   const [disputeBooking, setDisputeBooking] = useState(null)
   const [disputeReason, setDisputeReason] = useState('')
   const [onlineSessionBooking, setOnlineSessionBooking] = useState(null)
+  const [assessmentBookingId, setAssessmentBookingId] = useState(null)
   const [onlineSessionForm, setOnlineSessionForm] = useState({
     provider: 'GOOGLE_MEET',
     join_url: '',
@@ -834,6 +849,10 @@ export function BookingsPage() {
               onProgress={openProgress}
               onDispute={openDispute}
               onOnlineSession={openOnlineSession}
+              onAssessment={(selectedBooking) => setAssessmentBookingId((current) => (
+                String(current) === String(selectedBooking.id) ? null : selectedBooking.id
+              ))}
+              assessmentOpen={String(assessmentBookingId) === String(booking.id)}
               busyAction={actionMutation.isPending && pendingAction?.booking.id === booking.id}
             />
           ))

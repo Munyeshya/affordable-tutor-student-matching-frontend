@@ -743,6 +743,13 @@
   margin-top: 1rem;
 }
 
+.booking-context-assessments {
+  margin-top: 22px;
+  padding: 0 20px 24px;
+  border-top: 1px solid #ddd3cc;
+  background: #faf8f5;
+}
+
 .booking-danger-button {
   display: inline-flex;
   align-items: center;

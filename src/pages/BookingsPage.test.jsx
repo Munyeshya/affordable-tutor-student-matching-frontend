@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { updateBookingProgress } from '../api/services/bookings.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import { useBookingsQuery } from '../hooks/useCommonQueries.js'
+import { useBookingsQuery, useLearningLibraryQuery } from '../hooks/useCommonQueries.js'
 import { renderWithProviders } from '../test/render.jsx'
 import { BookingsPage } from './BookingsPage.jsx'
 
@@ -13,17 +13,28 @@ const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }))
 
 vi.mock('react-toastify', () => ({ toast }))
 vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
-vi.mock('../hooks/useCommonQueries.js', () => ({ useBookingsQuery: vi.fn() }))
+vi.mock('../hooks/useCommonQueries.js', () => ({ useBookingsQuery: vi.fn(), useLearningLibraryQuery: vi.fn() }))
 vi.mock('../api/services/bookings.js', () => ({
   updateBookingAction: vi.fn(),
   updateBookingProgress: vi.fn(),
 }))
 vi.mock('../api/services/payments.js', () => ({ listPayments: vi.fn() }))
+vi.mock('../api/services/assessments', () => ({
+  listAssessments: vi.fn(() => Promise.resolve({ data: [] })),
+  listAssessmentAttempts: vi.fn(() => Promise.resolve({ data: [] })),
+  listAssessmentConfirmations: vi.fn(() => Promise.resolve({ data: [] })),
+  submitAssessmentAttempt: vi.fn(),
+  submitAssessmentConfirmation: vi.fn(),
+  createAssessment: vi.fn(),
+  createAssessmentQuestion: vi.fn(),
+  getLearningImpact: vi.fn(),
+}))
 
 describe('BookingsPage progress', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useAuth.mockReturnValue({ user: { id: 9, role: 'TUTOR' } })
+    useLearningLibraryQuery.mockReturnValue({ data: [], isLoading: false, isError: false, refetch: vi.fn() })
     useBookingsQuery.mockReturnValue({
       data: [{
         id: 21,
@@ -60,5 +71,16 @@ describe('BookingsPage progress', () => {
       next_steps: '',
     }))
     expect(toast.success).toHaveBeenCalledWith('Learning progress shared successfully.')
+  })
+
+  it('opens assessment management inside the corresponding booking', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<BookingsPage />)
+
+    await user.click(screen.getByRole('button', { name: 'Set assessments' }))
+
+    expect(screen.getByRole('heading', { name: 'Measure learning for this booking' })).toBeInTheDocument()
+    expect(screen.getByText('Mathematics booking #21')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Open assessments' })).not.toBeInTheDocument()
   })
 })

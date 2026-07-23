@@ -12,6 +12,7 @@ import {
   updateLesson,
 } from '../api/services/catalog.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
+import { AssessmentsPage } from './AssessmentsPage.jsx'
 import { formatCourseStatus, isCourseEditable } from './tutorTeaching/courseHelpers.js'
 import './TutorTeachingPage.css'
 
@@ -158,11 +159,21 @@ export function TutorLessonPage({ isNew = false }) {
             <div className="lesson-assessment-next">
               <DashboardIcon name="assessments" size={22} />
               <div><strong>Next: measure this lesson</strong><p>Create initial and final assessments after the lesson content is ready.</p></div>
-              <Link to={`/assessments?lesson=${lesson.id}`}>Open assessments</Link>
+              <a href="#lesson-assessments">Open assessments</a>
             </div>
           ) : null}
         </section>
       </div>
+      {!isNew && editable ? (
+        <section className="tutor-lesson-assessments" id="lesson-assessments">
+          <AssessmentsPage
+            contextType="COURSE_LESSON"
+            contextId={lesson.id}
+            contextTitle={lesson.title}
+            embedded
+          />
+        </section>
+      ) : null}
     </section>
   )
 }

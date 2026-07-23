@@ -167,7 +167,7 @@ function AssessmentsSection({ course, lessons }) {
             <article key={lesson.id}>
               <span className={readyLessonIds.has(lesson.id) ? 'is-ready' : ''}>{readyLessonIds.has(lesson.id) ? '✓' : lesson.order_number}</span>
               <div><strong>{lesson.title}</strong><small>{readyLessonIds.has(lesson.id) ? 'Initial and final checks ready' : 'Assessment pair is incomplete'}</small></div>
-              {isCourseEditable(course.status) ? <Link to={`/assessments?lesson=${lesson.id}`}>{readyLessonIds.has(lesson.id) ? 'Manage checks' : 'Create checks'}</Link> : null}
+              {isCourseEditable(course.status) ? <Link to={`/tutor-teaching/courses/${course.id}/lessons/${lesson.id}#lesson-assessments`}>{readyLessonIds.has(lesson.id) ? 'Manage checks' : 'Create checks'}</Link> : null}
             </article>
           ))}
         </div>

@@ -5,6 +5,71 @@
   color: #171717;
 }
 
+.assessments-page.is-embedded {
+  width: 100%;
+  margin: 0;
+  padding: 28px 0 0;
+}
+
+.context-assessment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+  border: 1px solid #c9c9c9;
+  background: #181818;
+  color: #fff;
+}
+
+.context-assessment-head span {
+  color: #f29a49;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.context-assessment-head h2 {
+  margin: 4px 0;
+  font-size: 1.15rem;
+}
+
+.context-assessment-head p {
+  margin: 0;
+  color: #c8c8c8;
+  font-size: 0.68rem;
+}
+
+.context-assessment-head > strong {
+  flex: 0 0 auto;
+  color: #f3a45d;
+  font-size: 0.72rem;
+}
+
+.assessment-fixed-context {
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px;
+  border-left: 3px solid #b45309;
+  background: #fff6ed;
+}
+
+.assessment-fixed-context span {
+  color: #7b7169;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.assessment-fixed-context strong {
+  font-size: 0.72rem;
+}
+
+.assessments-page.is-embedded .assessment-section,
+.assessments-page.is-embedded .tutor-assessment-builder {
+  padding-top: 24px;
+}
+
 .assessment-page-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

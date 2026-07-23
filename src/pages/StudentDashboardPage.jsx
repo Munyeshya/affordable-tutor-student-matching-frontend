@@ -82,6 +82,12 @@ export function StudentDashboardPage() {
   const recentPayments = payments.filter((payment) => payment.status === 'PAID').slice(0, 2)
   const attemptedIds = new Set(attempts.map((attempt) => Number(attempt.assessment)))
   const pendingAssessments = assessments.filter((assessment) => !attemptedIds.has(Number(assessment.id)))
+  const nextPendingAssessment = pendingAssessments[0]
+  const nextAssessmentPath = nextPendingAssessment?.context_type === 'BOOKING'
+    ? `/bookings#booking-${nextPendingAssessment.booking}`
+    : nextPendingAssessment?.course_id && nextPendingAssessment?.lesson
+      ? `/my-courses/${nextPendingAssessment.course_id}/lessons/${nextPendingAssessment.lesson}#lesson-assessments`
+      : '/my-courses'
   const upcomingBookings = bookings
     .filter((booking) => ['PENDING', 'CONFIRMED'].includes(booking.status))
     .sort((left, right) => String(left.start_datetime || '').localeCompare(String(right.start_datetime || '')))
@@ -209,7 +215,7 @@ export function StudentDashboardPage() {
             {assessmentsQuery.isLoading || attemptsQuery.isLoading || reviewsQuery.isLoading || paymentsQuery.isLoading ? <DashboardSkeleton rows={3} /> : (
               <div className="student-action-list">
                 <Link to="/payments"><span><DashboardIcon name="payments" /></span><div><strong>{outstandingBookings.length} payment{outstandingBookings.length === 1 ? '' : 's'} due</strong><small>{outstandingBookings.length ? `${formatMoney(outstandingTotal)} for confirmed lessons.` : 'No confirmed lesson payments are due.'}</small></div><b aria-hidden="true">-&gt;</b></Link>
-                <Link to="/assessments"><span><DashboardIcon name="assessments" /></span><div><strong>{pendingAssessments.length} assessment{pendingAssessments.length === 1 ? '' : 's'}</strong><small>Check your knowledge before or after lessons.</small></div><b aria-hidden="true">-&gt;</b></Link>
+                <Link to={nextAssessmentPath}><span><DashboardIcon name="assessments" /></span><div><strong>{pendingAssessments.length} assessment{pendingAssessments.length === 1 ? '' : 's'}</strong><small>{pendingAssessments.length ? 'Open the related booking or lesson to continue.' : 'Knowledge checks appear inside their booking or lesson.'}</small></div><b aria-hidden="true">-&gt;</b></Link>
                 <Link to="/reviews"><span><DashboardIcon name="reviews" /></span><div><strong>{reviewCount} review{reviewCount === 1 ? '' : 's'} pending</strong><small>Share feedback after completed learning.</small></div><b aria-hidden="true">-&gt;</b></Link>
               </div>
             )}

@@ -14,6 +14,16 @@ vi.mock('../api/services/payments', () => ({
   recordLessonView: vi.fn(() => Promise.resolve()),
   updateLessonProgress: vi.fn(),
 }))
+vi.mock('../api/services/assessments', () => ({
+  listAssessments: vi.fn(() => Promise.resolve({ data: [] })),
+  listAssessmentAttempts: vi.fn(() => Promise.resolve({ data: [] })),
+  listAssessmentConfirmations: vi.fn(() => Promise.resolve({ data: [] })),
+  submitAssessmentAttempt: vi.fn(),
+  submitAssessmentConfirmation: vi.fn(),
+  createAssessment: vi.fn(),
+  createAssessmentQuestion: vi.fn(),
+  getLearningImpact: vi.fn(),
+}))
 
 const course = {
   id: 31,
@@ -69,11 +79,12 @@ describe('student course learning hierarchy', () => {
     expect(screen.queryByRole('heading', { name: 'Curriculum' })).not.toBeInTheDocument()
   })
 
-  it('opens curriculum and lesson content after choosing a course', () => {
+  it('opens curriculum, lesson content, and its contextual assessments after choosing a course', async () => {
     renderLearningPage('/my-courses/7')
 
     expect(screen.getByRole('heading', { name: 'Curriculum' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Linear equations' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Lesson assessments' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Purchased courses' })).not.toBeInTheDocument()
   })
 })

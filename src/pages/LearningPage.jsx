@@ -7,6 +7,7 @@ import { getApiErrorMessage } from '../api/errors'
 import { recordLessonView, updateLessonProgress } from '../api/services/payments'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLearningLibraryQuery } from '../hooks/useCommonQueries'
+import { AssessmentsPage } from './AssessmentsPage.jsx'
 import './LearningPage.css'
 
 function formatDate(value) {
@@ -215,6 +216,7 @@ export function LearningPage() {
       </section>
 
       {activeLesson ? (
+        <>
         <section className="learning-workspace">
           <LessonViewTracker lessonId={activeLesson.id} />
           <aside className="learning-curriculum" aria-labelledby="curriculum-title">
@@ -303,12 +305,22 @@ export function LearningPage() {
                     {completionMutation.isPending ? 'Saving progress...' : 'Mark lesson complete'}
                   </button>
                 )}
-                <Link className="learning-assessment-link" to={`/assessments?lesson=${activeLesson.id}`}>Lesson assessments</Link>
+                <a className="learning-assessment-link" href="#lesson-assessments">Lesson assessments</a>
               </div>
               <span>Use assessments to compare knowledge before and after this lesson.</span>
             </div>
           </article>
         </section>
+        <section className="learning-context-assessments" id="lesson-assessments">
+          <AssessmentsPage
+            contextType="COURSE_LESSON"
+            contextId={activeLesson.id}
+            contextTitle={activeLesson.title}
+            learningCompleted={Boolean(activeLesson.progress?.is_completed)}
+            embedded
+          />
+        </section>
+        </>
       ) : (
         <section className="learning-no-lessons">
           <h2>This course has no lessons yet</h2>

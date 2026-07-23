@@ -309,6 +309,14 @@
   background: #fff;
 }
 
+.learning-context-assessments {
+  scroll-margin-top: 110px;
+  padding: 8px 28px 32px;
+  border: 1px solid #c9c9c9;
+  border-top: 0;
+  background: #faf8f5;
+}
+
 .learning-curriculum {
   min-width: 0;
   border-right: 1px solid #d2d2d2;

@@ -24,7 +24,7 @@ describe('dashboard role guides', () => {
   })
 
   it('documents the latest role-specific workflows', () => {
-    expect(dashboardRoleGuides.TUTOR.actions.some((action) => action.to === '/assessments')).toBe(true)
+    expect(dashboardRoleGuides.TUTOR.actions.some((action) => action.to === '/assessments')).toBe(false)
     expect(dashboardRoleGuides.STUDENT.actions.some((action) => action.to === '/my-courses')).toBe(true)
     expect(dashboardRoleGuides.PARENT.actions.some((action) => action.to === '/payments')).toBe(true)
     expect(dashboardRoleGuides.ADMIN.actions.some((action) => action.to === '/admin/audit')).toBe(true)
