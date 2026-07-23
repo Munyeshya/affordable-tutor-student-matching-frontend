@@ -41,8 +41,11 @@ describe('JoinPage', () => {
 
     await user.type(screen.getByLabelText('Full name'), 'Aline Student')
     await user.selectOptions(screen.getByLabelText('Account type'), 'PARENT')
+    expect(screen.queryByLabelText('Phone number')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     await user.type(screen.getByLabelText('Phone number'), '0788000000')
     await user.type(screen.getByLabelText('Email address'), 'aline@example.com')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     await user.type(screen.getByLabelText('Password'), 'secure-password')
     await user.click(screen.getByRole('button', { name: 'Create account' }))
 
@@ -60,9 +63,14 @@ describe('JoinPage', () => {
     const user = userEvent.setup()
     renderJoin()
 
+    await user.type(screen.getByLabelText('Full name'), 'Tutor Test')
     await user.selectOptions(screen.getByLabelText('Account type'), 'TUTOR')
     expect(screen.getByText('Tutor account')).toBeInTheDocument()
     expect(screen.getByText(/submit qualifications/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.type(screen.getByLabelText('Phone number'), '0788000000')
+    await user.type(screen.getByLabelText('Email address'), 'tutor@example.com')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     await user.type(screen.getByLabelText('Password'), 'secure-password')
     await user.click(screen.getByRole('button', { name: 'Show password' }))
     expect(screen.getByLabelText('Password')).toHaveAttribute('type', 'text')

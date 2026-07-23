@@ -42,6 +42,7 @@ export function JoinPage() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [step, setStep] = useState(1)
   const [roleTitle, roleDescription] = roleGuidance[form.role]
 
   function updateField(name, value) {
@@ -52,6 +53,11 @@ export function JoinPage() {
     event.preventDefault()
     setSuccessMessage('')
     setError('')
+
+    if (step < 3) {
+      setStep((current) => current + 1)
+      return
+    }
 
     try {
       await signUp(form)
@@ -87,117 +93,102 @@ export function JoinPage() {
 
         <article className="sign-in-panel join-panel">
           <header className="sign-in-heading">
-            <span>Create your account</span>
-            <h2 id="join-title">Join Isomo in a few clear steps.</h2>
-            <p>Use accurate information so lessons, payments, and learning records stay connected to the right person.</p>
+            <span>Create your account / Step {step} of 3</span>
+            <h2 id="join-title">{step === 1 ? 'Choose who this account is for.' : step === 2 ? 'Add your contact details.' : 'Secure your new account.'}</h2>
+            <p>{step === 1 ? 'Tell us your name and select the role that matches how you will use Isomo.' : step === 2 ? 'Add accurate contact information for account and lesson coordination.' : 'Create a private password, then review and submit your account.'}</p>
           </header>
 
-          <div className="join-role-note" aria-live="polite">
-            <DashboardIcon name={form.role === 'TUTOR' ? 'verification' : form.role === 'PARENT' ? 'students' : 'courses'} size={18} />
-            <p><strong>{roleTitle}</strong><span>{roleDescription}</span></p>
+          <div className="auth-form-progress" aria-label={`Account creation step ${step} of 3`}>
+            {[1, 2, 3].map((item) => <span className={step >= item ? 'is-complete' : ''} key={item} />)}
           </div>
 
           <form className="sign-in-form join-form" onSubmit={handleSubmit}>
-            <div className="join-form-grid">
-              <label htmlFor="join-full-name">
-                <span>Full name</span>
-                <div className="sign-in-input-wrap">
-                  <DashboardIcon name="account" size={18} />
-                  <input
-                    id="join-full-name"
-                    type="text"
-                    placeholder="Your full name"
-                    autoComplete="name"
-                    value={form.full_name}
-                    onChange={(event) => updateField('full_name', event.target.value)}
-                    required
-                  />
+            {step === 1 ? (
+              <>
+                <div className="join-form-grid">
+                  <label htmlFor="join-full-name">
+                    <span>Full name</span>
+                    <div className="sign-in-input-wrap">
+                      <DashboardIcon name="account" size={18} />
+                      <input id="join-full-name" type="text" placeholder="Your full name" autoComplete="name" value={form.full_name} onChange={(event) => updateField('full_name', event.target.value)} autoFocus required />
+                    </div>
+                  </label>
+                  <label htmlFor="join-role">
+                    <span>Account type</span>
+                    <div className="sign-in-input-wrap join-select-wrap">
+                      <DashboardIcon name="students" size={18} />
+                      <select id="join-role" value={form.role} onChange={(event) => updateField('role', event.target.value)}>
+                        <option value="STUDENT">Student</option>
+                        <option value="PARENT">Parent or guardian</option>
+                        <option value="TUTOR">Tutor</option>
+                      </select>
+                    </div>
+                  </label>
                 </div>
-              </label>
-
-              <label htmlFor="join-role">
-                <span>Account type</span>
-                <div className="sign-in-input-wrap join-select-wrap">
-                  <DashboardIcon name="students" size={18} />
-                  <select id="join-role" value={form.role} onChange={(event) => updateField('role', event.target.value)}>
-                    <option value="STUDENT">Student</option>
-                    <option value="PARENT">Parent or guardian</option>
-                    <option value="TUTOR">Tutor</option>
-                  </select>
+                <div className="join-role-note" aria-live="polite">
+                  <DashboardIcon name={form.role === 'TUTOR' ? 'verification' : form.role === 'PARENT' ? 'students' : 'courses'} size={18} />
+                  <p><strong>{roleTitle}</strong><span>{roleDescription}</span></p>
                 </div>
-              </label>
+              </>
+            ) : null}
 
-              <label htmlFor="join-phone">
-                <span>Phone number</span>
-                <div className="sign-in-input-wrap">
-                  <DashboardIcon name="messages" size={18} />
-                  <input
-                    id="join-phone"
-                    type="tel"
-                    placeholder="For example, 0788 000 000"
-                    autoComplete="tel"
-                    value={form.phone_number}
-                    onChange={(event) => updateField('phone_number', event.target.value)}
-                    required
-                  />
-                </div>
-              </label>
-
-              <label htmlFor="join-email">
-                <span>Email address</span>
-                <div className="sign-in-input-wrap">
-                  <DashboardIcon name="messages" size={18} />
-                  <input
-                    id="join-email"
-                    type="email"
-                    placeholder="name@example.com"
-                    autoComplete="email"
-                    value={form.email}
-                    onChange={(event) => updateField('email', event.target.value)}
-                    required
-                  />
-                </div>
-              </label>
-            </div>
-
-            <label htmlFor="join-password">
-              <span>Password</span>
-              <div className="sign-in-input-wrap sign-in-password-wrap">
-                <DashboardIcon name="verification" size={18} />
-                <input
-                  id="join-password"
-                  aria-label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a secure password"
-                  autoComplete="new-password"
-                  minLength="8"
-                  value={form.password}
-                  onChange={(event) => updateField('password', event.target.value)}
-                  required
-                />
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
+            {step === 2 ? (
+              <div className="join-form-grid">
+                <label htmlFor="join-phone">
+                  <span>Phone number</span>
+                  <div className="sign-in-input-wrap">
+                    <DashboardIcon name="messages" size={18} />
+                    <input id="join-phone" type="tel" placeholder="For example, 0788 000 000" autoComplete="tel" value={form.phone_number} onChange={(event) => updateField('phone_number', event.target.value)} autoFocus required />
+                  </div>
+                </label>
+                <label htmlFor="join-email">
+                  <span>Email address</span>
+                  <div className="sign-in-input-wrap">
+                    <DashboardIcon name="messages" size={18} />
+                    <input id="join-email" type="email" placeholder="name@example.com" autoComplete="email" value={form.email} onChange={(event) => updateField('email', event.target.value)} required />
+                  </div>
+                </label>
               </div>
-              <small className="join-field-help">Use at least 8 characters. Avoid a password you use on another service.</small>
-            </label>
+            ) : null}
 
-            {error ? (
+            {step === 3 ? (
+              <>
+                <div className="auth-identity-summary join-account-summary">
+                  <DashboardIcon name="account" size={18} />
+                  <p><span>{roleTitle}</span><strong>{form.full_name} / {form.email}</strong></p>
+                  <button type="button" onClick={() => { setStep(1); setError('') }}>Edit</button>
+                </div>
+                <label htmlFor="join-password">
+                  <span>Password</span>
+                  <div className="sign-in-input-wrap sign-in-password-wrap">
+                    <DashboardIcon name="verification" size={18} />
+                    <input id="join-password" aria-label="Password" type={showPassword ? 'text' : 'password'} placeholder="Create a secure password" autoComplete="new-password" minLength="8" value={form.password} onChange={(event) => updateField('password', event.target.value)} autoFocus required />
+                    <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? 'Hide' : 'Show'}</button>
+                  </div>
+                  <small className="join-field-help">Use at least 8 characters. Avoid a password you use on another service.</small>
+                </label>
+              </>
+            ) : null}
+
+            {step === 3 && error ? (
               <div className="sign-in-error" role="alert">
                 <DashboardIcon name="disputes" size={18} />
                 <p><strong>Account could not be created</strong><span>{error}</span></p>
               </div>
             ) : null}
 
-            {successMessage ? <p className="join-success" role="status">{successMessage}</p> : null}
+            {step === 3 && successMessage ? <p className="join-success" role="status">{successMessage}</p> : null}
 
-            <button className="sign-in-submit" type="submit" disabled={submitting}>
-              <span>{submitting ? 'Creating your account...' : 'Create account'}</span>
-              {!submitting ? <DashboardIcon name="account" size={18} /> : null}
-            </button>
+            <div className={`auth-form-actions${step === 1 ? ' is-single' : ''}`}>
+              {step > 1 ? <button className="auth-step-back" type="button" onClick={() => { setStep((current) => current - 1); setError('') }} disabled={submitting}>Back</button> : null}
+              <button className="sign-in-submit" type="submit" disabled={submitting}>
+                <span>{submitting ? 'Creating your account...' : step === 3 ? 'Create account' : 'Next'}</span>
+                {!submitting ? <DashboardIcon name={step === 3 ? 'account' : 'logout'} size={18} /> : null}
+              </button>
+            </div>
           </form>
 
-          <p className="join-terms">By creating an account, you agree to use Isomo responsibly and provide accurate account information.</p>
+          {step === 3 ? <p className="join-terms">By creating an account, you agree to use Isomo responsibly and provide accurate account information.</p> : null}
 
           <div className="sign-in-join">
             <p><strong>Already have an account?</strong><span>Return to your learning or teaching workspace.</span></p>

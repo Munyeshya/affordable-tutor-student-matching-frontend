@@ -4,7 +4,8 @@
 }
 
 .sign-in-frame {
-  min-height: 590px;
+  height: clamp(470px, calc(100dvh - 140px), 535px);
+  min-height: 470px;
   display: grid;
   grid-template-columns: minmax(0, 1.04fr) minmax(390px, 0.96fr);
   border: 1px solid #d9d3ce;
@@ -19,7 +20,7 @@
   flex-direction: column;
   justify-content: space-between;
   background: #141311;
-  padding: clamp(2rem, 5vw, 4rem);
+  padding: clamp(1.75rem, 4vw, 3rem);
   color: #fff;
 }
 
@@ -78,7 +79,7 @@
 .sign-in-story-copy h1 {
   max-width: 420px;
   margin: 0.8rem 0 1rem;
-  font-size: clamp(2rem, 4.2vw, 3.25rem);
+  font-size: clamp(1.9rem, 3.5vw, 2.8rem);
   line-height: 1.04;
   letter-spacing: -0.045em;
 }
@@ -93,7 +94,7 @@
 
 .sign-in-role-list {
   display: grid;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
 }
 
 .sign-in-role-list article {
@@ -102,7 +103,7 @@
   gap: 0.7rem;
   align-items: start;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 0.8rem 0;
+  padding: 0.62rem 0;
 }
 
 .sign-in-role-list article > span {
@@ -134,7 +135,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(2rem, 6vw, 4.5rem);
+  padding: clamp(1.75rem, 4.5vw, 3.4rem);
 }
 
 .sign-in-heading h2 {
@@ -159,7 +160,7 @@
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.65rem;
   align-items: start;
-  margin-top: 1.25rem;
+  margin-top: 0.9rem;
   padding: 0.8rem 0.9rem;
 }
 
@@ -174,8 +175,42 @@
 .sign-in-form {
   display: grid;
   gap: 1rem;
-  margin-top: 1.6rem;
+  margin-top: 1.1rem;
 }
+
+.auth-form-progress {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 0.9rem;
+}
+
+.auth-form-progress.is-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.auth-form-progress span {
+  height: 3px;
+  background: #e5dfda;
+}
+
+.auth-form-progress span.is-complete { background: #c65d00; }
+.auth-form-progress span:only-child { grid-column: 1 / -1; }
+
+.auth-identity-summary {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: center;
+  border-left: 3px solid #c65d00;
+  background: #fff6ee;
+  padding: 0.65rem 0.8rem;
+  color: #8d4308;
+}
+
+.auth-identity-summary p { min-width: 0; display: grid; gap: 0.1rem; margin: 0; }
+.auth-identity-summary span { color: #80654f; font-size: 0.62rem; }
+.auth-identity-summary strong { overflow: hidden; color: #51311a; font-size: 0.72rem; text-overflow: ellipsis; white-space: nowrap; }
+.auth-identity-summary button { border: 0; background: transparent; padding: 0.3rem 0; color: #9a4503; font: inherit; font-size: 0.66rem; font-weight: 900; cursor: pointer; }
 
 .sign-in-form > label {
   display: grid;
@@ -229,14 +264,36 @@
 .sign-in-submit:disabled { border-color: #b6afa9; background: #b6afa9; cursor: wait; }
 .sign-in-submit svg { transform: rotate(180deg); }
 
+.auth-form-actions {
+  display: grid;
+  grid-template-columns: minmax(95px, 0.4fr) minmax(0, 1fr);
+  gap: 0.65rem;
+}
+
+.auth-form-actions.is-single { grid-template-columns: 1fr; }
+.auth-step-back {
+  min-height: 49px;
+  border: 1px solid #cfc8c2;
+  border-radius: 0;
+  background: #fff;
+  color: #4b4540;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.auth-step-back:hover:not(:disabled),
+.auth-step-back:focus-visible { border-color: #c65d00; color: #9a4503; }
+.auth-step-back:disabled { cursor: wait; opacity: 0.65; }
+
 .sign-in-join {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   border-top: 1px solid #e2dcd7;
-  margin-top: 1.5rem;
-  padding-top: 1.15rem;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
 }
 
 .sign-in-join p { display: grid; gap: 0.1rem; margin: 0; }
@@ -256,7 +313,7 @@
 }
 
 @media (max-width: 720px) {
-  .sign-in-frame { grid-template-columns: 1fr; }
+  .sign-in-frame { height: auto; min-height: 0; grid-template-columns: 1fr; }
   .sign-in-story { min-height: 390px; }
   .sign-in-story-copy { width: min(100%, 520px); }
   .sign-in-story-copy h1 { max-width: 500px; }
@@ -276,5 +333,15 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sign-in-input-wrap,
-  .sign-in-submit { transition: none; }
+  .sign-in-submit,
+  .auth-form-progress span { transition: none; }
+}
+
+@media (max-height: 680px) and (min-width: 721px) {
+  .sign-in-frame { height: calc(100dvh - 126px); min-height: 440px; }
+  .sign-in-story-copy h1 { margin-block: 0.55rem 0.7rem; font-size: 2rem; }
+  .sign-in-story-copy > p:last-child { line-height: 1.5; }
+  .sign-in-role-list { margin-top: 0.75rem; }
+  .sign-in-role-list article { padding-block: 0.45rem; }
+  .sign-in-panel { padding-block: 1.25rem; }
 }

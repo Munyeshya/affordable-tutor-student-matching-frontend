@@ -42,10 +42,16 @@ export function SignInPage() {
   const [email, setEmail] = useState(location.state?.registeredEmail || '')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [step, setStep] = useState(1)
 
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
+
+    if (step === 1) {
+      setStep(2)
+      return
+    }
 
     try {
       const signedInUser = await signIn({ email, password })
@@ -80,10 +86,15 @@ export function SignInPage() {
 
         <article className="sign-in-panel">
           <header className="sign-in-heading">
-            <span>Account access</span>
-            <h2 id="sign-in-title">Sign in to manage your activity.</h2>
-            <p>Enter the email address and password connected to your Isomo account.</p>
+            <span>Account access / Step {step} of 2</span>
+            <h2 id="sign-in-title">{step === 1 ? 'Sign in to manage your activity.' : 'Enter your account password.'}</h2>
+            <p>{step === 1 ? 'Start with the email address connected to your Isomo account.' : 'Your email is confirmed for this attempt. Enter your password to continue.'}</p>
           </header>
+
+          <div className="auth-form-progress is-two" aria-label={`Sign-in step ${step} of 2`}>
+            <span className="is-complete" />
+            <span className={step === 2 ? 'is-complete' : ''} />
+          </div>
 
           {returnPath ? (
             <div className="sign-in-return-notice">
@@ -93,52 +104,72 @@ export function SignInPage() {
           ) : null}
 
           <form className="sign-in-form" onSubmit={handleSubmit}>
-            <label htmlFor="sign-in-email">
-              <span>Email address</span>
-              <div className="sign-in-input-wrap">
-                <DashboardIcon name="account" size={18} />
-                <input
-                  id="sign-in-email"
-                  type="email"
-                  placeholder="name@example.com"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                />
-              </div>
-            </label>
+            {step === 1 ? (
+              <label htmlFor="sign-in-email">
+                <span>Email address</span>
+                <div className="sign-in-input-wrap">
+                  <DashboardIcon name="account" size={18} />
+                  <input
+                    id="sign-in-email"
+                    type="email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    autoFocus
+                    required
+                  />
+                </div>
+              </label>
+            ) : (
+              <>
+                <div className="auth-identity-summary">
+                  <DashboardIcon name="account" size={18} />
+                  <p><span>Signing in as</span><strong>{email}</strong></p>
+                  <button type="button" onClick={() => { setStep(1); setError('') }}>Change</button>
+                </div>
+                <label htmlFor="sign-in-password">
+                  <span>Password</span>
+                  <div className="sign-in-input-wrap sign-in-password-wrap">
+                    <DashboardIcon name="verification" size={18} />
+                    <input
+                      id="sign-in-password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      autoFocus
+                      required
+                    />
+                    <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                      {showPassword ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+                </label>
+              </>
+            )}
 
-            <label htmlFor="sign-in-password">
-              <span>Password</span>
-              <div className="sign-in-input-wrap sign-in-password-wrap">
-                <DashboardIcon name="verification" size={18} />
-                <input
-                  id="sign-in-password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  required
-                />
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-            </label>
-
-            {error ? (
+            {step === 2 && error ? (
               <div className="sign-in-error" role="alert">
                 <DashboardIcon name="disputes" size={18} />
                 <p><strong>Sign-in unsuccessful</strong><span>{error}</span></p>
               </div>
             ) : null}
 
-            <button className="sign-in-submit" type="submit" disabled={submitting}>
-              <span>{submitting ? 'Signing you in...' : 'Sign in'}</span>
-              {!submitting ? <DashboardIcon name="logout" size={18} /> : null}
-            </button>
+            {step === 1 ? (
+              <button className="sign-in-submit" type="submit">
+                <span>Next</span><DashboardIcon name="logout" size={18} />
+              </button>
+            ) : (
+              <div className="auth-form-actions">
+                <button className="auth-step-back" type="button" onClick={() => { setStep(1); setError('') }} disabled={submitting}>Back</button>
+                <button className="sign-in-submit" type="submit" disabled={submitting}>
+                  <span>{submitting ? 'Signing you in...' : 'Sign in'}</span>
+                  {!submitting ? <DashboardIcon name="logout" size={18} /> : null}
+                </button>
+              </div>
+            )}
           </form>
 
           <div className="sign-in-join">

@@ -43,6 +43,8 @@ describe('SignInPage', () => {
     renderSignIn()
 
     await user.type(screen.getByLabelText('Email address'), 'tutor@isomo.test')
+    expect(screen.queryByLabelText('Password')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     await user.type(screen.getByLabelText('Password'), 'secure-password')
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
@@ -56,6 +58,7 @@ describe('SignInPage', () => {
     renderSignIn({ pathname: '/bookings', search: '?status=PENDING' })
 
     await user.type(screen.getByLabelText('Email address'), 'student@isomo.test')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     await user.type(screen.getByLabelText('Password'), 'secure-password')
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
@@ -74,15 +77,19 @@ describe('SignInPage', () => {
     })
     renderSignIn()
 
+    await user.type(screen.getByLabelText('Email address'), 'student@isomo.test')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     expect(screen.getByText('The email address or password is incorrect.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
-    expect(screen.getByRole('heading', { name: 'Sign in to manage your activity.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Enter your account password.' })).toBeInTheDocument()
     expect(screen.queryByText(/Destination/)).not.toBeInTheDocument()
   })
 
   it('lets the user reveal and hide the password without changing its value', async () => {
     const user = userEvent.setup()
     renderSignIn()
+    await user.type(screen.getByLabelText('Email address'), 'student@isomo.test')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
     const password = screen.getByLabelText('Password')
 
     await user.type(password, 'secure-password')

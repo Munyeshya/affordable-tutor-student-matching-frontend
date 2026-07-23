@@ -285,7 +285,7 @@
   min-height: calc(100vh - 106px);
   margin-inline: auto;
   align-content: center;
-  padding-block: 28px;
+  padding-block: clamp(10px, 2vh, 18px);
 }
 
 .dashboard-layout-header {
