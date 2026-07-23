@@ -8,8 +8,16 @@
   min-height: 470px;
   display: grid;
   grid-template-columns: minmax(0, 1.04fr) minmax(390px, 0.96fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
   border: 1px solid #d9d3ce;
   background: #fff;
+}
+
+.sign-in-story,
+.sign-in-panel {
+  min-height: 0;
+  height: 100%;
 }
 
 .sign-in-story {
@@ -79,7 +87,7 @@
 .sign-in-story-copy h1 {
   max-width: 420px;
   margin: 0.8rem 0 1rem;
-  font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
   line-height: 1.04;
   letter-spacing: -0.045em;
 }
@@ -308,12 +316,14 @@
   .sign-in-page { padding-inline: 0; }
   .sign-in-frame { grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr); }
   .sign-in-story { padding: 2.25rem; }
-  .sign-in-story-copy h1 { font-size: 2.2rem; }
+  .sign-in-story-copy h1 { font-size: 1.95rem; }
   .sign-in-panel { padding: 2.5rem; }
 }
 
 @media (max-width: 720px) {
-  .sign-in-frame { height: auto; min-height: 0; grid-template-columns: 1fr; }
+  .sign-in-frame { height: auto; min-height: 0; grid-template-columns: 1fr; grid-template-rows: none; }
+  .sign-in-story,
+  .sign-in-panel { height: auto; }
   .sign-in-story { min-height: 390px; }
   .sign-in-story-copy { width: min(100%, 520px); }
   .sign-in-story-copy h1 { max-width: 500px; }
@@ -323,7 +333,7 @@
 
 @media (max-width: 480px) {
   .sign-in-story { min-height: 0; padding: 1.75rem 1.25rem; }
-  .sign-in-story-copy h1 { font-size: 1.85rem; }
+  .sign-in-story-copy h1 { font-size: 1.65rem; }
   .sign-in-story-accent,
   .sign-in-illustration { display: none; }
   .sign-in-role-list article:nth-child(3) { display: none; }
@@ -339,7 +349,7 @@
 
 @media (max-height: 680px) and (min-width: 721px) {
   .sign-in-frame { height: calc(100dvh - 126px); min-height: 440px; }
-  .sign-in-story-copy h1 { margin-block: 0.55rem 0.7rem; font-size: 2rem; }
+  .sign-in-story-copy h1 { margin-block: 0.55rem 0.7rem; font-size: 1.8rem; }
   .sign-in-story-copy > p:last-child { line-height: 1.5; }
   .sign-in-role-list { margin-top: 0.75rem; }
   .sign-in-role-list article { padding-block: 0.45rem; }

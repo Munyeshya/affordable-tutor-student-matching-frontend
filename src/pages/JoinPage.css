@@ -86,8 +86,10 @@
 }
 
 @media (max-width: 760px) {
-  .join-frame { height: auto; min-height: 0; grid-template-columns: 1fr; }
+  .join-frame { height: auto; min-height: 0; grid-template-columns: 1fr; grid-template-rows: none; }
   .join-story { min-height: 390px; }
+  .join-story,
+  .join-panel { height: auto; }
 }
 
 @media (max-width: 540px) {
