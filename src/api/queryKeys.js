@@ -24,6 +24,10 @@ export const queryKeys = {
     attempts: ['assessments', 'attempts'],
     confirmations: ['assessments', 'confirmations'],
   },
+  availability: {
+    all: ['availability'],
+    mine: ['availability', 'mine'],
+  },
   bookings: {
     all: ['bookings'],
     tutors: ['bookings', 'tutors'],

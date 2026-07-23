@@ -2,6 +2,7 @@ import React from 'react'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Route, Routes } from 'react-router-dom'
 
 import { updateBookingProgress } from '../api/services/bookings.js'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -15,8 +16,11 @@ vi.mock('react-toastify', () => ({ toast }))
 vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 vi.mock('../hooks/useCommonQueries.js', () => ({ useBookingsQuery: vi.fn(), useLearningLibraryQuery: vi.fn() }))
 vi.mock('../api/services/bookings.js', () => ({
+  createDispute: vi.fn(),
+  listDisputes: vi.fn(),
   updateBookingAction: vi.fn(),
   updateBookingProgress: vi.fn(),
+  updateOnlineLessonSession: vi.fn(),
 }))
 vi.mock('../api/services/payments.js', () => ({ listPayments: vi.fn() }))
 vi.mock('../api/services/assessments', () => ({
@@ -31,6 +35,16 @@ vi.mock('../api/services/assessments', () => ({
 }))
 
 describe('BookingsPage progress', () => {
+  function renderBookingPage(route = '/bookings/21') {
+    return renderWithProviders(
+      <Routes>
+        <Route path="/bookings" element={<BookingsPage />} />
+        <Route path="/bookings/:bookingId" element={<BookingsPage />} />
+      </Routes>,
+      { route },
+    )
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     useAuth.mockReturnValue({ user: { id: 9, role: 'TUTOR' } })
@@ -57,7 +71,7 @@ describe('BookingsPage progress', () => {
 
   it('lets the assigned tutor publish a progress update', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<BookingsPage />)
+    renderBookingPage()
 
     expect(screen.getByText('The tutor will add progress notes as this lesson moves forward.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Add progress' }))
@@ -73,9 +87,20 @@ describe('BookingsPage progress', () => {
     expect(toast.success).toHaveBeenCalledWith('Learning progress shared successfully.')
   })
 
+  it('shows a compact list before opening the full booking workspace', async () => {
+    const user = userEvent.setup()
+    renderBookingPage('/bookings')
+
+    expect(screen.getByRole('link', { name: 'View booking' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Add progress' })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('link', { name: 'View booking' }))
+    expect(screen.getByRole('button', { name: 'Add progress' })).toBeInTheDocument()
+  })
+
   it('opens assessment management inside the corresponding booking', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<BookingsPage />)
+    renderBookingPage()
 
     await user.click(screen.getByRole('button', { name: 'Set assessments' }))
 

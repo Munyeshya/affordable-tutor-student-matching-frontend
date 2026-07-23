@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import { queryKeys } from '../api/queryKeys'
 import { listPayments } from '../api/services/payments'
@@ -175,6 +175,14 @@ function OnlineLessonPanel({ booking, role, onManage }) {
               <p>{session.instructions}</p>
             </div>
           ) : null}
+          {session.join_url ? (
+            <div className="booking-meeting-link">
+              <span>Meeting link</span>
+              <a href={session.join_url} target="_blank" rel="noreferrer">
+                {session.join_url}
+              </a>
+            </div>
+          ) : null}
           <footer>
             {!isTutor && !session.can_join_now ? (
               <small>Join access opens {formatDateTime(session.access_opens_at)}.</small>
@@ -211,6 +219,36 @@ function OnlineLessonPanel({ booking, role, onManage }) {
         </div>
       )}
     </section>
+  )
+}
+
+function BookingListItem({ booking, payment, user }) {
+  const status = STATUS_COPY[booking.status] || { label: booking.status }
+  const participantName = user?.role === 'TUTOR' ? booking.student_name : booking.tutor_name
+
+  return (
+    <article className="booking-list-item">
+      <div className="booking-list-date" aria-label={formatDateTime(booking.start_datetime)}>
+        <strong>{new Intl.DateTimeFormat('en-RW', { day: '2-digit' }).format(new Date(booking.start_datetime))}</strong>
+        <span>{new Intl.DateTimeFormat('en-RW', { month: 'short' }).format(new Date(booking.start_datetime))}</span>
+      </div>
+      <div className="booking-list-main">
+        <div>
+          <p className="eyebrow">Booking #{booking.id}</p>
+          <h2>{booking.subject_name || 'Lesson request'}</h2>
+          <p>{participantName || 'Participant'} / {formatDateTime(booking.start_datetime)}</p>
+        </div>
+        <div className="booking-list-meta">
+          <span>{booking.mode === 'IN_PERSON' ? 'In person' : 'Online'}</span>
+          <strong>{formatMoney(booking.total_amount, booking.currency)}</strong>
+          {['STUDENT', 'PARENT'].includes(user?.role) ? <small>{payment?.status || 'Payment not started'}</small> : null}
+        </div>
+      </div>
+      <div className="booking-list-action">
+        <span className={'booking-status booking-status-' + booking.status.toLowerCase()}>{status.label}</span>
+        <Link className="secondary-button" to={`/bookings/${booking.id}`}>View booking</Link>
+      </div>
+    </article>
   )
 }
 
@@ -635,6 +673,7 @@ function ProgressDialog({ booking, form, setForm, onClose, onSave, busy }) {
 
 export function BookingsPage() {
   const { user } = useAuth()
+  const { bookingId } = useParams()
   const queryClient = useQueryClient()
   const [activeStatus, setActiveStatus] = useState('ALL')
   const [pendingAction, setPendingAction] = useState(null)
@@ -749,6 +788,9 @@ export function BookingsPage() {
   const visibleBookings = activeStatus === 'ALL'
     ? bookings
     : bookings.filter((booking) => booking.status === activeStatus)
+  const selectedBooking = bookingId
+    ? bookings.find((booking) => String(booking.id) === String(bookingId))
+    : null
   const counts = STATUS_FILTERS.reduce((result, status) => {
     result[status] = status === 'ALL' ? bookings.length : bookings.filter((item) => item.status === status).length
     return result
@@ -789,11 +831,17 @@ export function BookingsPage() {
     <section className="bookings-lifecycle-page">
       <header className="bookings-lifecycle-hero">
         <div>
-          <p className="eyebrow">Bookings</p>
-          <h1>Keep every lesson request clear.</h1>
-          <p className="supporting-text">Review schedules, respond to requests, and follow each booking from creation to completion.</p>
+          <p className="eyebrow">{bookingId ? `Booking #${bookingId}` : 'Bookings'}</p>
+          <h1>{bookingId ? selectedBooking?.subject_name || 'Booking details' : 'Keep every lesson request clear.'}</h1>
+          <p className="supporting-text">
+            {bookingId
+              ? 'Review this lesson schedule, meeting access, progress, payment, and assessments in one place.'
+              : 'Review schedules, respond to requests, and open a booking to follow it from creation to completion.'}
+          </p>
         </div>
-        {user?.role === 'STUDENT' || user?.role === 'PARENT' ? (
+        {bookingId ? (
+          <Link className="secondary-button" to="/bookings">Back to bookings</Link>
+        ) : user?.role === 'STUDENT' || user?.role === 'PARENT' ? (
           <Link className="primary-button" to="/tutors">Request another tutor</Link>
         ) : null}
       </header>
@@ -806,7 +854,7 @@ export function BookingsPage() {
         user={user}
       />
 
-      <section className="booking-status-tabs" aria-label="Filter bookings by status">
+      {!bookingId ? <section className="booking-status-tabs" aria-label="Filter bookings by status">
         {STATUS_FILTERS.map((status) => (
           <button
             className={activeStatus === status ? 'booking-status-tab-active' : ''}
@@ -818,7 +866,7 @@ export function BookingsPage() {
             <strong>{counts[status]}</strong>
           </button>
         ))}
-      </section>
+      </section> : null}
 
       <section className="booking-lifecycle-list">
         {bookingsQuery.isLoading ? (
@@ -836,24 +884,37 @@ export function BookingsPage() {
             <p>{getApiErrorMessage(bookingsQuery.error)}</p>
             <button className="primary-button" type="button" onClick={() => bookingsQuery.refetch()}>Try again</button>
           </article>
-        ) : visibleBookings.length ? (
-          visibleBookings.map((booking) => (
+        ) : bookingId && selectedBooking ? (
             <BookingCard
-              booking={booking}
-              payment={paymentsByBooking.get(String(booking.id))}
+              booking={selectedBooking}
+              payment={paymentsByBooking.get(String(selectedBooking.id))}
               user={user}
-              activeDispute={activeDisputesByBooking.get(String(booking.id))}
-              key={booking.id}
+              activeDispute={activeDisputesByBooking.get(String(selectedBooking.id))}
               onAction={openAction}
               onPay={setPaymentBooking}
               onProgress={openProgress}
               onDispute={openDispute}
               onOnlineSession={openOnlineSession}
-              onAssessment={(selectedBooking) => setAssessmentBookingId((current) => (
-                String(current) === String(selectedBooking.id) ? null : selectedBooking.id
+              onAssessment={(assessmentBooking) => setAssessmentBookingId((current) => (
+                String(current) === String(assessmentBooking.id) ? null : assessmentBooking.id
               ))}
-              assessmentOpen={String(assessmentBookingId) === String(booking.id)}
-              busyAction={actionMutation.isPending && pendingAction?.booking.id === booking.id}
+              assessmentOpen={String(assessmentBookingId) === String(selectedBooking.id)}
+              busyAction={actionMutation.isPending && pendingAction?.booking.id === selectedBooking.id}
+            />
+        ) : bookingId ? (
+          <article className="booking-lifecycle-empty">
+            <p className="eyebrow">Booking not found</p>
+            <h2>This booking is not available in your account.</h2>
+            <p>It may have been removed, or your account may not have permission to view it.</p>
+            <Link className="primary-button" to="/bookings">Return to bookings</Link>
+          </article>
+        ) : visibleBookings.length ? (
+          visibleBookings.map((booking) => (
+            <BookingListItem
+              booking={booking}
+              payment={paymentsByBooking.get(String(booking.id))}
+              user={user}
+              key={booking.id}
             />
           ))
         ) : (

@@ -115,7 +115,6 @@ export function StudentDashboardPage() {
         </div>
         <div className="student-overview-actions">
           <Link className="secondary-button" to="/courses">Browse courses</Link>
-          <Link className="primary-button" to="/tutors">Find a tutor</Link>
         </div>
       </header>
 
@@ -249,7 +248,6 @@ export function StudentDashboardPage() {
           <section className="student-overview-panel">
             <SectionHeading eyebrow="Quick access" title="Keep moving" />
             <nav className="student-quick-links" aria-label="Student shortcuts">
-              <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Find tutors</strong><small>Compare topics and prices</small></span></Link>
               <Link to="/tutors"><DashboardIcon name="search" /><span><strong>Request a lesson</strong><small>Choose a tutor and send your learning needs</small></span></Link>
               <Link to="/messages"><DashboardIcon name="messages" /><span><strong>Messages</strong><small>Talk with your tutors</small></span></Link>
               <Link to="/payments"><DashboardIcon name="payments" /><span><strong>Payments</strong><small>Pay lessons and print receipts</small></span></Link>

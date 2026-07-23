@@ -279,6 +279,79 @@
   gap: 1rem;
 }
 
+.booking-list-item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #eadfd7;
+  background: #fff;
+  padding: 1rem 1.1rem;
+}
+
+.booking-list-date {
+  display: grid;
+  min-height: 58px;
+  place-content: center;
+  border-right: 1px solid #eadfd7;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.booking-list-date strong {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.booking-list-date span {
+  margin-top: 0.25rem;
+  color: #9b4d00;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.booking-list-main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-list-main h2 {
+  margin: 0.18rem 0;
+  font-size: 1rem;
+}
+
+.booking-list-main p:last-child {
+  margin: 0;
+  color: #6b625d;
+  font-size: 0.76rem;
+}
+
+.booking-list-meta {
+  display: grid;
+  min-width: 145px;
+  gap: 0.18rem;
+  text-align: right;
+}
+
+.booking-list-meta span,
+.booking-list-meta small {
+  color: #81756e;
+  font-size: 0.67rem;
+}
+
+.booking-list-meta strong {
+  font-size: 0.82rem;
+}
+
+.booking-list-action {
+  display: grid;
+  justify-items: end;
+  gap: 0.55rem;
+}
+
 .booking-lifecycle-card,
 .booking-lifecycle-empty {
   border: 1px solid #eadfd7;
@@ -500,6 +573,31 @@
   font-size: 0.76rem;
   line-height: 1.5;
   white-space: pre-line;
+}
+
+.booking-meeting-link {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.75rem 0;
+  border-left: 3px solid #b45309;
+  background: #fff;
+  padding: 0.7rem 0.8rem;
+}
+
+.booking-meeting-link span {
+  color: #81756e;
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.booking-meeting-link a {
+  overflow-wrap: anywhere;
+  color: #8f4600;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .booking-online-session > footer {
@@ -913,6 +1011,27 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .booking-list-item {
+    grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .booking-list-main {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .booking-list-meta {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .booking-list-action {
+    grid-column: 2;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: start;
+  }
+
   .booking-lifecycle-facts > div,
   .booking-lifecycle-facts > div:first-child {
     border-right: 0;
@@ -956,6 +1075,24 @@
 
   .booking-lifecycle-facts {
     grid-template-columns: 1fr;
+  }
+
+  .booking-list-item {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-list-date {
+    display: none;
+  }
+
+  .booking-list-action {
+    grid-column: 1;
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
+
+  .booking-list-action .booking-status {
+    justify-self: start;
   }
 
   .booking-online-session > footer {

@@ -80,7 +80,12 @@
     confirmations: '/assessments/confirmations/',
     confirmationCreate: '/assessments/confirmations/create/',
     impact: '/assessments/impact/',
-  },  bookings: {
+  },
+  availability: {
+    mine: '/availability/me/',
+    detail: (id) => `/availability/${id}/`,
+  },
+  bookings: {
     list: '/bookings/',
     create: '/bookings/create/',
     action: (id) => `/bookings/${id}/action/`,

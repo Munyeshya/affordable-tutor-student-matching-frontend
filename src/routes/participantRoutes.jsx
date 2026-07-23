@@ -6,6 +6,7 @@ import { ScheduleProposalsPage } from '../pages/ScheduleProposalsPage.jsx'
 
 export const participantRoutes = [
   { path: '/bookings', element: <BookingsPage /> },
+  { path: '/bookings/:bookingId', element: <BookingsPage /> },
   { path: '/schedule-proposals', element: <ScheduleProposalsPage /> },
   { path: '/messages', element: <MessagesPage /> },
 ]

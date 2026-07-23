@@ -6,11 +6,13 @@ import { TutorDocumentsPage } from '../pages/TutorDocumentsPage.jsx'
 import { TutorEarningsPage } from '../pages/TutorEarningsPage.jsx'
 import { TutorLessonPage } from '../pages/TutorLessonPage.jsx'
 import { TutorTeachingPage } from '../pages/TutorTeachingPage.jsx'
+import { TutorAvailabilityPage } from '../pages/TutorAvailabilityPage.jsx'
 
 export const tutorRoutes = [
   { path: '/tutor', element: <TutorDashboardPage /> },
   { path: '/tutor-dashboard', element: <TutorDashboardPage /> },
   { path: '/tutor-documents', element: <TutorDocumentsPage /> },
+  { path: '/tutor-availability', element: <TutorAvailabilityPage /> },
   { path: '/tutor-teaching', element: <TutorTeachingPage /> },
   { path: '/tutor-teaching/courses/new', element: <TutorCoursePage isNew /> },
   { path: '/tutor-teaching/courses/:courseId', element: <TutorCoursePage /> },

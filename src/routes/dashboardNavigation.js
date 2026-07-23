@@ -38,6 +38,7 @@ const navigationByRole = {
       items: [
         { label: 'Verification documents', to: '/tutor-documents', icon: 'documents' },
         { label: 'Courses and lessons', to: '/tutor-teaching', icon: 'courses' },
+        { label: 'Availability', to: '/tutor-availability', icon: 'schedule' },
         { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Earnings', to: '/tutor-earnings', icon: 'earnings' },
@@ -67,7 +68,6 @@ const navigationByRole = {
     {
       label: 'Learning',
       items: [
-        { label: 'Find tutors', to: '/tutors', icon: 'search' },
         { label: 'My courses', to: '/my-courses', icon: 'courses' },
         { label: 'Schedule proposals', to: '/schedule-proposals', icon: 'schedule' },
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },

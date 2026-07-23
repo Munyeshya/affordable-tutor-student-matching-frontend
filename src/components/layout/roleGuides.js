@@ -140,6 +140,12 @@ export const dashboardRoleGuides = {
         linkLabel: 'Open teaching workspace',
       },
       {
+        title: 'Publish your normal availability',
+        description: 'Add the online or in-person times learners can book directly. Confirmed bookings and accepted custom schedules automatically consume overlapping open time.',
+        to: '/tutor-availability',
+        linkLabel: 'Manage availability',
+      },
+      {
         title: 'Negotiate recurring schedules',
         description: 'Review custom schedule proposals, accept workable times, reject unsuitable requests, or return a clear counter-offer. Accepted proposals never replace an already booked slot.',
         to: '/schedule-proposals',
