@@ -72,6 +72,7 @@ const navigationByRole = {
         { label: 'Bookings', to: '/bookings', icon: 'bookings' },
         { label: 'Payments', to: '/payments', icon: 'payments' },
         { label: 'Assessments', to: '/assessments', icon: 'assessments' },
+        { label: 'Reports', to: '/reports', icon: 'reports' },
         { label: 'Reviews', to: '/reviews', icon: 'reviews' },
       ],
     },

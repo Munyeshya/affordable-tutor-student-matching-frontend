@@ -15,10 +15,12 @@ export function FormattedText({ value, fallback = '', className = '', id }) {
 }
 
 const COMMANDS = [
-  { command: 'bold', label: 'Bold', content: <strong>B</strong> },
-  { command: 'italic', label: 'Italic', content: <em>I</em> },
-  { command: 'underline', label: 'Underline', content: <u>U</u> },
-  { command: 'insertUnorderedList', label: 'Bullet list', content: <><span aria-hidden="true">&bull;</span> List</> },
+  { key: 'heading', command: 'formatBlock', value: 'h2', label: 'Heading', content: <strong>H1</strong> },
+  { key: 'subheading', command: 'formatBlock', value: 'h3', label: 'Subheading', content: <strong>H2</strong> },
+  { key: 'bold', command: 'bold', label: 'Bold', content: <strong>B</strong> },
+  { key: 'italic', command: 'italic', label: 'Italic', content: <em>I</em> },
+  { key: 'underline', command: 'underline', label: 'Underline', content: <u>U</u> },
+  { key: 'bullet-list', command: 'insertUnorderedList', label: 'Bullet list', content: <><span aria-hidden="true">&bull;</span> List</> },
 ]
 
 export function FormattedTextEditor({
@@ -58,7 +60,12 @@ export function FormattedTextEditor({
   function updateActiveCommands() {
     if (typeof document.queryCommandState !== 'function') return
     setActiveCommands(Object.fromEntries(
-      COMMANDS.map(({ command }) => [command, document.queryCommandState(command)]),
+      COMMANDS.map(({ key, command, value }) => {
+        if (command === 'formatBlock' && typeof document.queryCommandValue === 'function') {
+          return [key, String(document.queryCommandValue(command) || '').toLowerCase() === value]
+        }
+        return [key, document.queryCommandState(command)]
+      }),
     ))
   }
 
@@ -69,7 +76,7 @@ export function FormattedTextEditor({
     updateActiveCommands()
   }
 
-  function applyCommand(command) {
+  function applyCommand(command, value = null) {
     if (disabled || typeof document.execCommand !== 'function') return
     const editor = editorRef.current
     const selection = window.getSelection()
@@ -81,7 +88,7 @@ export function FormattedTextEditor({
     }
 
     document.execCommand('styleWithCSS', false, false)
-    document.execCommand(command, false, null)
+    document.execCommand(command, false, value)
     publishValue()
   }
 
@@ -97,16 +104,16 @@ export function FormattedTextEditor({
   return (
     <div className={`formatted-text-editor${disabled ? ' is-disabled' : ''}`}>
       <div className="formatted-text-toolbar" role="toolbar" aria-label="Course description formatting">
-        {COMMANDS.map(({ command, label, content }) => (
+        {COMMANDS.map(({ key, command, value: commandValue, label, content }) => (
           <button
-            key={command}
+            key={key}
             type="button"
             disabled={disabled}
-            className={activeCommands[command] ? 'is-active' : ''}
+            className={activeCommands[key] ? 'is-active' : ''}
             aria-label={label}
-            aria-pressed={Boolean(activeCommands[command])}
+            aria-pressed={Boolean(activeCommands[key])}
             onMouseDown={(event) => event.preventDefault()}
-            onClick={() => applyCommand(command)}
+            onClick={() => applyCommand(command, commandValue)}
           >
             {content}
           </button>
@@ -128,7 +135,7 @@ export function FormattedTextEditor({
         onBlur={publishValue}
         onPaste={handlePaste}
       />
-      <small>Formatting appears immediately. Select text for bold, italic, or underline, and use List for bullet points.</small>
+      <small>Formatting appears immediately. Use headings to organize sections, then add bold, italic, underline, or bullet lists where they improve clarity.</small>
     </div>
   )
 }

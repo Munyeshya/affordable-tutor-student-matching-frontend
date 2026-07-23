@@ -11,13 +11,13 @@ import './ReportsPage.css'
 
 const reportDetailsByRole = {
   STUDENT: {
-    eyebrow: 'Student learning report',
-    title: 'Your learning progress, clearly presented.',
-    description: 'Review tutoring activity, course access, spending, and student-confirmed assessment improvement in one printable report.',
+    eyebrow: 'Student productivity report card',
+    title: 'Your learning progress, ready to present.',
+    description: 'Open a branded A4 report card with productivity, tutoring attendance, course completion, tutor notes, and student-confirmed assessment growth.',
     sections: [
-      ['Learning activity', 'Booking status, course purchases, and recent tutoring subjects.', 'bookings'],
-      ['Verified progress', 'Initial and final assessment outcomes with confirmed improvement.', 'assessments'],
-      ['Account context', 'Academic level, learning location, and affordability preferences.', 'account'],
+      ['Productivity score', 'A clear engagement score based on completed tutoring, course lessons, and confirmed assessments.', 'reports'],
+      ['Report-card results', 'Initial scores, final scores, growth, course completion, and tutor progress notes.', 'assessments'],
+      ['Student context', 'Academic level, school, learning goals, and recorded learning investment.', 'account'],
     ],
     privacy: 'This report contains only your own learning and account information.',
   },

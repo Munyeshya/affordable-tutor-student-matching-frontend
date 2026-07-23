@@ -40,6 +40,12 @@ export const dashboardRoleGuides = {
         linkLabel: 'Open learning',
       },
       {
+        title: 'Open your productivity report card',
+        description: 'Print or save an Isomo-branded report card showing course completion, tutoring attendance, confirmed assessment growth, and tutor progress notes.',
+        to: '/reports',
+        linkLabel: 'Open report card',
+      },
+      {
         title: 'Communicate and review',
         description: 'Message tutors connected to your bookings and leave an eligible rating or review after completed learning.',
         to: '/messages',

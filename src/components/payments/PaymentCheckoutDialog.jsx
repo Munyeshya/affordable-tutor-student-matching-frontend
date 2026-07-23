@@ -31,6 +31,13 @@ function formatMoney(value, currency = 'RWF') {
   return `${new Intl.NumberFormat('en-RW').format(Number(value || 0))} ${currency}`
 }
 
+function paymentErrorMessage(error) {
+  if (error?.code === 'ERR_NETWORK' || (!error?.response && error?.request)) {
+    return 'The Isomo payment service is not reachable. Confirm the backend service is running, then retry. No payment or course access was recorded.'
+  }
+  return getApiErrorMessage(error, 'Could not complete this payment simulation.')
+}
+
 function statusCopy(status) {
   const copy = {
     PENDING: ['Waiting for approval', 'Approve the payment prompt, then check the status again.'],
@@ -77,6 +84,7 @@ export function PaymentCheckoutDialog({
   const [selectedLearnerId, setSelectedLearnerId] = useState(String(initialLearnerId || learners[0]?.id || ''))
   const [confirmed, setConfirmed] = useState(false)
   const [transaction, setTransaction] = useState(null)
+  const [requestError, setRequestError] = useState('')
   const [idempotencyKey, setIdempotencyKey] = useState(createIdempotencyKey)
   const settledIdRef = useRef(null)
 
@@ -110,6 +118,7 @@ export function PaymentCheckoutDialog({
   }, [currentTransaction, onSettled])
 
   const initiateMutation = useMutation({
+    onMutate: () => setRequestError(''),
     mutationFn: () => {
       const payload = {
         provider: activeProvider,
@@ -132,7 +141,11 @@ export function PaymentCheckoutDialog({
       setTransaction(response.data)
       if (response.data.status === 'PENDING') toast.info('Payment request sent for approval.')
     },
-    onError: (error) => toast.error(getApiErrorMessage(error, 'Could not complete this payment simulation.')),
+    onError: (error) => {
+      const message = paymentErrorMessage(error)
+      setRequestError(message)
+      toast.error(message)
+    },
   })
 
   const printMutation = useMutation({
@@ -164,6 +177,11 @@ export function PaymentCheckoutDialog({
     queryClient.removeQueries({ queryKey: queryKeys.payments.transaction(kind, currentTransaction?.id) })
   }
 
+  function closeDialog() {
+    setRequestError('')
+    onClose()
+  }
+
   function openReceipt(receiptNumber) {
     const receiptWindow = window.open('', '_blank')
     if (!receiptWindow) {
@@ -174,10 +192,10 @@ export function PaymentCheckoutDialog({
   }
 
   return (
-    <ConfirmationDialog open={open} onClose={onClose} labelledBy="payment-checkout-title" backdropClassName="payment-dialog-backdrop" dialogClassName="payment-checkout-dialog">
+    <ConfirmationDialog open={open} onClose={closeDialog} labelledBy="payment-checkout-title" backdropClassName="payment-dialog-backdrop" dialogClassName="payment-checkout-dialog">
       <header className="payment-dialog-head">
         <div><p className="eyebrow">Isomo checkout</p><h2 id="payment-checkout-title">{title}</h2></div>
-        <button type="button" onClick={onClose} aria-label="Close payment dialog">Close</button>
+        <button type="button" onClick={closeDialog} aria-label="Close payment dialog">Close</button>
       </header>
 
       {!currentTransaction ? <CheckoutSteps step={step} /> : null}
@@ -208,7 +226,7 @@ export function PaymentCheckoutDialog({
           <div className="payment-dialog-actions">
             {['FAILED', 'EXPIRED'].includes(currentTransaction.status) ? <button type="button" className="primary-button" onClick={resetAttempt}>Try again</button> : null}
             {currentTransaction.status === 'PENDING' ? <button type="button" className="secondary-button" onClick={() => statusQuery.refetch()} disabled={statusQuery.isFetching}>{statusQuery.isFetching ? 'Checking...' : 'Check status'}</button> : null}
-            {FINAL_STATUSES.has(currentTransaction.status) ? <button type="button" className="primary-button" onClick={onClose}>Finish</button> : null}
+            {FINAL_STATUSES.has(currentTransaction.status) ? <button type="button" className="primary-button" onClick={closeDialog}>Finish</button> : null}
           </div>
         </section>
       ) : step === 1 ? (
@@ -227,12 +245,12 @@ export function PaymentCheckoutDialog({
             <li>Access is granted only after the simulation completes.</li>
             <li>A traceable transaction reference and receipt will be generated.</li>
           </ul>
-          <div className="payment-dialog-actions"><button type="button" className="secondary-button" onClick={onClose}>Not now</button><button type="button" className="primary-button" onClick={() => setStep(2)} disabled={learners.length > 0 && !selectedLearnerId}>Choose payment method</button></div>
+          <div className="payment-dialog-actions"><button type="button" className="secondary-button" onClick={closeDialog}>Not now</button><button type="button" className="primary-button" onClick={() => setStep(2)} disabled={learners.length > 0 && !selectedLearnerId}>Choose payment method</button></div>
         </section>
       ) : step === 2 ? (
         <section className="payment-method-step">
           {providersQuery.isLoading ? <div className="payment-provider-skeleton" aria-busy="true"><span /><span /></div> : providersQuery.isError ? (
-            <div className="payment-provider-error"><p>{getApiErrorMessage(providersQuery.error, 'Could not load payment methods.')}</p><button type="button" onClick={() => providersQuery.refetch()}>Try again</button></div>
+            <div className="payment-provider-error" role="alert"><strong>Payment service unavailable</strong><p>{paymentErrorMessage(providersQuery.error)}</p><button type="button" onClick={() => providersQuery.refetch()}>Retry connection</button></div>
           ) : !availableProviders.length ? (
             <div className="payment-provider-error"><p>No payment simulation is configured. Contact the Isomo administrator.</p></div>
           ) : (
@@ -259,6 +277,7 @@ export function PaymentCheckoutDialog({
           <div><span>Payment method</span><strong>{METHOD_COPY[activeNetwork]?.[0] || selectedProvider?.name}</strong></div>
           <div><span>Learner</span><strong>{displayedLearnerName}</strong></div>
           <div><span>Amount</span><strong>{formatMoney(amount, currency)}</strong></div>
+          {requestError ? <div className="payment-request-error" role="alert"><strong>Payment was not completed</strong><p>{requestError}</p></div> : null}
           <label><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /><span>I confirm these details and understand this is a payment simulation.</span></label>
           <div className="payment-dialog-actions"><button type="button" className="secondary-button" onClick={() => setStep(2)} disabled={initiateMutation.isPending}>Back</button><button type="button" className="primary-button" onClick={() => initiateMutation.mutate()} disabled={!confirmed || initiateMutation.isPending}>{initiateMutation.isPending ? 'Processing simulation...' : 'Complete payment simulation'}</button></div>
         </section>

@@ -1,4 +1,4 @@
-const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'U', 'UL', 'LI'])
+const ALLOWED_TAGS = new Set(['H2', 'H3', 'P', 'BR', 'STRONG', 'EM', 'U', 'UL', 'LI'])
 const NORMALIZED_TAGS = {
   B: 'STRONG',
   DIV: 'P',
@@ -52,7 +52,7 @@ export function sanitizeFormattedHtml(value) {
     return escapeHtml(source)
   }
 
-  const hasHtml = /<\/?(?:p|br|strong|b|em|i|u|ul|li|div)\b/i.test(source)
+  const hasHtml = /<\/?(?:h2|h3|p|br|strong|b|em|i|u|ul|li|div)\b/i.test(source)
   const parser = new DOMParser()
   const parsed = parser.parseFromString(hasHtml ? source : legacyTextToHtml(source), 'text/html')
   const output = document.implementation.createHTMLDocument('')
@@ -88,6 +88,6 @@ export function toPlainFormattedText(value) {
   const container = document.createElement('div')
   container.innerHTML = safeHtml
   container.querySelectorAll('br').forEach((element) => element.replaceWith(' '))
-  container.querySelectorAll('p, li').forEach((element) => element.append(' '))
+  container.querySelectorAll('h2, h3, p, li').forEach((element) => element.append(' '))
   return String(container.textContent || '').replace(/\s+/g, ' ').trim()
 }

@@ -125,4 +125,23 @@ describe('PaymentCheckoutDialog', () => {
     expect(screen.getByText(/Approve the payment prompt/)).toBeInTheDocument()
     expect(baseProps.onSettled).not.toHaveBeenCalled()
   })
+
+  it('keeps checkout open with clear recovery guidance when the backend is offline', async () => {
+    const user = userEvent.setup()
+    createCoursePurchase.mockRejectedValue({ code: 'ERR_NETWORK', request: {} })
+
+    renderWithProviders(<PaymentCheckoutDialog {...baseProps} />)
+
+    await user.click(await screen.findByRole('button', { name: 'Choose payment method' }))
+    await user.click(screen.getByRole('button', { name: 'Review payment' }))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Complete payment simulation' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('Payment was not completed')
+    expect(alert).toHaveTextContent('backend service is running')
+    expect(alert).toHaveTextContent('No payment or course access was recorded')
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('payment service is not reachable'))
+    expect(baseProps.onSettled).not.toHaveBeenCalled()
+  })
 })
