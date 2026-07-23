@@ -83,7 +83,7 @@ export function HowItWorksPage() {
       <section className="how-hero" aria-labelledby="how-title">
         <div className="how-hero-copy">
           <p className="how-eyebrow">How Isomo works</p>
-          <h1 id="how-title">One clear path from “I need help” to “I can do this.”</h1>
+          <h1 id="how-title">One clear path from &quot;I need help&quot; to &quot;I can do this.&quot;</h1>
           <p className="how-hero-text">
             Tell us what you want to learn, compare verified support by fit and price, then follow
             your progress from the first assessment to the final outcome.
@@ -120,7 +120,7 @@ export function HowItWorksPage() {
           <div className="how-match-result">
             <span className="how-result-icon"><DashboardIcon name="verification" size={22} /></span>
             <div><small>Your result</small><strong>Verified matches</strong><p>Clear prices, availability, and lesson focus.</p></div>
-            <span className="how-result-arrow" aria-hidden="true">→</span>
+            <span className="how-result-arrow" aria-hidden="true">-&gt;</span>
           </div>
 
           <p className="how-match-caption">You stay in control until you choose.</p>
@@ -129,7 +129,7 @@ export function HowItWorksPage() {
 
       <section className="how-journeys" aria-labelledby="journeys-title">
         <header className="how-section-heading">
-          <div><p className="how-eyebrow">Choose your path</p><h2 id="journeys-title">One platform, three clear journeys.</h2></div>
+          <div><p className="how-eyebrow">Choose your path</p><h2 id="journeys-title">One platform, <span>three clear journeys.</span></h2></div>
           <p>Each account sees the tools and records relevant to its role.</p>
         </header>
         <div className="how-journey-list">

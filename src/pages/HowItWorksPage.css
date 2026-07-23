@@ -197,6 +197,21 @@
 .how-faq,
 .how-cta { padding: clamp(2rem, 5vw, 4.5rem); }
 
+.how-journeys {
+  position: relative;
+  background: #fffaf6;
+}
+
+.how-journeys::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(70px, 10vw, 150px);
+  height: 6px;
+  background: var(--how-orange);
+  content: '';
+}
+
 .how-section-heading {
   display: flex;
   align-items: end;
@@ -204,6 +219,16 @@
   gap: 2rem;
   padding-bottom: 1.5rem;
 }
+
+.how-journeys .how-section-heading {
+  position: relative;
+  border-left: 4px solid var(--how-orange);
+  margin-bottom: 1.2rem;
+  background: #fff;
+  padding: 1.1rem 1.2rem;
+}
+
+.how-journeys .how-section-heading h2 span { color: var(--how-orange); }
 
 .how-section-heading h2,
 .how-impact h2,
@@ -223,14 +248,34 @@
   text-align: right;
 }
 
-.how-journey-list { display: grid; border-top: 1px solid var(--how-line); }
+.how-journey-list { display: grid; gap: 0.85rem; }
 
 .how-journey-lane {
+  --lane-accent: #c65d00;
+  --lane-border: #efc39f;
+  --lane-tint: #fff1e5;
   display: grid;
   grid-template-columns: minmax(220px, 0.72fr) minmax(0, 2fr);
-  gap: clamp(1rem, 3vw, 3rem);
-  border-bottom: 1px solid var(--how-line);
-  padding: 1.4rem 0;
+  border: 1px solid var(--lane-border);
+  background: #fff;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.how-journey-lane:nth-child(2) {
+  --lane-accent: #ad7600;
+  --lane-border: #ead59e;
+  --lane-tint: #fff8df;
+}
+
+.how-journey-lane:nth-child(3) {
+  --lane-accent: #8c3f2a;
+  --lane-border: #dfb9ae;
+  --lane-tint: #fbeeea;
+}
+
+.how-journey-lane:hover {
+  border-color: var(--lane-accent);
+  transform: translateY(-2px);
 }
 
 .how-lane-header {
@@ -238,6 +283,9 @@
   grid-template-columns: 46px 1fr;
   gap: 0.8rem;
   align-items: start;
+  border-top: 4px solid var(--lane-accent);
+  background: var(--lane-tint);
+  padding: 1.15rem;
 }
 
 .how-icon-box {
@@ -245,12 +293,12 @@
   height: 42px;
   display: grid;
   place-items: center;
-  border: 1px solid #f0c7a6;
-  background: var(--how-warm);
-  color: var(--how-orange);
+  border: 1px solid var(--lane-border);
+  background: #fff;
+  color: var(--lane-accent);
 }
 
-.how-lane-header p { color: var(--how-orange); font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
+.how-lane-header p { color: var(--lane-accent); font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
 .how-lane-header h3 { margin-top: 0.3rem; font-size: 0.86rem; line-height: 1.45; }
 
 .how-lane-steps {
@@ -265,11 +313,14 @@
   position: relative;
   min-width: 0;
   border-left: 1px solid var(--how-line);
-  padding: 0.15rem clamp(0.7rem, 1.5vw, 1.2rem);
+  padding: 1.15rem clamp(0.7rem, 1.5vw, 1.2rem);
+  transition: background-color 180ms ease;
 }
 
-.how-step-index { display: block; color: #9c928a; font-size: 0.6rem; font-weight: 900; }
-.how-step-icon { width: 30px; height: 30px; display: grid; place-items: center; margin-top: 0.55rem; color: var(--how-orange); }
+.how-lane-steps li:hover { background: var(--lane-tint); }
+
+.how-step-index { display: block; color: var(--lane-accent); font-size: 0.6rem; font-weight: 900; }
+.how-step-icon { width: 30px; height: 30px; display: grid; place-items: center; margin-top: 0.55rem; background: var(--lane-tint); color: var(--lane-accent); }
 .how-lane-steps strong { display: block; margin-top: 0.45rem; font-size: 0.76rem; }
 .how-lane-steps p { margin-top: 0.3rem; color: #716a64; font-size: 0.68rem; line-height: 1.5; }
 
@@ -355,7 +406,7 @@
 @media (max-width: 1050px) {
   .how-hero { grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr); }
   .how-journey-lane { grid-template-columns: 1fr; }
-  .how-lane-steps { margin-left: 54px; }
+  .how-lane-steps { margin-left: 0; }
 }
 
 @media (max-width: 760px) {
@@ -364,6 +415,7 @@
   .how-match-visual { min-height: 390px; border-top: 1px solid #f0d7c2; border-left: 0; }
   .how-section-heading,
   .how-cta { align-items: flex-start; flex-direction: column; }
+  .how-journeys .how-section-heading { gap: 0.7rem; }
   .how-section-heading > p { text-align: left; }
   .how-lane-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-left: 0; }
   .how-lane-steps li { border-top: 1px solid var(--how-line); padding-block: 0.9rem; }
@@ -388,4 +440,10 @@
   .how-actions { width: 100%; }
   .how-actions .primary-button,
   .how-actions .secondary-button { flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .how-journey-lane,
+  .how-lane-steps li { transition: none; }
+  .how-journey-lane:hover { transform: none; }
 }
