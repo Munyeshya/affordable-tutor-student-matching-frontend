@@ -1,63 +1,183 @@
-﻿import React from 'react'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-import { Page } from '../App'
-import { InfoCard, MinimalList } from '../components/ui/PagePrimitives.jsx'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
+import './HowItWorksPage.css'
 
-const howItWorksSteps = [
-  { title: 'Search', text: 'Find tutors by name, lesson, topic, or level.' },
-  { title: 'Compare', text: 'Review documents, ratings, and lesson pricing.' },
-  { title: 'Request', text: 'Send a request and wait for approval.' },
-  { title: 'Learn', text: 'Take the lesson and rate the tutor after.' },
+const journeys = [
+  {
+    role: 'Students',
+    icon: 'students',
+    summary: 'Find support that fits the subject, level, schedule, and budget.',
+    steps: [
+      { title: 'Discover', text: 'Search verified tutors or browse complete courses.', icon: 'search' },
+      { title: 'Compare', text: 'Check teaching focus, ratings, availability, and price.', icon: 'reviews' },
+      { title: 'Book or buy', text: 'Request a lesson or purchase the right course.', icon: 'bookings' },
+      { title: 'Learn and measure', text: 'Complete learning, assessments, and a review.', icon: 'assessments' },
+    ],
+  },
+  {
+    role: 'Parents',
+    icon: 'account',
+    summary: 'Arrange trusted learning support and follow formally linked students.',
+    steps: [
+      { title: 'Link a student', text: 'Connect the learner whose support you manage.', icon: 'students' },
+      { title: 'Choose support', text: 'Compare suitable tutors, courses, and prices.', icon: 'courses' },
+      { title: 'Confirm payment', text: 'Complete the guided payment flow when required.', icon: 'payments' },
+      { title: 'Follow progress', text: 'Read booking updates, outcomes, and reports.', icon: 'reports' },
+    ],
+  },
+  {
+    role: 'Tutors',
+    icon: 'courses',
+    summary: 'Build a credible teaching presence and manage learners professionally.',
+    steps: [
+      { title: 'Create an account', text: 'Add accurate personal and teaching details.', icon: 'account' },
+      { title: 'Get verified', text: 'Submit qualifications, ID, and the signed agreement.', icon: 'verification' },
+      { title: 'Publish teaching', text: 'Create lessons, courses, outcomes, and availability.', icon: 'courses' },
+      { title: 'Teach and report', text: 'Manage bookings, progress, reviews, and earnings.', icon: 'earnings' },
+    ],
+  },
 ]
+
+const learningCycle = [
+  { number: '01', title: 'Starting point', text: 'The tutor records the learner’s initial level and expected knowledge outcomes.' },
+  { number: '02', title: 'Active learning', text: 'Lessons, schedule updates, course activity, and progress stay connected.' },
+  { number: '03', title: 'Outcome check', text: 'A final assessment records what changed after the agreed learning period.' },
+  { number: '04', title: 'Visible progress', text: 'Reports present growth clearly for the student and formally linked parent.' },
+]
+
+const trustPoints = [
+  { icon: 'verification', title: 'Verified before visible', text: 'Tutor profiles appear publicly only after administrator review.' },
+  { icon: 'payments', title: 'Price before commitment', text: 'Students compare lesson and course costs before choosing.' },
+  { icon: 'reports', title: 'Progress after learning', text: 'Assessments and reports turn activity into understandable outcomes.' },
+]
+
+function JourneyLane({ journey }) {
+  return (
+    <article className="how-journey-lane">
+      <header className="how-lane-header">
+        <span className="how-icon-box"><DashboardIcon name={journey.icon} size={22} /></span>
+        <div>
+          <p>{journey.role}</p>
+          <h3>{journey.summary}</h3>
+        </div>
+      </header>
+
+      <ol className="how-lane-steps">
+        {journey.steps.map((step, index) => (
+          <li key={step.title}>
+            <span className="how-step-index">0{index + 1}</span>
+            <span className="how-step-icon"><DashboardIcon name={step.icon} size={18} /></span>
+            <div><strong>{step.title}</strong><p>{step.text}</p></div>
+          </li>
+        ))}
+      </ol>
+    </article>
+  )
+}
+
 export function HowItWorksPage() {
   return (
-    <>
-      <Page
-        title="How it works"
-        text="Search, compare, request, and learn in just a few taps."
-        action="Start searching"
-        secondary={{ to: '/join', label: 'Become a tutor' }}
-      />
-
-      <section className="split-layout">
-        <article className="panel card">
-          <p className="eyebrow">Student flow</p>
-          <h2>Four simple steps.</h2>
-          <div className="steps-list">
-            {howItWorksSteps.map((step, index) => (
-              <div className="step-item" key={step.title}>
-                <div className="step-number">0{index + 1}</div>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="panel card">
-          <p className="eyebrow">Tutor flow</p>
-          <h2>Keep the process clear before approval.</h2>
-          <p className="supporting-text">
-            Tutors upload qualifications, choose lessons and levels, then wait for admin review.
+    <div className="how-page">
+      <section className="how-hero" aria-labelledby="how-title">
+        <div className="how-hero-copy">
+          <p className="how-eyebrow">The Isomo journey</p>
+          <h1 id="how-title">Find the right support. Learn with clarity. See the progress.</h1>
+          <p className="how-hero-text">
+            Isomo connects students with verified tutors and structured courses while keeping price,
+            learning expectations, and outcomes visible from the start.
           </p>
-          <MinimalList
-            items={[
-              'Create account',
-              'Upload documents',
-              'Choose lessons and levels',
-              'Get approved by admin',
-            ]}
-          />
-        </article>
+          <div className="how-actions">
+            <Link className="primary-button" to="/tutors"><DashboardIcon name="search" size={18} /> Find a tutor</Link>
+            <Link className="secondary-button" to="/courses"><DashboardIcon name="courses" size={18} /> Browse courses</Link>
+          </div>
+        </div>
+
+        <aside className="how-hero-summary" aria-label="Isomo service summary">
+          <img src="/aking-notes.svg" alt="Student taking learning notes" />
+          <div className="how-summary-list">
+            <p><span>01</span><strong>Compare verified support</strong></p>
+            <p><span>02</span><strong>Choose by fit and price</strong></p>
+            <p><span>03</span><strong>Track learning outcomes</strong></p>
+          </div>
+        </aside>
       </section>
 
-      <section className="benefits-grid">
-        <InfoCard title="FAQ" text="Approval usually follows document review. Ratings are lesson-specific. Search works by name, lesson, topic, and level." />
-        <InfoCard title="FAQ" text="After booking, the tutor and student continue inside their accounts. Tutors submit ID, certificates, agreement form, and lesson list." />
-        <InfoCard title="FAQ" text="Admin reviews documents and lesson coverage before tutors become visible." />
+      <section className="how-journeys" aria-labelledby="journeys-title">
+        <header className="how-section-heading">
+          <div><p className="how-eyebrow">Choose your path</p><h2 id="journeys-title">One platform, three clear journeys.</h2></div>
+          <p>Each account sees the tools and records relevant to its role.</p>
+        </header>
+        <div className="how-journey-list">
+          {journeys.map((journey) => <JourneyLane journey={journey} key={journey.role} />)}
+        </div>
       </section>
-    </>
+
+      <section className="how-trust-band" aria-label="Platform trust principles">
+        {trustPoints.map((point) => (
+          <article key={point.title}>
+            <DashboardIcon name={point.icon} size={22} />
+            <div><h3>{point.title}</h3><p>{point.text}</p></div>
+          </article>
+        ))}
+      </section>
+
+      <section className="how-impact" aria-labelledby="impact-title">
+        <div className="how-impact-intro">
+          <p className="how-eyebrow">Beyond the booking</p>
+          <h2 id="impact-title">Learning support should show what changed.</h2>
+          <p>
+            A completed payment or lesson is not the final result. Isomo keeps the learner’s starting
+            point, teaching activity, and final outcome connected so progress can be understood.
+          </p>
+          <div className="how-affordability-note">
+            <DashboardIcon name="payments" size={22} />
+            <div><strong>Affordability remains visible</strong><span>Compare prices first, then choose the support that fits.</span></div>
+          </div>
+        </div>
+
+        <ol className="how-cycle">
+          {learningCycle.map((item) => (
+            <li key={item.number}>
+              <span>{item.number}</span>
+              <div><h3>{item.title}</h3><p>{item.text}</p></div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="how-faq" aria-labelledby="faq-title">
+        <header className="how-section-heading">
+          <div><p className="how-eyebrow">Common questions</p><h2 id="faq-title">Know what happens before you begin.</h2></div>
+        </header>
+        <div className="how-faq-list">
+          <details>
+            <summary>Can I explore tutors and courses before creating an account?</summary>
+            <p>Yes. Discovery and course details are public. An account is required when you send a request, propose a schedule, purchase, or manage learning records.</p>
+          </details>
+          <details>
+            <summary>How does Isomo verify tutors?</summary>
+            <p>Tutors submit identity and qualification documents, a signed integrity agreement, and their teaching levels. Administrators review these before making a profile visible.</p>
+          </details>
+          <details>
+            <summary>What happens if the listed availability does not fit?</summary>
+            <p>A logged-in student or parent can propose a custom schedule. The tutor may accept it, reject it, or return a counter-offer without overriding already booked slots.</p>
+          </details>
+          <details>
+            <summary>Who can see a student’s progress?</summary>
+            <p>The student, connected tutors for their teaching records, formally linked parents, and explicitly authorized administrators can access the relevant information.</p>
+          </details>
+        </div>
+      </section>
+
+      <section className="how-cta">
+        <div><p className="how-eyebrow">Ready when you are</p><h2>Start with the learning support you need today.</h2></div>
+        <div className="how-actions">
+          <Link className="primary-button" to="/tutors">Find a tutor</Link>
+          <Link className="how-text-link" to="/join">Create an account <span aria-hidden="true">→</span></Link>
+        </div>
+      </section>
+    </div>
   )
 }
