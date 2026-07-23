@@ -273,7 +273,7 @@ export function TutorDetailPage() {
   }, null)
   const canBook = !isAuthenticated || user?.role === 'STUDENT' || user?.role === 'PARENT'
   const baseBookingPath = `/book?tutor=${tutor.user_id}&profile=${tutor.id}`
-  const bookingLabel = isAuthenticated ? 'Choose an available time' : 'Sign in after choosing a time'
+  const bookingLabel = isAuthenticated ? 'Request a lesson' : 'Sign in to request'
 
   function changeCalendarMonth(offset) {
     const nextMonth = new Date(
@@ -420,7 +420,7 @@ export function TutorDetailPage() {
                           {course.description ? <p className="supporting-text">{toPlainFormattedText(course.description)}</p> : null}
                           {canBook ? (
                             <Link className="link-button tutor-course-action" to={courseAvailabilityPath}>
-                              <InlineIcon name="calendar" /> View available times
+                              <InlineIcon name="calendar" /> Request lesson
                             </Link>
                           ) : null}
                         </div>
@@ -539,7 +539,8 @@ export function TutorDetailPage() {
                       <div className="tutor-calendar-empty">
                         <InlineIcon name="calendar" size={24} />
                         <h4>No available lesson times</h4>
-                        <p>This tutor has not published an open slot for this date. Choose one of the highlighted dates on the calendar.</p>
+                        <p>This tutor has not published an open slot for this date. Choose a highlighted date or propose a schedule for the tutor to review.</p>
+                        {canBook ? <Link to={`/tutors/${tutor.id}/propose`}>Propose a schedule</Link> : null}
                       </div>
                     )}
                   </section>
@@ -660,9 +661,14 @@ export function TutorDetailPage() {
             </div>
           </div>
           {canBook ? (
-            <Link className="primary-button tutor-booking-button" to="#availability">
-              <InlineIcon name="calendar" /> {bookingLabel}
-            </Link>
+            <>
+              <Link className="primary-button tutor-booking-button" to="#availability">
+                <InlineIcon name="calendar" /> {bookingLabel}
+              </Link>
+              <Link className="secondary-button tutor-booking-button" to={`/tutors/${tutor.id}/propose`}>
+                <InlineIcon name="calendar" /> Propose a custom schedule
+              </Link>
+            </>
           ) : (
             <p className="tutor-detail-role-note">Booking requests are available to students and parents.</p>
           )}

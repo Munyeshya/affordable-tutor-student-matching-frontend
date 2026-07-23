@@ -299,7 +299,7 @@ function TutorCard({ tutor, marketplacePath }) {
           View profile <InlineIcon name="arrow" />
         </Link>
         <Link className="secondary-button" to={`/tutors/${tutor.id}#availability`} state={{ fromMarketplace: marketplacePath }}>
-          <InlineIcon name="calendar" /> View times
+          <InlineIcon name="calendar" /> Request tutor
         </Link>
       </div>
     </article>

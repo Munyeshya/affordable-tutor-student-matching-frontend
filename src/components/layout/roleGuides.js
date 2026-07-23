@@ -10,8 +10,8 @@ export const dashboardRoleGuides = {
         linkLabel: 'Search tutors',
       },
       {
-        title: 'Choose a published lesson time',
-        description: 'Open a tutor profile to compare courses, lesson prices, and highlighted calendar dates, then choose one of the tutor\'s available slots.',
+        title: 'Choose a lesson or propose a schedule',
+        description: 'Open a tutor profile to compare courses, lesson prices, and highlighted calendar dates. Choose an open slot or create a custom recurring schedule proposal.',
         to: '/tutors',
         linkLabel: 'Compare tutor offers',
       },
@@ -78,10 +78,10 @@ export const dashboardRoleGuides = {
         linkLabel: 'Search tutors',
       },
       {
-        title: 'Arrange a lesson from availability',
-        description: 'Open a tutor profile, choose a highlighted calendar slot, and complete the booking for a formally linked student.',
+        title: 'Arrange lesson schedules',
+        description: 'Choose a highlighted calendar slot or create a recurring schedule proposal for a formally linked student, then monitor tutor responses.',
         to: '/tutors',
-        linkLabel: 'Find an available tutor',
+        linkLabel: 'Find a tutor',
       },
       {
         title: 'Complete learning payments',

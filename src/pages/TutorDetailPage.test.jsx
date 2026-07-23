@@ -122,7 +122,7 @@ describe('TutorDetailPage', () => {
     expect(await screen.findByRole('heading', { name: 'Aline Uwase' })).toBeInTheDocument()
     expect(screen.getByText('12,000 RWF / course')).toBeInTheDocument()
     expect(screen.getByText('8,000 RWF / hour')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View available times' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Request lesson' })).toHaveAttribute(
       'href',
       '/tutors/1#availability',
     )
@@ -134,7 +134,10 @@ describe('TutorDetailPage', () => {
     expect(screen.getByText('6 open')).toBeInTheDocument()
     expect(screen.getByText('Times are shown in your local timezone.')).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Tutor availability calendar' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Propose a custom schedule/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Propose a custom schedule/i })).toHaveAttribute(
+      'href',
+      '/tutors/1/propose',
+    )
     expect(screen.getAllByText('Choose')).toHaveLength(4)
     expect(screen.getByText('1-4 of 6')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
