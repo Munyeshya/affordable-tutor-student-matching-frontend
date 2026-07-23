@@ -170,4 +170,24 @@ describe('TutorDetailPage', () => {
     expect(screen.getByText('6 open')).toBeInTheDocument()
     expect(screen.getByText('1-4 of 6')).toBeInTheDocument()
   })
+
+  it('hides booking and schedule proposal actions from logged-in tutors', async () => {
+    useAuth.mockReturnValue({
+      user: { id: 7, role: 'TUTOR' },
+      isAuthenticated: true,
+    })
+
+    renderWithProviders(
+      <Routes>
+        <Route path="/tutors/:id" element={<TutorDetailPage />} />
+      </Routes>,
+      { route: '/tutors/1' },
+    )
+
+    expect(await screen.findByRole('heading', { name: 'Aline Uwase' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Request lesson' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Propose a custom schedule/i })).not.toBeInTheDocument()
+    expect(screen.queryByText('Choose')).not.toBeInTheDocument()
+    expect(screen.getByText('Booking requests are available to students and parents.')).toBeInTheDocument()
+  })
 })

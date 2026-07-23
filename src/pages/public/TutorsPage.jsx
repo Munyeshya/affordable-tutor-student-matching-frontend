@@ -8,6 +8,7 @@ import { InlineIcon } from '../../components/ui/InlineIcon.jsx'
 import { Pagination } from '../../components/ui/Pagination.jsx'
 import { UserAvatar } from '../../components/ui/UserAvatar.jsx'
 import { EDUCATION_LEVEL_OPTIONS, formatEducationLevel } from '../../constants/educationLevels.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import './TutorsPage.css'
 
 const PAGE_SIZE = 9
@@ -206,7 +207,7 @@ function formatFilterDate(value) {
   }).format(date)
 }
 
-function TutorCard({ tutor, marketplacePath }) {
+function TutorCard({ tutor, marketplacePath, canRequest }) {
   const subjectLevels = Array.isArray(tutor.subject_levels) ? tutor.subject_levels : []
   const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : []
   const modes = [tutor.teaches_online ? 'Online' : null, tutor.teaches_in_person ? 'In person' : null]
@@ -298,9 +299,11 @@ function TutorCard({ tutor, marketplacePath }) {
         >
           View profile <InlineIcon name="arrow" />
         </Link>
-        <Link className="secondary-button" to={`/tutors/${tutor.id}#availability`} state={{ fromMarketplace: marketplacePath }}>
-          <InlineIcon name="calendar" /> Request tutor
-        </Link>
+        {canRequest ? (
+          <Link className="secondary-button" to={`/tutors/${tutor.id}#availability`} state={{ fromMarketplace: marketplacePath }}>
+            <InlineIcon name="calendar" /> Request tutor
+          </Link>
+        ) : null}
       </div>
     </article>
   )
@@ -464,6 +467,8 @@ function MarketplaceFilterForm({ filters, onApply, onClear, subjects, subjectsLo
 }
 
 export function TutorsPage() {
+  const { user, isAuthenticated } = useAuth()
+  const canRequest = !isAuthenticated || ['STUDENT', 'PARENT'].includes(user?.role)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const filterButtonRef = useRef(null)
   const filterPanelRef = useRef(null)
@@ -701,7 +706,7 @@ export function TutorsPage() {
           {tutorsQuery.isLoading
             ? Array.from({ length: 6 }, (_, index) => <TutorSkeleton key={index} />)
             : tutorPage.results.map((tutor) => (
-              <TutorCard key={tutor.id} tutor={tutor} marketplacePath={marketplacePath} />
+              <TutorCard key={tutor.id} tutor={tutor} marketplacePath={marketplacePath} canRequest={canRequest} />
             ))}
         </section>
       ) : null}

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { usePublicTutorsQuery, useSubjectsQuery } from '../../hooks/useCommonQueries.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { renderWithProviders } from '../../test/render.jsx'
 import { TutorsPage } from './TutorsPage.jsx'
 
@@ -11,6 +12,7 @@ vi.mock('../../hooks/useCommonQueries.js', () => ({
   usePublicTutorsQuery: vi.fn(),
   useSubjectsQuery: vi.fn(),
 }))
+vi.mock('../../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 
 const tutor = {
   id: 10,
@@ -38,6 +40,7 @@ const tutor = {
 describe('TutorsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useAuth.mockReturnValue({ user: null, isAuthenticated: false })
     useSubjectsQuery.mockReturnValue({ data: [{ id: 1, name: 'Mathematics' }], isLoading: false })
     usePublicTutorsQuery.mockReturnValue({
       data: { count: 1, next: null, previous: null, results: [tutor] },
@@ -45,6 +48,15 @@ describe('TutorsPage', () => {
       isFetching: false,
       isError: false,
     })
+  })
+
+  it('hides booking actions from logged-in tutor accounts', () => {
+    useAuth.mockReturnValue({ user: { id: 20, role: 'TUTOR' }, isAuthenticated: true })
+
+    renderWithProviders(<TutorsPage />, { route: '/tutors' })
+
+    expect(screen.getByRole('link', { name: 'View profile' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Request tutor' })).not.toBeInTheDocument()
   })
 
   it('loads URL filters and presents affordability-first tutor results', () => {
