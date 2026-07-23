@@ -1,17 +1,35 @@
-﻿import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
-import { Page } from '../App'
-import { InfoCard, MinimalList } from '../components/ui/PagePrimitives.jsx'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import './SignInPage.css'
 import './JoinPage.css'
 
-const joinChecklist = [
-  'Qualification documents',
-  'Signed agreement form',
-  'Lessons and levels taught',
-  'Profile photo and bio',
+const joinRoles = [
+  {
+    icon: 'students',
+    title: 'Students',
+    text: 'Find affordable tutors, learn through courses, and measure progress.',
+  },
+  {
+    icon: 'account',
+    title: 'Parents and guardians',
+    text: 'Arrange and monitor learning support for formally linked students.',
+  },
+  {
+    icon: 'courses',
+    title: 'Tutors',
+    text: 'Build a professional teaching profile after document verification.',
+  },
 ]
+
+const roleGuidance = {
+  STUDENT: ['Student account', 'Search tutors, book lessons, buy courses, complete assessments, and review your progress.'],
+  PARENT: ['Parent account', 'Link student accounts, arrange tutoring, complete payments, and follow family learning reports.'],
+  TUTOR: ['Tutor account', 'Create your account first, then submit qualifications and the signed integrity agreement for approval.'],
+}
+
 export function JoinPage() {
   const { signUp, submitting, error, setError } = useAuth()
   const navigate = useNavigate()
@@ -22,7 +40,9 @@ export function JoinPage() {
     password: '',
     role: 'STUDENT',
   })
+  const [showPassword, setShowPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [roleTitle, roleDescription] = roleGuidance[form.role]
 
   function updateField(name, value) {
     setForm((current) => ({ ...current, [name]: value }))
@@ -38,82 +58,159 @@ export function JoinPage() {
       setSuccessMessage('Account created. Please sign in to continue.')
       navigate('/sign-in', { state: { registeredEmail: form.email } })
     } catch {
-      // context already sets the error message
+      // The authentication context provides a safe, actionable error message.
     }
   }
 
   return (
-    <>
-      <Page
-        title="Join now"
-        text="Create an account as a student or tutor."
-        action="Create account"
-        secondary={{ to: '/tutors', label: 'Browse tutors' }}
-      />
+    <section className="sign-in-page join-page" aria-labelledby="join-title">
+      <div className="sign-in-frame join-frame">
+        <aside className="sign-in-story join-story" aria-label="Isomo account options">
+          <div className="sign-in-story-accent" aria-hidden="true"><span /><span /><span /><span /></div>
+          <div className="sign-in-story-copy">
+            <p className="sign-in-kicker">Start your Isomo journey</p>
+            <h1>Create one account for purposeful learning.</h1>
+            <p>Choose your role, complete the essential details, and enter a trusted learning marketplace built around quality and affordability.</p>
+          </div>
 
-      <section className="benefits-grid">
-        <InfoCard title="Student" text="Search tutors and request lessons quickly." />
-        <InfoCard title="Tutor" text="Upload documents and present your lessons." />
-        <InfoCard title="Approval" text="Admin reviews keep the marketplace trusted." />
-      </section>
+          <div className="sign-in-role-list">
+            {joinRoles.map((role) => (
+              <article key={role.title}>
+                <span><DashboardIcon name={role.icon} size={19} /></span>
+                <div><strong>{role.title}</strong><p>{role.text}</p></div>
+              </article>
+            ))}
+          </div>
 
-      <section className="split-layout">
-        <article className="panel card">
-          <p className="eyebrow">Create account</p>
-          <h2>Choose the role that fits you.</h2>
-          <form className="steps-list join-form" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Full name"
-              aria-label="Full name"
-              value={form.full_name}
-              onChange={(event) => updateField('full_name', event.target.value)}
-            />
-            <select
-              aria-label="Account type"
-              value={form.role}
-              onChange={(event) => updateField('role', event.target.value)}
-            >
-              <option value="STUDENT">Student</option>
-              <option value="TUTOR">Tutor</option>
-              <option value="PARENT">Parent</option>
-            </select>
-            <input
-              type="tel"
-              placeholder="Phone number"
-              aria-label="Phone number"
-              value={form.phone_number}
-              onChange={(event) => updateField('phone_number', event.target.value)}
-              required
-            />
-            <input
-              type="email"
-              placeholder="Email address"
-              aria-label="Email address"
-              value={form.email}
-              onChange={(event) => updateField('email', event.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              aria-label="Password"
-              value={form.password}
-              onChange={(event) => updateField('password', event.target.value)}
-            />
-            {error ? <p className="supporting-text">{error}</p> : null}
-            {successMessage ? <p className="supporting-text">{successMessage}</p> : null}
-            <button className="primary-button" type="submit" disabled={submitting}>
-              {submitting ? 'Creating account...' : 'Create account'}
+          <img className="sign-in-illustration join-illustration" src="/researcher.svg" alt="" aria-hidden="true" />
+        </aside>
+
+        <article className="sign-in-panel join-panel">
+          <header className="sign-in-heading">
+            <span>Create your account</span>
+            <h2 id="join-title">Join Isomo in a few clear steps.</h2>
+            <p>Use accurate information so lessons, payments, and learning records stay connected to the right person.</p>
+          </header>
+
+          <div className="join-role-note" aria-live="polite">
+            <DashboardIcon name={form.role === 'TUTOR' ? 'verification' : form.role === 'PARENT' ? 'students' : 'courses'} size={18} />
+            <p><strong>{roleTitle}</strong><span>{roleDescription}</span></p>
+          </div>
+
+          <form className="sign-in-form join-form" onSubmit={handleSubmit}>
+            <div className="join-form-grid">
+              <label htmlFor="join-full-name">
+                <span>Full name</span>
+                <div className="sign-in-input-wrap">
+                  <DashboardIcon name="account" size={18} />
+                  <input
+                    id="join-full-name"
+                    type="text"
+                    placeholder="Your full name"
+                    autoComplete="name"
+                    value={form.full_name}
+                    onChange={(event) => updateField('full_name', event.target.value)}
+                    required
+                  />
+                </div>
+              </label>
+
+              <label htmlFor="join-role">
+                <span>Account type</span>
+                <div className="sign-in-input-wrap join-select-wrap">
+                  <DashboardIcon name="students" size={18} />
+                  <select id="join-role" value={form.role} onChange={(event) => updateField('role', event.target.value)}>
+                    <option value="STUDENT">Student</option>
+                    <option value="PARENT">Parent or guardian</option>
+                    <option value="TUTOR">Tutor</option>
+                  </select>
+                </div>
+              </label>
+
+              <label htmlFor="join-phone">
+                <span>Phone number</span>
+                <div className="sign-in-input-wrap">
+                  <DashboardIcon name="messages" size={18} />
+                  <input
+                    id="join-phone"
+                    type="tel"
+                    placeholder="For example, 0788 000 000"
+                    autoComplete="tel"
+                    value={form.phone_number}
+                    onChange={(event) => updateField('phone_number', event.target.value)}
+                    required
+                  />
+                </div>
+              </label>
+
+              <label htmlFor="join-email">
+                <span>Email address</span>
+                <div className="sign-in-input-wrap">
+                  <DashboardIcon name="messages" size={18} />
+                  <input
+                    id="join-email"
+                    type="email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    value={form.email}
+                    onChange={(event) => updateField('email', event.target.value)}
+                    required
+                  />
+                </div>
+              </label>
+            </div>
+
+            <label htmlFor="join-password">
+              <span>Password</span>
+              <div className="sign-in-input-wrap sign-in-password-wrap">
+                <DashboardIcon name="verification" size={18} />
+                <input
+                  id="join-password"
+                  aria-label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Create a secure password"
+                  autoComplete="new-password"
+                  minLength="8"
+                  value={form.password}
+                  onChange={(event) => updateField('password', event.target.value)}
+                  required
+                />
+                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <small className="join-field-help">Use at least 8 characters. Avoid a password you use on another service.</small>
+            </label>
+
+            {error ? (
+              <div className="sign-in-error" role="alert">
+                <DashboardIcon name="disputes" size={18} />
+                <p><strong>Account could not be created</strong><span>{error}</span></p>
+              </div>
+            ) : null}
+
+            {successMessage ? <p className="join-success" role="status">{successMessage}</p> : null}
+
+            <button className="sign-in-submit" type="submit" disabled={submitting}>
+              <span>{submitting ? 'Creating your account...' : 'Create account'}</span>
+              {!submitting ? <DashboardIcon name="account" size={18} /> : null}
             </button>
           </form>
-        </article>
 
-        <article className="panel card">
-          <p className="eyebrow">Tutor checklist</p>
-          <h2>What tutors should prepare.</h2>
-          <MinimalList items={joinChecklist} />
+          <p className="join-terms">By creating an account, you agree to use Isomo responsibly and provide accurate account information.</p>
+
+          <div className="sign-in-join">
+            <p><strong>Already have an account?</strong><span>Return to your learning or teaching workspace.</span></p>
+            <Link to="/sign-in">Sign in</Link>
+          </div>
         </article>
-      </section>
-    </>
+      </div>
+
+      <div className="sign-in-assurance" aria-label="Isomo registration assurances">
+        <p><DashboardIcon name="earnings" size={18} /><span><strong>Affordable first</strong>Compare relevant learning support by price and fit.</span></p>
+        <p><DashboardIcon name="verification" size={18} /><span><strong>Verified tutors</strong>Tutor visibility requires documents and administrator approval.</span></p>
+        <p><DashboardIcon name="reports" size={18} /><span><strong>Visible progress</strong>Bookings, courses, and outcomes stay organized by account.</span></p>
+      </div>
+    </section>
   )
 }

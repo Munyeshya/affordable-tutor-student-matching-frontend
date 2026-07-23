@@ -1,4 +1,110 @@
-.join-form input,
-.join-form select {
+.join-frame {
+  grid-template-columns: minmax(0, 0.88fr) minmax(500px, 1.12fr);
+}
+
+.join-story {
+  background: #141311;
+}
+
+.join-illustration {
+  right: -60px;
+  width: min(52%, 320px);
+  opacity: 0.15;
+}
+
+.join-panel {
+  padding-block: clamp(2rem, 4.5vw, 3.5rem);
+}
+
+.join-role-note {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  border-left: 3px solid #c65d00;
+  margin-top: 1.2rem;
+  background: #fff6ee;
+  padding: 0.8rem 0.9rem;
+  color: #8d4308;
+}
+
+.join-role-note p {
+  display: grid;
+  gap: 0.12rem;
+  margin: 0;
+}
+
+.join-role-note strong { color: #61320e; font-size: 0.72rem; }
+.join-role-note span { color: #755d4b; font-size: 0.67rem; line-height: 1.45; }
+
+.join-form {
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+.join-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.join-form-grid > label,
+.join-form > label {
+  display: grid;
+  gap: 0.4rem;
+  color: #393531;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.join-select-wrap select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
   border-radius: 0;
+  background: transparent;
+  padding: 0.8rem 0;
+  color: #1b1917;
+  font: inherit;
+  font-size: 0.78rem;
+  outline: 0;
+  cursor: pointer;
+}
+
+.join-field-help {
+  color: #837a73;
+  font-size: 0.62rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.join-success {
+  border-left: 3px solid #33704d;
+  margin: 0;
+  background: #f0faf4;
+  padding: 0.75rem 0.85rem;
+  color: #285b3e;
+  font-size: 0.7rem;
+}
+
+.join-terms {
+  margin: 0.8rem 0 0;
+  color: #837a73;
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .join-frame { grid-template-columns: minmax(0, 0.78fr) minmax(480px, 1.22fr); }
+  .join-panel { padding: 2.25rem; }
+}
+
+@media (max-width: 760px) {
+  .join-frame { grid-template-columns: 1fr; }
+  .join-story { min-height: 390px; }
+}
+
+@media (max-width: 540px) {
+  .join-form-grid { grid-template-columns: 1fr; }
+  .join-panel { padding: 2rem 1.25rem; }
 }
