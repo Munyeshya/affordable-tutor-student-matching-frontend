@@ -193,7 +193,7 @@ export function LearningPage() {
         {activeCourse ? <><span aria-hidden="true">/</span><span>{activeCourse.title}</span></> : null}
         {activeLesson ? <><span aria-hidden="true">/</span><span>{activeLesson.title}</span></> : null}
       </nav>
-      <header className="learning-page-head">
+      <header className="learning-page-head learning-course-head">
         <div>
           <p className="eyebrow">Course workspace</p>
           <h1>Continue where you left off</h1>
