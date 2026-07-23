@@ -6,6 +6,17 @@ const NORMALIZED_TAGS = {
 }
 const BLOCKED_TAGS = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT'])
 
+function styledSpanTags(element) {
+  const tags = []
+  const fontWeight = String(element.style.fontWeight || '').toLowerCase()
+  const textDecoration = String(element.style.textDecorationLine || element.style.textDecoration || '').toLowerCase()
+
+  if (fontWeight === 'bold' || fontWeight === 'bolder' || Number.parseInt(fontWeight, 10) >= 600) tags.push('STRONG')
+  if (['italic', 'oblique'].includes(String(element.style.fontStyle || '').toLowerCase())) tags.push('EM')
+  if (textDecoration.includes('underline')) tags.push('U')
+  return tags
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -67,14 +78,19 @@ export function sanitizeFormattedHtml(value) {
 
     const normalizedTag = NORMALIZED_TAGS[node.tagName] || node.tagName
     if (BLOCKED_TAGS.has(normalizedTag)) return
-    if (!ALLOWED_TAGS.has(normalizedTag)) {
+    const safeTags = node.tagName === 'SPAN' ? styledSpanTags(node) : [normalizedTag]
+    if (!safeTags.length || safeTags.some((tag) => !ALLOWED_TAGS.has(tag))) {
       Array.from(node.childNodes).forEach((child) => appendSafeNode(child, parent))
       return
     }
 
-    const safeElement = output.createElement(normalizedTag.toLowerCase())
-    Array.from(node.childNodes).forEach((child) => appendSafeNode(child, safeElement))
-    parent.appendChild(safeElement)
+    let childParent = parent
+    safeTags.forEach((tag) => {
+      const safeElement = output.createElement(tag.toLowerCase())
+      childParent.appendChild(safeElement)
+      childParent = safeElement
+    })
+    Array.from(node.childNodes).forEach((child) => appendSafeNode(child, childParent))
   }
 
   Array.from(parsed.body.childNodes).forEach((node) => appendSafeNode(node, container))

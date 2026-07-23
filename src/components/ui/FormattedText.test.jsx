@@ -27,6 +27,14 @@ describe('course description formatting', () => {
     expect(toPlainFormattedText(value)).toBe('What you will learn Core skills Algebra')
   })
 
+  it('normalizes browser-generated inline styles without retaining arbitrary CSS', () => {
+    const value = '<p><span style="font-style: italic; color: red">Important</span> and <span style="font-weight: 700; text-decoration: underline">clear</span></p>'
+
+    expect(sanitizeFormattedHtml(value)).toBe(
+      '<p><em>Important</em> and <strong><u>clear</u></strong></p>',
+    )
+  })
+
   it('provides heading, inline-style, and list controls', () => {
     render(<FormattedTextEditor value="" onChange={vi.fn()} placeholder="Describe the course" />)
 
@@ -36,6 +44,7 @@ describe('course description formatting', () => {
 
     expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'h2')
     expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'h3')
+    expect(document.execCommand).toHaveBeenCalledWith('styleWithCSS', false, 'false')
     expect(document.execCommand).toHaveBeenCalledWith('italic', false, null)
     expect(screen.getByRole('button', { name: 'Bold' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Underline' })).toBeEnabled()
@@ -47,5 +56,32 @@ describe('course description formatting', () => {
 
     expect(screen.getByRole('heading', { name: 'Course outcomes', level: 2 })).toBeInTheDocument()
     expect(screen.getByText('Build confidence.')).toBeInTheDocument()
+  })
+
+  it('preserves the selected text and publishes semantic italic markup', () => {
+    const onChange = vi.fn()
+    document.execCommand = vi.fn((command) => {
+      if (command !== 'italic') return true
+      const selection = window.getSelection()
+      const range = selection.getRangeAt(0)
+      const italic = document.createElement('em')
+      italic.appendChild(range.extractContents())
+      range.insertNode(italic)
+      return true
+    })
+    render(<FormattedTextEditor value="<p>Important course detail</p>" onChange={onChange} />)
+    const editor = screen.getByRole('textbox')
+    const textNode = editor.querySelector('p').firstChild
+    const range = document.createRange()
+    range.setStart(textNode, 0)
+    range.setEnd(textNode, 9)
+    window.getSelection().removeAllRanges()
+    window.getSelection().addRange(range)
+
+    const italicButton = screen.getByRole('button', { name: 'Italic' })
+    fireEvent.mouseDown(italicButton)
+    fireEvent.click(italicButton)
+
+    expect(onChange).toHaveBeenLastCalledWith('<p><em>Important</em> course detail</p>')
   })
 })

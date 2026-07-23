@@ -23,6 +23,13 @@ const COMMANDS = [
   { key: 'bullet-list', command: 'insertUnorderedList', label: 'Bullet list', content: <><span aria-hidden="true">&bull;</span> List</> },
 ]
 
+function getEditorSelectionRange(editor) {
+  const selection = window.getSelection()
+  if (!editor || !selection?.rangeCount) return null
+  const range = selection.getRangeAt(0)
+  return editor.contains(range.commonAncestorContainer) ? range.cloneRange() : null
+}
+
 export function FormattedTextEditor({
   id,
   value,
@@ -44,13 +51,8 @@ export function FormattedTextEditor({
   useEffect(() => {
     function rememberEditorSelection() {
       const editor = editorRef.current
-      const selection = window.getSelection()
-      if (!editor || !selection?.rangeCount) return
-
-      const range = selection.getRangeAt(0)
-      if (editor.contains(range.commonAncestorContainer)) {
-        savedRangeRef.current = range.cloneRange()
-      }
+      const range = getEditorSelectionRange(editor)
+      if (range) savedRangeRef.current = range
     }
 
     document.addEventListener('selectionchange', rememberEditorSelection)
@@ -80,16 +82,23 @@ export function FormattedTextEditor({
     if (disabled || typeof document.execCommand !== 'function') return
     const editor = editorRef.current
     const selection = window.getSelection()
+    const range = getEditorSelectionRange(editor) || savedRangeRef.current
     editor?.focus()
 
-    if (selection && savedRangeRef.current) {
+    if (selection && range) {
       selection.removeAllRanges()
-      selection.addRange(savedRangeRef.current)
+      selection.addRange(range)
     }
 
-    document.execCommand('styleWithCSS', false, false)
+    document.execCommand('styleWithCSS', false, 'false')
     document.execCommand(command, false, value)
     publishValue()
+  }
+
+  function preserveSelection(event) {
+    const range = getEditorSelectionRange(editorRef.current)
+    if (range) savedRangeRef.current = range
+    event.preventDefault()
   }
 
   function handlePaste(event) {
@@ -112,7 +121,7 @@ export function FormattedTextEditor({
             className={activeCommands[key] ? 'is-active' : ''}
             aria-label={label}
             aria-pressed={Boolean(activeCommands[key])}
-            onMouseDown={(event) => event.preventDefault()}
+            onMouseDown={preserveSelection}
             onClick={() => applyCommand(command, commandValue)}
           >
             {content}
