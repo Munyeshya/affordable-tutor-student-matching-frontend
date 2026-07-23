@@ -150,11 +150,6 @@ export function SignInPage() {
         </article>
       </div>
 
-      <div className="sign-in-assurance" aria-label="Isomo account assurances">
-        <p><DashboardIcon name="verification" size={18} /><span><strong>Protected access</strong>Private account information stays role-restricted.</span></p>
-        <p><DashboardIcon name="payments" size={18} /><span><strong>Traceable activity</strong>Payments and learning records remain easy to review.</span></p>
-        <p><DashboardIcon name="help" size={18} /><span><strong>Clear support</strong>Useful messages help you recover when something fails.</span></p>
-      </div>
     </section>
   )
 }

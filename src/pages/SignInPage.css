@@ -247,30 +247,6 @@
 .sign-in-join a:focus-visible { text-decoration: underline; }
 .sign-in-session-note { margin: 0.9rem 0 0; color: #356247; font-size: 0.7rem; }
 
-.sign-in-assurance {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: solid #d9d3ce;
-  border-width: 0 1px 1px;
-  background: #faf8f6;
-}
-
-.sign-in-assurance > p {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.65rem;
-  align-items: start;
-  margin: 0;
-  border-right: 1px solid #e1dbd6;
-  padding: 0.9rem 1rem;
-  color: #a94f00;
-}
-
-.sign-in-assurance > p:last-child { border-right: 0; }
-.sign-in-assurance span { color: #786f69; font-size: 0.64rem; line-height: 1.45; }
-.sign-in-assurance strong { display: block; color: #302c29; font-size: 0.68rem; }
-
 @media (max-width: 900px) {
   .sign-in-page { padding-inline: 0; }
   .sign-in-frame { grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr); }
@@ -286,9 +262,6 @@
   .sign-in-story-copy h1 { max-width: 500px; }
   .sign-in-role-list { width: min(100%, 480px); margin-top: 1.5rem; }
   .sign-in-panel { padding: 2.5rem clamp(1.2rem, 7vw, 3rem); }
-  .sign-in-assurance { grid-template-columns: 1fr; }
-  .sign-in-assurance > p { border-right: 0; border-bottom: 1px solid #e1dbd6; }
-  .sign-in-assurance > p:last-child { border-bottom: 0; }
 }
 
 @media (max-width: 480px) {
