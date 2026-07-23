@@ -13,6 +13,7 @@ describe('ContactPage', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: /one clear conversation/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Kigali City' })).toBeInTheDocument()
+    expect(screen.getByText('Kigali City', { selector: '.contact-map-selection strong' })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Northern' }))
     expect(screen.getByText('Northern', { selector: '.contact-map-selection strong' })).toBeInTheDocument()
     expect(screen.getByRole('form', { name: 'Email Isomo support' })).toHaveAttribute(

@@ -8,7 +8,7 @@ const SUPPORT_EMAIL = 'treanparentcharityupdates@gmail.com'
 
 function InteractiveRwandaMap() {
   const mapRef = useRef(null)
-  const [selectedProvince, setSelectedProvince] = useState('Select a province')
+  const [selectedProvince, setSelectedProvince] = useState('Kigali City')
 
   useEffect(() => {
     mapRef.current?.querySelectorAll('path[id^="RW-"]').forEach((path) => {
