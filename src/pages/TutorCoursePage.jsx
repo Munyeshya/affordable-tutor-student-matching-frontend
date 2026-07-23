@@ -94,9 +94,13 @@ function CourseDetailsSection({ course, form, editable, busy, tutorSubjects, onC
             onChange={(value) => onChange('description', value)}
             placeholder="Describe the learning problem, what the course covers, and who it is designed for."
           />
-          <small>{descriptionLength}/20 minimum characters</small>
+          <small>
+            {descriptionLength >= 20
+              ? `${descriptionLength} characters - ready for the course review checklist.`
+              : `${descriptionLength}/20 characters for final review. You can save the draft now and complete this later.`}
+          </small>
         </div>
-        {editable ? <footer><Link to="/tutor-teaching">Cancel</Link><button type="submit" disabled={busy || descriptionLength < 20}>{busy ? 'Saving...' : course ? 'Save course details' : 'Create course and continue'}</button></footer> : null}
+        {editable ? <footer><Link to="/tutor-teaching">Cancel</Link><button type="submit" disabled={busy}>{busy ? 'Saving...' : course ? 'Save course details' : 'Create course and continue'}</button></footer> : null}
       </form>
     </section>
   )
