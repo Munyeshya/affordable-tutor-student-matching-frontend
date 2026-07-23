@@ -59,14 +59,13 @@ describe('JoinPage', () => {
     expect(await screen.findByRole('heading', { name: 'Sign in for aline@example.com' })).toBeInTheDocument()
   })
 
-  it('reveals the password and explains the selected role', async () => {
+  it('preserves the selected role while revealing the password step', async () => {
     const user = userEvent.setup()
     renderJoin()
 
     await user.type(screen.getByLabelText('Full name'), 'Tutor Test')
     await user.selectOptions(screen.getByLabelText('Account type'), 'TUTOR')
-    expect(screen.getByText('Tutor account')).toBeInTheDocument()
-    expect(screen.getByText(/submit qualifications/)).toBeInTheDocument()
+    expect(screen.getByLabelText('Account type')).toHaveValue('TUTOR')
     await user.click(screen.getByRole('button', { name: 'Next' }))
     await user.type(screen.getByLabelText('Phone number'), '0788000000')
     await user.type(screen.getByLabelText('Email address'), 'tutor@example.com')

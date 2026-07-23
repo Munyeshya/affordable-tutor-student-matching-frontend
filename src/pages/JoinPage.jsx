@@ -24,10 +24,10 @@ const joinRoles = [
   },
 ]
 
-const roleGuidance = {
-  STUDENT: ['Student account', 'Search tutors, book lessons, buy courses, complete assessments, and review your progress.'],
-  PARENT: ['Parent account', 'Link student accounts, arrange tutoring, complete payments, and follow family learning reports.'],
-  TUTOR: ['Tutor account', 'Create your account first, then submit qualifications and the signed integrity agreement for approval.'],
+const roleTitles = {
+  STUDENT: 'Student account',
+  PARENT: 'Parent account',
+  TUTOR: 'Tutor account',
 }
 
 export function JoinPage() {
@@ -43,7 +43,7 @@ export function JoinPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [step, setStep] = useState(1)
-  const [roleTitle, roleDescription] = roleGuidance[form.role]
+  const roleTitle = roleTitles[form.role]
 
   function updateField(name, value) {
     setForm((current) => ({ ...current, [name]: value }))
@@ -104,32 +104,26 @@ export function JoinPage() {
 
           <form className="sign-in-form join-form" onSubmit={handleSubmit}>
             {step === 1 ? (
-              <>
-                <div className="join-form-grid">
-                  <label htmlFor="join-full-name">
-                    <span>Full name</span>
-                    <div className="sign-in-input-wrap">
-                      <DashboardIcon name="account" size={18} />
-                      <input id="join-full-name" type="text" placeholder="Your full name" autoComplete="name" value={form.full_name} onChange={(event) => updateField('full_name', event.target.value)} autoFocus required />
-                    </div>
-                  </label>
-                  <label htmlFor="join-role">
-                    <span>Account type</span>
-                    <div className="sign-in-input-wrap join-select-wrap">
-                      <DashboardIcon name="students" size={18} />
-                      <select id="join-role" value={form.role} onChange={(event) => updateField('role', event.target.value)}>
-                        <option value="STUDENT">Student</option>
-                        <option value="PARENT">Parent or guardian</option>
-                        <option value="TUTOR">Tutor</option>
-                      </select>
-                    </div>
-                  </label>
-                </div>
-                <div className="join-role-note" aria-live="polite">
-                  <DashboardIcon name={form.role === 'TUTOR' ? 'verification' : form.role === 'PARENT' ? 'students' : 'courses'} size={18} />
-                  <p><strong>{roleTitle}</strong><span>{roleDescription}</span></p>
-                </div>
-              </>
+              <div className="join-form-grid">
+                <label htmlFor="join-full-name">
+                  <span>Full name</span>
+                  <div className="sign-in-input-wrap">
+                    <DashboardIcon name="account" size={18} />
+                    <input id="join-full-name" type="text" placeholder="Your full name" autoComplete="name" value={form.full_name} onChange={(event) => updateField('full_name', event.target.value)} autoFocus required />
+                  </div>
+                </label>
+                <label htmlFor="join-role">
+                  <span>Account type</span>
+                  <div className="sign-in-input-wrap join-select-wrap">
+                    <DashboardIcon name="students" size={18} />
+                    <select id="join-role" value={form.role} onChange={(event) => updateField('role', event.target.value)}>
+                      <option value="STUDENT">Student</option>
+                      <option value="PARENT">Parent or guardian</option>
+                      <option value="TUTOR">Tutor</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
             ) : null}
 
             {step === 2 ? (
