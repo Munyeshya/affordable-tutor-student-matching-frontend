@@ -31,6 +31,11 @@ function formatDate(value) {
   }).format(new Date(value))
 }
 
+function formatMonth(value) {
+  if (!value) return ''
+  return new Intl.DateTimeFormat('en-RW', { month: 'short', year: '2-digit' }).format(new Date(value))
+}
+
 function payoutTone(status) {
   if (['PAID', 'APPROVED'].includes(status)) return 'success'
   if (status === 'REJECTED') return 'danger'
@@ -74,11 +79,12 @@ export function TutorEarningsPage() {
   const queryClient = useQueryClient()
   const [payoutAmount, setPayoutAmount] = useState('')
   const [formMessage, setFormMessage] = useState('')
+  const [reportPeriod, setReportPeriod] = useState('90')
 
   const isTutor = isAuthenticated && user?.role === 'TUTOR'
   const earningsQuery = useQuery({
-    queryKey: queryKeys.payments.tutorEarnings,
-    queryFn: () => getTutorEarnings().then((response) => response.data),
+    queryKey: queryKeys.payments.tutorEarnings(reportPeriod),
+    queryFn: () => getTutorEarnings(reportPeriod).then((response) => response.data),
     enabled: isTutor,
   })
   const payoutsQuery = useQuery({
@@ -95,7 +101,7 @@ export function TutorEarningsPage() {
       toast.success('Payout request submitted.')
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorPayouts }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings }),
+        queryClient.invalidateQueries({ queryKey: ['payments', 'tutor-earnings'] }),
       ])
     },
     onError: (error) => {
@@ -126,6 +132,8 @@ export function TutorEarningsPage() {
   const availableBalance = Number(summary.available_balance || 0)
   const recentEarnings = Array.isArray(summary.recent_earnings) ? summary.recent_earnings : []
   const payouts = Array.isArray(payoutsQuery.data) ? payoutsQuery.data : []
+  const monthlyTrend = Array.isArray(summary.monthly_trend) ? summary.monthly_trend : []
+  const largestMonth = Math.max(...monthlyTrend.map((item) => Number(item.total || 0)), 1)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -154,7 +162,20 @@ export function TutorEarningsPage() {
           <h1>Your teaching income, in one clear view.</h1>
           <p>Review lesson and course revenue, understand reserved funds, and request only what is available.</p>
         </div>
-        <span><DashboardIcon name="earnings" size={24} /></span>
+        <div className="tutor-earnings-report-actions">
+          <label>
+            <span>Report period</span>
+            <select value={reportPeriod} onChange={(event) => setReportPeriod(event.target.value)}>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last 12 months</option>
+              <option value="all">All time</option>
+            </select>
+          </label>
+          <button type="button" onClick={() => window.print()}>
+            <DashboardIcon name="reports" size={17} /> Print report
+          </button>
+        </div>
       </header>
 
       {earningsQuery.isError ? (
@@ -193,6 +214,36 @@ export function TutorEarningsPage() {
           value={earningsQuery.isLoading ? '--' : formatMoney(summary.paid_payouts)}
           detail="Completed withdrawals"
         />
+      </section>
+
+      <section className="tutor-earnings-panel tutor-earnings-report">
+        <header>
+          <div>
+            <p className="eyebrow">Income report</p>
+            <h2>{summary.report_period?.label || 'Selected period'}</h2>
+          </div>
+          <small>Generated {new Intl.DateTimeFormat('en-RW', { dateStyle: 'medium' }).format(new Date())}</small>
+        </header>
+        <div className="tutor-report-metrics">
+          <article><small>Period income</small><strong>{formatMoney(summary.period_total_earnings)}</strong></article>
+          <article><small>Transactions</small><strong>{summary.period_transaction_count || 0}</strong></article>
+          <article><small>Average transaction</small><strong>{formatMoney(summary.average_transaction_value)}</strong></article>
+          <article><small>Confirmed, awaiting payment</small><strong>{formatMoney(summary.outstanding_confirmed_value)}</strong><em>{summary.outstanding_confirmed_count || 0} bookings</em></article>
+          <article><small>Successful refunds</small><strong>{formatMoney(summary.successful_refunds_total)}</strong><em>{summary.successful_refunds_count || 0} refunds</em></article>
+        </div>
+        <div className="tutor-income-trend" aria-label="Monthly income trend">
+          <div className="tutor-income-trend-legend"><span>Bookings</span><span>Courses</span></div>
+          {monthlyTrend.length ? monthlyTrend.map((item) => (
+            <article key={item.month}>
+              <small>{formatMonth(item.month)}</small>
+              <div>
+                <i style={{ width: `${(Number(item.booking_revenue || 0) / largestMonth) * 100}%` }} />
+                <b style={{ width: `${(Number(item.course_revenue || 0) / largestMonth) * 100}%` }} />
+              </div>
+              <strong>{formatMoney(item.total)}</strong>
+            </article>
+          )) : <p>No successful income was recorded in the last 12 months.</p>}
+        </div>
       </section>
 
       <section className="tutor-earnings-main-grid">

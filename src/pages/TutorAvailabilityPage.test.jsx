@@ -70,7 +70,7 @@ describe('TutorAvailabilityPage', () => {
       mode: 'IN_PERSON',
       start_datetime: expect.any(String),
       end_datetime: expect.any(String),
-    })))
+    }), expect.anything()))
     expect(toast.success).toHaveBeenCalledWith('Availability published successfully.')
   })
 })

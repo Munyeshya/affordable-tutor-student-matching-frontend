@@ -1,0 +1,28 @@
+.app-error-page {
+  min-height: calc(100vh - 80px);
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+  background: #fbfbfb;
+}
+
+.app-error-page section {
+  width: min(100%, 560px);
+  border: 1px solid #dedede;
+  border-top: 4px solid var(--orange, #d96b00);
+  background: #fff;
+  padding: clamp(1.5rem, 5vw, 2.75rem);
+}
+
+.app-error-page section > span {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #111;
+}
+
+.app-error-page h1 { margin: .6rem 0; font-size: clamp(1.5rem, 4vw, 2.25rem); }
+.app-error-page p:not(.eyebrow) { color: #666; line-height: 1.65; }
+.app-error-page section > div { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.4rem; }

@@ -1,12 +1,14 @@
 import React from 'react'
 
-import { TutorCoursePage } from '../pages/TutorCoursePage.jsx'
-import { TutorDashboardPage } from '../pages/TutorDashboardPage.jsx'
-import { TutorDocumentsPage } from '../pages/TutorDocumentsPage.jsx'
-import { TutorEarningsPage } from '../pages/TutorEarningsPage.jsx'
-import { TutorLessonPage } from '../pages/TutorLessonPage.jsx'
-import { TutorTeachingPage } from '../pages/TutorTeachingPage.jsx'
-import { TutorAvailabilityPage } from '../pages/TutorAvailabilityPage.jsx'
+import { lazyNamed } from './lazyNamed.jsx'
+
+const TutorCoursePage = lazyNamed(() => import('../pages/TutorCoursePage.jsx'), 'TutorCoursePage')
+const TutorDashboardPage = lazyNamed(() => import('../pages/TutorDashboardPage.jsx'), 'TutorDashboardPage')
+const TutorDocumentsPage = lazyNamed(() => import('../pages/TutorDocumentsPage.jsx'), 'TutorDocumentsPage')
+const TutorEarningsPage = lazyNamed(() => import('../pages/TutorEarningsPage.jsx'), 'TutorEarningsPage')
+const TutorLessonPage = lazyNamed(() => import('../pages/TutorLessonPage.jsx'), 'TutorLessonPage')
+const TutorTeachingPage = lazyNamed(() => import('../pages/TutorTeachingPage.jsx'), 'TutorTeachingPage')
+const TutorAvailabilityPage = lazyNamed(() => import('../pages/TutorAvailabilityPage.jsx'), 'TutorAvailabilityPage')
 
 export const tutorRoutes = [
   { path: '/tutor', element: <TutorDashboardPage /> },

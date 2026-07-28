@@ -1,8 +1,10 @@
 import React from 'react'
 
-import { ParentDashboardPage } from '../pages/ParentDashboardPage.jsx'
-import { ParentStudentDetailPage } from '../pages/ParentStudentDetailPage.jsx'
-import { ParentStudentsPage } from '../pages/ParentStudentsPage.jsx'
+import { lazyNamed } from './lazyNamed.jsx'
+
+const ParentDashboardPage = lazyNamed(() => import('../pages/ParentDashboardPage.jsx'), 'ParentDashboardPage')
+const ParentStudentDetailPage = lazyNamed(() => import('../pages/ParentStudentDetailPage.jsx'), 'ParentStudentDetailPage')
+const ParentStudentsPage = lazyNamed(() => import('../pages/ParentStudentsPage.jsx'), 'ParentStudentsPage')
 
 export const parentRoutes = [
   { path: '/parent', element: <ParentDashboardPage /> },

@@ -9,6 +9,7 @@ import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDia
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import {
   createDispute,
+  getBooking,
   listDisputes,
   updateBookingAction,
   updateBookingProgress,
@@ -697,6 +698,11 @@ export function BookingsPage() {
   })
 
   const bookingsQuery = useBookingsQuery()
+  const bookingDetailQuery = useQuery({
+    queryKey: queryKeys.bookings.detail(bookingId),
+    queryFn: () => getBooking(bookingId).then((response) => response.data),
+    enabled: Boolean(bookingId),
+  })
   const paymentsQuery = useQuery({
     queryKey: queryKeys.payments.bookings,
     queryFn: () => listPayments().then((response) => response.data),
@@ -789,7 +795,7 @@ export function BookingsPage() {
     ? bookings
     : bookings.filter((booking) => booking.status === activeStatus)
   const selectedBooking = bookingId
-    ? bookings.find((booking) => String(booking.id) === String(bookingId))
+    ? bookingDetailQuery.data || bookings.find((booking) => String(booking.id) === String(bookingId))
     : null
   const counts = STATUS_FILTERS.reduce((result, status) => {
     result[status] = status === 'ALL' ? bookings.length : bookings.filter((item) => item.status === status).length
@@ -869,7 +875,7 @@ export function BookingsPage() {
       </section> : null}
 
       <section className="booking-lifecycle-list">
-        {bookingsQuery.isLoading ? (
+        {(bookingsQuery.isLoading || (bookingId && bookingDetailQuery.isLoading)) ? (
           Array.from({ length: 3 }).map((_, index) => (
             <article className="booking-lifecycle-card" key={index} aria-busy="true">
               <div className="skeleton skeleton-line skeleton-title" />
@@ -877,12 +883,15 @@ export function BookingsPage() {
               <div className="skeleton skeleton-line" />
             </article>
           ))
-        ) : bookingsQuery.isError ? (
+        ) : (bookingsQuery.isError || (bookingId && bookingDetailQuery.isError)) ? (
           <article className="booking-lifecycle-empty">
             <p className="eyebrow">Could not load bookings</p>
             <h2>Let us try that again.</h2>
-            <p>{getApiErrorMessage(bookingsQuery.error)}</p>
-            <button className="primary-button" type="button" onClick={() => bookingsQuery.refetch()}>Try again</button>
+            <p>{getApiErrorMessage(bookingDetailQuery.error || bookingsQuery.error)}</p>
+            <button className="primary-button" type="button" onClick={() => {
+              bookingsQuery.refetch()
+              if (bookingId) bookingDetailQuery.refetch()
+            }}>Try again</button>
           </article>
         ) : bookingId && selectedBooking ? (
             <BookingCard
@@ -954,7 +963,7 @@ export function BookingsPage() {
         onSettled={async () => {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.payments.bookings }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorEarnings }),
+            queryClient.invalidateQueries({ queryKey: ['payments', 'tutor-earnings'] }),
             queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard }),
             queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all }),
           ])

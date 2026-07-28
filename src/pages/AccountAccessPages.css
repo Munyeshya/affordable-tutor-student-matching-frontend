@@ -1,0 +1,34 @@
+.account-access-page {
+  min-height: min(620px, calc(100vh - 150px));
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.account-access-card {
+  width: min(100%, 470px);
+  border: 1px solid #dedede;
+  border-top: 4px solid var(--orange, #d96b00);
+  background: #fff;
+  padding: clamp(1.4rem, 4vw, 2.25rem);
+}
+
+.account-access-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #111;
+}
+
+.account-access-card h1 { margin: .45rem 0 .65rem; font-size: clamp(1.45rem, 4vw, 2rem); }
+.account-access-card > p:not(.eyebrow) { color: #666; line-height: 1.65; }
+.account-access-card form { display: grid; gap: 1rem; margin-top: 1.4rem; }
+.account-access-card label { display: grid; gap: .45rem; font-weight: 700; }
+.account-access-card input { min-height: 46px; border: 1px solid #c9c9c9; padding: 0 .8rem; border-radius: 0; }
+.account-access-card .primary-button { justify-content: center; text-align: center; }
+.account-access-link { display: inline-block; margin-top: 1.1rem; color: #222; font-weight: 700; }
+.account-access-status { margin: 1.35rem 0 .3rem; border-left: 3px solid var(--orange, #d96b00); background: #fff5eb; padding: 1rem; line-height: 1.55; }
+.account-access-loader { width: 32px; height: 32px; margin-top: 1.2rem; border: 3px solid #ddd; border-top-color: var(--orange, #d96b00); border-radius: 50%; animation: account-spin .8s linear infinite; }
+@keyframes account-spin { to { transform: rotate(360deg); } }

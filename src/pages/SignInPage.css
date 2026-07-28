@@ -355,3 +355,18 @@
   .sign-in-role-list article { padding-block: 0.45rem; }
   .sign-in-panel { padding-block: 1.25rem; }
 }
+.sign-in-recovery-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  margin-top: -.25rem;
+  font-size: .82rem;
+}
+
+.sign-in-recovery-links a {
+  color: #444;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

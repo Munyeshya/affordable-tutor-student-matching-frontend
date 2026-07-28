@@ -10,6 +10,10 @@ export function listBookings() {
   return apiClient.get(API_ENDPOINTS.bookings.list).then(normalizeListResponse)
 }
 
+export function getBooking(id) {
+  return apiClient.get(API_ENDPOINTS.bookings.detail(id))
+}
+
 export function updateBookingAction(id, payload) {
   return apiClient.patch(API_ENDPOINTS.bookings.action(id), payload)
 }

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
-import { AUTH_SESSION_EXPIRED_EVENT, clearAuthSession, getStoredRefreshToken, hasStoredAccessToken, setAuthSession } from '../api/client'
+import { AUTH_SESSION_EXPIRED_EVENT, bootstrapAuthSession, clearAuthSession, hasStoredAccessToken, setAuthSession } from '../api/client'
 import { getApiErrorMessage } from '../api/errors'
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from '../api/services/auth'
 
@@ -31,14 +31,8 @@ export function AuthProvider({ children }) {
     let ignore = false
 
     async function hydrateUser() {
-      if (!hasStoredAccessToken()) {
-        if (!ignore) {
-          setLoading(false)
-        }
-        return
-      }
-
       try {
+        if (!hasStoredAccessToken()) await bootstrapAuthSession()
         const response = await getCurrentUser()
         if (!ignore) {
           setUser(response.data)
@@ -86,8 +80,8 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await loginRequest(credentials)
-      const { access, refresh, user: nextUser } = response.data
-      setAuthSession({ accessToken: access, refreshToken: refresh })
+      const { access, user: nextUser } = response.data
+      setAuthSession({ accessToken: access })
       setUser(nextUser)
       toast.success(`Welcome back, ${nextUser?.full_name || nextUser?.email || 'user'}.`)
       return nextUser
@@ -107,7 +101,7 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await registerRequest(payload)
-      toast.success('Account created successfully. You can sign in now.')
+      toast.success(response.data?.message || 'Account created. Check your email to verify it before signing in.')
       return response.data
     } catch (requestError) {
       const message = getApiErrorMessage(requestError)
@@ -120,12 +114,8 @@ export function AuthProvider({ children }) {
   }
 
   async function signOut() {
-    const refreshToken = getStoredRefreshToken()
-
     try {
-      if (refreshToken) {
-        await logoutRequest({ refresh: refreshToken })
-      }
+      await logoutRequest()
     } catch {
       // Clear local session even if logout is already expired on the server.
     } finally {
@@ -165,4 +155,3 @@ export function useAuth() {
 
   return context
 }
-

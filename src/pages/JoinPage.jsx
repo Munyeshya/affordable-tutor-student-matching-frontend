@@ -61,8 +61,8 @@ export function JoinPage() {
 
     try {
       await signUp(form)
-      setSuccessMessage('Account created. Please sign in to continue.')
-      navigate('/sign-in', { state: { registeredEmail: form.email } })
+      setSuccessMessage('Account created. Check your email to verify it before signing in.')
+      navigate('/resend-verification', { state: { registeredEmail: form.email } })
     } catch {
       // The authentication context provides a safe, actionable error message.
     }

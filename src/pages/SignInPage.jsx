@@ -147,6 +147,10 @@ export function SignInPage() {
                     </button>
                   </div>
                 </label>
+                <div className="sign-in-recovery-links">
+                  <Link to="/forgot-password">Forgot password?</Link>
+                  <Link to="/resend-verification">Resend verification email</Link>
+                </div>
               </>
             )}
 

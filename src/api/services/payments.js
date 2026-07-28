@@ -57,8 +57,8 @@ export function decidePayout(id, data) {
   return apiClient.patch(API_ENDPOINTS.payments.payoutDecision(id), data)
 }
 
-export function getTutorEarnings() {
-  return apiClient.get(API_ENDPOINTS.payments.earnings)
+export function getTutorEarnings(period = '90') {
+  return apiClient.get(API_ENDPOINTS.payments.earnings, { params: { period } })
 }
 
 export function createCoursePurchase(data, idempotencyKey) {

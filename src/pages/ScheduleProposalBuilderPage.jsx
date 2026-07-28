@@ -57,6 +57,7 @@ function createDefaultForm(tutorId) {
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     notes: '',
     message: '',
+    hourlyRate: '',
     recurring: {
       startDate: toDateInput(firstDate),
       endDate: toDateInput(lastDate),
@@ -153,7 +154,8 @@ export function ScheduleProposalBuilderPage() {
   const totalHours = sessions.reduce((total, session) => (
     total + ((new Date(session.end_datetime) - new Date(session.start_datetime)) / 3600000)
   ), 0)
-  const estimatedTotal = Number(tutor?.hourly_rate) * totalHours
+  const proposedHourlyRate = Number(form.hourlyRate || tutor?.hourly_rate)
+  const estimatedTotal = proposedHourlyRate * totalHours
 
   const proposalMutation = useMutation({
     mutationFn: createScheduleProposal,
@@ -216,6 +218,9 @@ export function ScheduleProposalBuilderPage() {
 
   function validateProposal() {
     if (!form.subjectId) return 'Choose the subject for this schedule.'
+    if (!Number.isFinite(proposedHourlyRate) || proposedHourlyRate <= 0) {
+      return 'Enter a positive proposed hourly rate.'
+    }
     if (!sessions.length) return 'Add at least one valid lesson date.'
     if (sessions.length > 60) return 'A schedule proposal can contain at most 60 lessons.'
     if (selectedMode === 'IN_PERSON' && !form.location.trim()) return 'Enter the in-person lesson location.'
@@ -259,6 +264,7 @@ export function ScheduleProposalBuilderPage() {
       timezone: form.timezone,
       notes: form.notes.trim(),
       message: form.message.trim(),
+      hourly_rate: proposedHourlyRate,
       sessions,
     })
   }
@@ -330,6 +336,17 @@ export function ScheduleProposalBuilderPage() {
                   {tutor.teaches_online ? <option value="ONLINE">Online</option> : null}
                   {tutor.teaches_in_person ? <option value="IN_PERSON">In person</option> : null}
                 </select>
+              </label>
+              <label className="booking-field">
+                <span>Proposed hourly rate ({tutor.currency || 'RWF'})</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={form.hourlyRate || tutor.hourly_rate || ''}
+                  onChange={(event) => updateField('hourlyRate', event.target.value)}
+                />
+                <small>Both sides can revise this amount before accepting the schedule.</small>
               </label>
             </div>
             {selectedMode === 'IN_PERSON' ? (
@@ -440,6 +457,7 @@ export function ScheduleProposalBuilderPage() {
             <div><dt>Tutor</dt><dd>{tutor.full_name}</dd></div>
             <div><dt>Timezone</dt><dd>{form.timezone}</dd></div>
             <div><dt>Total learning time</dt><dd>{totalHours.toFixed(1)} hours</dd></div>
+            <div><dt>Proposed hourly rate</dt><dd>{formatMoney(proposedHourlyRate, tutor.currency)}</dd></div>
             <div><dt>Estimated total</dt><dd>{formatMoney(estimatedTotal, tutor.currency)}</dd></div>
           </dl>
           <div className="schedule-preview-list">

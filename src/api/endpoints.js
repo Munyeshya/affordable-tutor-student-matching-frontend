@@ -21,6 +21,10 @@
     me: '/auth/me/',
     profileImage: '/auth/me/profile-image/',
     refresh: '/auth/refresh/',
+    verifyEmail: '/auth/email/verify/',
+    resendVerification: '/auth/email/resend/',
+    passwordReset: '/auth/password/reset/',
+    passwordResetConfirm: '/auth/password/reset/confirm/',
   },
   tutors: {
     list: '/tutors/',
@@ -87,6 +91,7 @@
   },
   bookings: {
     list: '/bookings/',
+    detail: (id) => `/bookings/${id}/`,
     create: '/bookings/create/',
     action: (id) => `/bookings/${id}/action/`,
     progress: (id) => `/bookings/${id}/progress/`,

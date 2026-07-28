@@ -85,7 +85,7 @@ export function TutorDashboardPage() {
   })
   const bookingsQuery = useBookingsQuery({ staleTime: 30_000 })
   const earningsQuery = useQuery({
-    queryKey: queryKeys.payments.tutorEarnings,
+    queryKey: queryKeys.payments.tutorEarnings(),
     queryFn: () => getTutorEarnings().then((response) => response.data),
     staleTime: 30_000,
   })

@@ -54,7 +54,13 @@ function getNotificationIcon(kind = '') {
   return 'bell'
 }
 
+function safeNotificationLink(value) {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return null
+  return value
+}
+
 function NotificationRow({ item, onRead, busy }) {
+  const destination = safeNotificationLink(item.link)
   return (
     <article className={`notification-row ${item.is_read ? 'is-read' : 'is-unread'}`}>
       <span className="notification-state-dot" aria-label={item.is_read ? 'Read' : 'Unread'} />
@@ -77,9 +83,9 @@ function NotificationRow({ item, onRead, busy }) {
       </div>
 
       <div className="notification-row-actions">
-        {item.link ? (
+        {destination ? (
           <Link
-            to={item.link}
+            to={destination}
             aria-label={`Open notification: ${item.title}`}
             onClick={() => {
               if (!item.is_read) onRead(item.id)

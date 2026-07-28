@@ -99,6 +99,7 @@ function ProposalCard({ proposal, user, onAction, onCounter, onPay, busy, highli
         <div><dt>Lessons</dt><dd>{revision.sessions.length}</dd></div>
         <div><dt>Mode</dt><dd>{revision.mode === 'IN_PERSON' ? 'In person' : 'Online'}</dd></div>
         <div><dt>Timezone</dt><dd>{revision.timezone}</dd></div>
+        <div><dt>Hourly rate</dt><dd>{formatMoney(revision.hourly_rate, revision.currency)}</dd></div>
         <div><dt>Estimated total</dt><dd>{formatMoney(revision.estimated_total, revision.currency)}</dd></div>
       </dl>
 
@@ -219,6 +220,16 @@ function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
           <span>Timezone</span>
           <input value={counter.timezone} onChange={(event) => setCounter((current) => ({ ...current, timezone: event.target.value }))} />
         </label>
+        <label className="booking-field">
+          <span>Hourly rate ({counter.currency})</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={counter.hourlyRate}
+            onChange={(event) => setCounter((current) => ({ ...current, hourlyRate: event.target.value }))}
+          />
+        </label>
       </div>
       {counter.mode === 'IN_PERSON' ? (
         <label className="booking-field">
@@ -254,7 +265,7 @@ function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
       </label>
       <div className="booking-review-actions">
         <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Go back</button>
-        <button className="primary-button" type="button" onClick={onSubmit} disabled={busy || !counter.message.trim()}>
+        <button className="primary-button" type="button" onClick={onSubmit} disabled={busy || !counter.message.trim() || Number(counter.hourlyRate) <= 0}>
           {busy ? 'Sending...' : 'Send counter-offer'}
         </button>
       </div>
@@ -319,6 +330,8 @@ export function ScheduleProposalsPage() {
       mode: revision.mode,
       location: revision.location || '',
       timezone: revision.timezone,
+      currency: revision.currency || 'RWF',
+      hourlyRate: revision.hourly_rate || '',
       notes: revision.notes || '',
       message: '',
       sessions: revision.sessions.map((session) => ({
@@ -329,6 +342,11 @@ export function ScheduleProposalsPage() {
   }
 
   function submitCounter() {
+    const hourlyRate = Number(counter.hourlyRate)
+    if (!Number.isFinite(hourlyRate) || hourlyRate <= 0) {
+      toast.error('Enter a positive hourly rate for this counter-offer.')
+      return
+    }
     const normalizedSessions = counter.sessions.map((session) => ({
       start: new Date(session.start_datetime),
       end: new Date(session.end_datetime),
@@ -351,6 +369,7 @@ export function ScheduleProposalsPage() {
         timezone: counter.timezone,
         notes: counter.notes.trim(),
         message: counter.message.trim(),
+        hourly_rate: hourlyRate,
         sessions: normalizedSessions.map((session) => ({
           start_datetime: session.start.toISOString(),
           end_datetime: session.end.toISOString(),

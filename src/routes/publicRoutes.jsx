@@ -1,16 +1,18 @@
-﻿import React from 'react'
+import React from 'react'
 
-import { HomePage } from '../App.jsx'
-import { AboutPage } from '../pages/AboutPage.jsx'
-import { ContactPage } from '../pages/ContactPage.jsx'
-import { HowItWorksPage } from '../pages/HowItWorksPage.jsx'
-import { CoursesPage } from '../pages/CoursesPage.jsx'
-import { CourseDetailPage } from '../pages/CourseDetailPage.jsx'
-import { TutorsPage } from '../pages/public/TutorsPage.jsx'
-import { TutorDetailPage } from '../pages/TutorDetailPage.jsx'
-import { ScheduleProposalBuilderPage } from '../pages/ScheduleProposalBuilderPage.jsx'
-import { UnauthorizedPage } from '../pages/UnauthorizedPage.jsx'
-import { BookingRequestRoute } from './BookingRequestRoute.jsx'
+import { lazyNamed } from './lazyNamed.jsx'
+
+const HomePage = lazyNamed(() => import('../App.jsx'), 'HomePage')
+const AboutPage = lazyNamed(() => import('../pages/AboutPage.jsx'), 'AboutPage')
+const ContactPage = lazyNamed(() => import('../pages/ContactPage.jsx'), 'ContactPage')
+const HowItWorksPage = lazyNamed(() => import('../pages/HowItWorksPage.jsx'), 'HowItWorksPage')
+const CoursesPage = lazyNamed(() => import('../pages/CoursesPage.jsx'), 'CoursesPage')
+const CourseDetailPage = lazyNamed(() => import('../pages/CourseDetailPage.jsx'), 'CourseDetailPage')
+const TutorsPage = lazyNamed(() => import('../pages/public/TutorsPage.jsx'), 'TutorsPage')
+const TutorDetailPage = lazyNamed(() => import('../pages/TutorDetailPage.jsx'), 'TutorDetailPage')
+const ScheduleProposalBuilderPage = lazyNamed(() => import('../pages/ScheduleProposalBuilderPage.jsx'), 'ScheduleProposalBuilderPage')
+const UnauthorizedPage = lazyNamed(() => import('../pages/UnauthorizedPage.jsx'), 'UnauthorizedPage')
+const BookingRequestRoute = lazyNamed(() => import('./BookingRequestRoute.jsx'), 'BookingRequestRoute')
 
 export const publicRoutes = [
   { key: 'home', index: true, element: <HomePage /> },

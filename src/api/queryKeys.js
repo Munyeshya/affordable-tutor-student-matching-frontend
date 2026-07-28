@@ -30,6 +30,7 @@ export const queryKeys = {
   },
   bookings: {
     all: ['bookings'],
+    detail: (id) => ['bookings', 'detail', String(id)],
     tutors: ['bookings', 'tutors'],
     tutorDetail: (id) => ['bookings', 'tutors', id],
     proposals: ['bookings', 'schedule-proposals'],
@@ -74,7 +75,7 @@ export const queryKeys = {
     bookings: ['payments', 'booking-payments'],
     coursePurchases: ['payments', 'course-purchases'],
     transaction: (kind, id) => ['payments', 'transaction', kind, id],
-    tutorEarnings: ['payments', 'tutor-earnings'],
+    tutorEarnings: (period = '90') => ['payments', 'tutor-earnings', period],
     tutorPayouts: ['payments', 'tutor-payouts'],
   },
   reviews: {

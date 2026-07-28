@@ -1,16 +1,16 @@
 import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'
-const AUTH_ACCESS_TOKEN_KEY = 'affordable_auth_access_token'
-const AUTH_REFRESH_TOKEN_KEY = 'affordable_auth_refresh_token'
 export const AUTH_SESSION_EXPIRED_EVENT = 'auth:session-expired'
 
 let refreshPromise = null
 let sessionExpiryNotified = false
+let accessToken = null
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -18,37 +18,26 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem(AUTH_ACCESS_TOKEN_KEY)
-
   if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
     config.headers.delete?.('Content-Type')
     delete config.headers['Content-Type']
   }
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
   }
 
   return config
 })
 
 async function requestNewAccessToken() {
-  const refresh = getStoredRefreshToken()
-  if (!refresh) {
-    throw new Error('No refresh token is available.')
-  }
-
   const response = await axios.post(
     `${API_BASE_URL}/auth/refresh/`,
-    { refresh },
-    { timeout: 15_000 },
+    {},
+    { timeout: 15_000, withCredentials: true },
   )
-  const accessToken = response.data.access
-  setAuthSession({
-    accessToken,
-    refreshToken: response.data.refresh || refresh,
-  })
-  return accessToken
+  setAuthSession({ accessToken: response.data.access })
+  return response.data.access
 }
 
 function notifySessionExpired() {
@@ -69,6 +58,8 @@ apiClient.interceptors.response.use(
       '/auth/login/',
       '/auth/register/',
       '/auth/refresh/',
+      '/auth/email/',
+      '/auth/password/',
     ].some((path) => requestUrl.includes(path))
 
     if (
@@ -99,37 +90,25 @@ apiClient.interceptors.response.use(
   },
 )
 
-export function setAuthSession({ accessToken, refreshToken }) {
+export function setAuthSession({ accessToken: nextAccessToken }) {
   sessionExpiryNotified = false
-
-  if (accessToken) {
-    localStorage.setItem(AUTH_ACCESS_TOKEN_KEY, accessToken)
-  } else {
-    localStorage.removeItem(AUTH_ACCESS_TOKEN_KEY)
-  }
-
-  if (refreshToken) {
-    localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, refreshToken)
-  } else {
-    localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY)
-  }
+  accessToken = nextAccessToken || null
 }
 
 export function clearAuthSession() {
-  localStorage.removeItem(AUTH_ACCESS_TOKEN_KEY)
-  localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY)
-}
-
-export function getStoredRefreshToken() {
-  return localStorage.getItem(AUTH_REFRESH_TOKEN_KEY)
+  accessToken = null
 }
 
 export function getStoredAccessToken() {
-  return localStorage.getItem(AUTH_ACCESS_TOKEN_KEY)
+  return accessToken
 }
 
 export function hasStoredAccessToken() {
-  return Boolean(localStorage.getItem(AUTH_ACCESS_TOKEN_KEY))
+  return Boolean(accessToken)
+}
+
+export function bootstrapAuthSession() {
+  return requestNewAccessToken()
 }
 
 export function getApiBaseUrl() {

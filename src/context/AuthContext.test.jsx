@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  bootstrapAuthSession,
   clearAuthSession,
   hasStoredAccessToken,
   setAuthSession,
@@ -22,6 +23,7 @@ vi.mock('../api/services/auth.js', () => ({
 }))
 vi.mock('../api/client.js', () => ({
   AUTH_SESSION_EXPIRED_EVENT: 'auth:session-expired',
+  bootstrapAuthSession: vi.fn(),
   clearAuthSession: vi.fn(),
   getStoredRefreshToken: vi.fn(),
   hasStoredAccessToken: vi.fn(),
@@ -46,6 +48,7 @@ describe('AuthProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     hasStoredAccessToken.mockReturnValue(false)
+    bootstrapAuthSession.mockRejectedValue(new Error('No refresh cookie'))
   })
 
   it('finishes hydration without calling the API when no token exists', async () => {
@@ -80,7 +83,7 @@ describe('AuthProvider', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in probe' }))
 
     expect(await screen.findByText('student@isomo.test')).toBeInTheDocument()
-    expect(setAuthSession).toHaveBeenCalledWith({ accessToken: 'access-token', refreshToken: 'refresh-token' })
+    expect(setAuthSession).toHaveBeenCalledWith({ accessToken: 'access-token' })
     expect(toast.success).toHaveBeenCalledWith('Welcome back, Test Student.')
   })
 

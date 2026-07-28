@@ -9,9 +9,9 @@ import { JoinPage } from './JoinPage.jsx'
 
 vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 
-function SignInDestination() {
+function VerificationDestination() {
   const location = useLocation()
-  return <h1>Sign in for {location.state?.registeredEmail}</h1>
+  return <h1>Verify email for {location.state?.registeredEmail}</h1>
 }
 
 function renderJoin() {
@@ -19,7 +19,7 @@ function renderJoin() {
     <MemoryRouter initialEntries={['/join']}>
       <Routes>
         <Route path="/join" element={<JoinPage />} />
-        <Route path="/sign-in" element={<SignInDestination />} />
+        <Route path="/resend-verification" element={<VerificationDestination />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -34,7 +34,7 @@ describe('JoinPage', () => {
     useAuth.mockReturnValue({ signUp, submitting: false, error: '', setError })
   })
 
-  it('creates the selected account and carries the email to sign in', async () => {
+  it('creates the selected account and carries the email to verification', async () => {
     const user = userEvent.setup()
     signUp.mockResolvedValue({ id: 25 })
     renderJoin()
@@ -56,7 +56,7 @@ describe('JoinPage', () => {
       password: 'secure-password',
       role: 'PARENT',
     })
-    expect(await screen.findByRole('heading', { name: 'Sign in for aline@example.com' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Verify email for aline@example.com' })).toBeInTheDocument()
   })
 
   it('preserves the selected role while revealing the password step', async () => {

@@ -1,13 +1,15 @@
-﻿import React from 'react'
+import React from 'react'
 
-import { AdminDisputesPage } from '../pages/AdminDisputesPage.jsx'
-import { AdminAuditPage } from '../pages/AdminAuditPage.jsx'
-import { AdminCoursesPage } from '../pages/AdminCoursesPage.jsx'
-import { AdminReviewModerationPage } from '../pages/AdminReviewModerationPage.jsx'
-import { AdminUsersPage } from '../pages/AdminUsersPage.jsx'
-import { AdminTutorReviewsPage } from '../pages/AdminTutorReviewsPage.jsx'
-import { AdminDashboardPage } from '../pages/AdminDashboardPage.jsx'
-import { AdminPayoutsPage } from '../pages/AdminPayoutsPage.jsx'
+import { lazyNamed } from './lazyNamed.jsx'
+
+const AdminDisputesPage = lazyNamed(() => import('../pages/AdminDisputesPage.jsx'), 'AdminDisputesPage')
+const AdminAuditPage = lazyNamed(() => import('../pages/AdminAuditPage.jsx'), 'AdminAuditPage')
+const AdminCoursesPage = lazyNamed(() => import('../pages/AdminCoursesPage.jsx'), 'AdminCoursesPage')
+const AdminReviewModerationPage = lazyNamed(() => import('../pages/AdminReviewModerationPage.jsx'), 'AdminReviewModerationPage')
+const AdminUsersPage = lazyNamed(() => import('../pages/AdminUsersPage.jsx'), 'AdminUsersPage')
+const AdminTutorReviewsPage = lazyNamed(() => import('../pages/AdminTutorReviewsPage.jsx'), 'AdminTutorReviewsPage')
+const AdminDashboardPage = lazyNamed(() => import('../pages/AdminDashboardPage.jsx'), 'AdminDashboardPage')
+const AdminPayoutsPage = lazyNamed(() => import('../pages/AdminPayoutsPage.jsx'), 'AdminPayoutsPage')
 
 export const adminRoutes = [
   { path: '/admin', element: <AdminDashboardPage /> },

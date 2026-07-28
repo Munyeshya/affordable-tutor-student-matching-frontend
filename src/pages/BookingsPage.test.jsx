@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Route, Routes } from 'react-router-dom'
 
-import { updateBookingProgress } from '../api/services/bookings.js'
+import { getBooking, updateBookingProgress } from '../api/services/bookings.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingsQuery, useLearningLibraryQuery } from '../hooks/useCommonQueries.js'
 import { renderWithProviders } from '../test/render.jsx'
@@ -17,6 +17,7 @@ vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 vi.mock('../hooks/useCommonQueries.js', () => ({ useBookingsQuery: vi.fn(), useLearningLibraryQuery: vi.fn() }))
 vi.mock('../api/services/bookings.js', () => ({
   createDispute: vi.fn(),
+  getBooking: vi.fn(),
   listDisputes: vi.fn(),
   updateBookingAction: vi.fn(),
   updateBookingProgress: vi.fn(),
@@ -66,6 +67,21 @@ describe('BookingsPage progress', () => {
       isLoading: false,
       isError: false,
     })
+    getBooking.mockResolvedValue({
+      data: {
+        id: 21,
+        status: 'CONFIRMED',
+        subject_name: 'Mathematics',
+        student_name: 'Aline Student',
+        tutor_name: 'Eric Tutor',
+        mode: 'ONLINE',
+        start_datetime: '2030-01-10T10:00:00Z',
+        currency: 'RWF',
+        total_amount: 8000,
+        events: [],
+        progress: null,
+      },
+    })
     updateBookingProgress.mockResolvedValue({ data: { progress_percent: 50 } })
   })
 
@@ -73,7 +89,7 @@ describe('BookingsPage progress', () => {
     const user = userEvent.setup()
     renderBookingPage()
 
-    expect(screen.getByText('The tutor will add progress notes as this lesson moves forward.')).toBeInTheDocument()
+    expect(await screen.findByText('The tutor will add progress notes as this lesson moves forward.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Add progress' }))
     await user.type(screen.getByLabelText('Progress summary'), 'The learner understands equivalent fractions.')
     await user.click(screen.getByRole('button', { name: 'Share progress update' }))
@@ -102,7 +118,7 @@ describe('BookingsPage progress', () => {
     const user = userEvent.setup()
     renderBookingPage()
 
-    await user.click(screen.getByRole('button', { name: 'Set assessments' }))
+    await user.click(await screen.findByRole('button', { name: 'Set assessments' }))
 
     expect(screen.getByRole('heading', { name: 'Measure learning for this booking' })).toBeInTheDocument()
     expect(screen.getByText('Mathematics booking #21')).toBeInTheDocument()

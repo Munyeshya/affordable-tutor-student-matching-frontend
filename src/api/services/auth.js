@@ -9,8 +9,8 @@ export function register(data) {
   return apiClient.post(API_ENDPOINTS.auth.register, data)
 }
 
-export function logout(data) {
-  return apiClient.post(API_ENDPOINTS.auth.logout, data)
+export function logout() {
+  return apiClient.post(API_ENDPOINTS.auth.logout, {})
 }
 
 export function getCurrentUser() {
@@ -31,6 +31,18 @@ export function removeProfileImage() {
   return apiClient.delete(API_ENDPOINTS.auth.profileImage)
 }
 
-export function refreshToken(refresh) {
-  return apiClient.post(API_ENDPOINTS.auth.refresh, { refresh })
+export function verifyEmail(data) {
+  return apiClient.post(API_ENDPOINTS.auth.verifyEmail, data)
+}
+
+export function resendVerification(email) {
+  return apiClient.post(API_ENDPOINTS.auth.resendVerification, { email })
+}
+
+export function requestPasswordReset(email) {
+  return apiClient.post(API_ENDPOINTS.auth.passwordReset, { email })
+}
+
+export function confirmPasswordReset(data) {
+  return apiClient.post(API_ENDPOINTS.auth.passwordResetConfirm, data)
 }

@@ -1,8 +1,10 @@
 import React from 'react'
 
-import { BookingsPage } from '../pages/BookingsPage.jsx'
-import { MessagesPage } from '../pages/MessagesPage.jsx'
-import { ScheduleProposalsPage } from '../pages/ScheduleProposalsPage.jsx'
+import { lazyNamed } from './lazyNamed.jsx'
+
+const BookingsPage = lazyNamed(() => import('../pages/BookingsPage.jsx'), 'BookingsPage')
+const MessagesPage = lazyNamed(() => import('../pages/MessagesPage.jsx'), 'MessagesPage')
+const ScheduleProposalsPage = lazyNamed(() => import('../pages/ScheduleProposalsPage.jsx'), 'ScheduleProposalsPage')
 
 export const participantRoutes = [
   { path: '/bookings', element: <BookingsPage /> },
