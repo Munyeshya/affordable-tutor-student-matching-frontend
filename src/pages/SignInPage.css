@@ -143,7 +143,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: clamp(1.35rem, 4vw, 2.6rem);
+  padding: clamp(1rem, 2.5vw, 2rem) clamp(1.35rem, 4vw, 2.6rem) clamp(1.35rem, 4vw, 2.6rem);
 }
 
 .sign-in-heading h2 {
@@ -317,7 +317,7 @@
   .sign-in-frame { grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr); }
   .sign-in-story { padding: 2.25rem; }
   .sign-in-story-copy h1 { font-size: 1.95rem; }
-  .sign-in-panel { padding: 2.5rem; }
+  .sign-in-panel { padding: 1.75rem 2.5rem 2.5rem; }
 }
 
 @media (max-width: 720px) {
@@ -328,7 +328,7 @@
   .sign-in-story-copy { width: min(100%, 520px); }
   .sign-in-story-copy h1 { max-width: 500px; }
   .sign-in-role-list { width: min(100%, 480px); margin-top: 1.5rem; }
-  .sign-in-panel { padding: 2.5rem clamp(1.2rem, 7vw, 3rem); }
+  .sign-in-panel { padding: 1.75rem clamp(1.2rem, 7vw, 3rem) 2.5rem; }
 }
 
 @media (max-width: 480px) {
@@ -337,7 +337,7 @@
   .sign-in-story-accent,
   .sign-in-illustration { display: none; }
   .sign-in-role-list article:nth-child(3) { display: none; }
-  .sign-in-panel { padding: 2rem 1.25rem; }
+  .sign-in-panel { padding: 1.4rem 1.25rem 2rem; }
   .sign-in-join { align-items: flex-start; flex-direction: column; }
 }
 
