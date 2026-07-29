@@ -57,6 +57,15 @@ async function requestNewAccessToken() {
   return response.data.access
 }
 
+function getOrCreateRefreshPromise() {
+  if (!refreshPromise) {
+    refreshPromise = requestNewAccessToken().finally(() => {
+      refreshPromise = null
+    })
+  }
+  return refreshPromise
+}
+
 function notifySessionExpired() {
   clearAuthSession()
 
@@ -91,13 +100,7 @@ apiClient.interceptors.response.use(
     originalRequest._retry = true
 
     try {
-      if (!refreshPromise) {
-        refreshPromise = requestNewAccessToken().finally(() => {
-          refreshPromise = null
-        })
-      }
-
-      const accessToken = await refreshPromise
+      const accessToken = await getOrCreateRefreshPromise()
       originalRequest.headers.Authorization = `Bearer ${accessToken}`
       return apiClient(originalRequest)
     } catch (refreshError) {
@@ -143,7 +146,7 @@ export function getStoredSessionKey() {
 }
 
 export function bootstrapAuthSession() {
-  return requestNewAccessToken()
+  return getOrCreateRefreshPromise()
 }
 
 export function getApiBaseUrl() {
