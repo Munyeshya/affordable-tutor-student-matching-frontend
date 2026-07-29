@@ -87,12 +87,12 @@ describe('student course learning hierarchy', () => {
     expect(screen.queryByRole('heading', { name: 'Curriculum' })).not.toBeInTheDocument()
   })
 
-  it('opens curriculum, lesson content, and its contextual assessments after choosing a course', async () => {
+  it('opens curriculum, lesson content, and course assessments after choosing a course', async () => {
     renderLearningPage('/my-courses/7')
 
     expect(screen.getByRole('heading', { name: 'Curriculum' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Linear equations' })).toBeInTheDocument()
-    expect(await screen.findByRole('heading', { name: 'Lesson assessments' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Course assessments' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Purchased courses' })).not.toBeInTheDocument()
   })
 
@@ -100,8 +100,8 @@ describe('student course learning hierarchy', () => {
     const user = userEvent.setup()
     listAssessments.mockResolvedValue({
       data: [
-        { id: 1, lesson: 12, course_id: 7, context_type: 'COURSE_LESSON', context_title: 'Algebra foundations / Linear equations', attempt_type: 'PRE_TEST', title: 'Initial algebra check', description: 'Starting knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: true, availability_message: '', questions: [{ id: 101, question: '2 + 2?', option_a: '4', option_b: '5' }] },
-        { id: 2, lesson: 12, course_id: 7, context_type: 'COURSE_LESSON', context_title: 'Algebra foundations / Linear equations', attempt_type: 'POST_TEST', title: 'Final algebra check', description: 'Final knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: false, availability_message: 'Complete the initial assessment before taking the final assessment.', questions: [{ id: 102, question: '3 + 3?', option_a: '6', option_b: '7' }] },
+        { id: 1, course: 7, course_id: 7, context_type: 'COURSE', context_title: 'Algebra foundations', attempt_type: 'PRE_TEST', title: 'Initial algebra check', description: 'Starting knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: true, availability_message: '', questions: [{ id: 101, question: '2 + 2?', option_a: '4', option_b: '5' }] },
+        { id: 2, course: 7, course_id: 7, context_type: 'COURSE', context_title: 'Algebra foundations', attempt_type: 'POST_TEST', title: 'Final algebra check', description: 'Final knowledge', expected_knowledge_outcomes: 'Solve a basic equation', marks: 1, can_attempt: false, availability_message: 'Complete the initial assessment before taking the final assessment.', questions: [{ id: 102, question: '3 + 3?', option_a: '6', option_b: '7' }] },
       ],
     })
 

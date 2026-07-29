@@ -12,7 +12,6 @@ import {
   updateLesson,
 } from '../api/services/catalog.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
-import { AssessmentsPage } from './AssessmentsPage.jsx'
 import { formatCourseStatus, isCourseEditable } from './tutorTeaching/courseHelpers.js'
 import './TutorTeachingPage.css'
 
@@ -155,25 +154,8 @@ export function TutorLessonPage({ isNew = false }) {
             </label>
             {editable ? <footer><Link to={`/tutor-teaching/courses/${course.id}/curriculum`}>Cancel</Link><button type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? 'Saving...' : isNew ? 'Create lesson' : 'Save lesson'}</button></footer> : null}
           </form>
-          {!isNew && editable ? (
-            <div className="lesson-assessment-next">
-              <DashboardIcon name="assessments" size={22} />
-              <div><strong>Next: measure this lesson</strong><p>Create initial and final assessments after the lesson content is ready.</p></div>
-              <a href="#lesson-assessments">Open assessments</a>
-            </div>
-          ) : null}
         </section>
       </div>
-      {!isNew && editable ? (
-        <section className="tutor-lesson-assessments" id="lesson-assessments">
-          <AssessmentsPage
-            contextType="COURSE_LESSON"
-            contextId={lesson.id}
-            contextTitle={lesson.title}
-            embedded
-          />
-        </section>
-      ) : null}
     </section>
   )
 }

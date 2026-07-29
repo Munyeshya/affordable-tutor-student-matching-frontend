@@ -135,7 +135,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Create contextual assessments',
-        description: 'Open the corresponding course lesson or confirmed booking, then add its initial and final assessments, expected outcomes, and questions there.',
+        description: 'Open the corresponding course or confirmed booking, then add its single initial and final assessment pair, expected outcomes, and questions there.',
         to: '/tutor-teaching',
         linkLabel: 'Open teaching workspace',
       },

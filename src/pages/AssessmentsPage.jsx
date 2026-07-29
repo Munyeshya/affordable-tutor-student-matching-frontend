@@ -35,12 +35,12 @@ function formatDate(value) {
 function getContextKey(item) {
   return item.context_type === 'BOOKING'
     ? `booking:${item.booking}`
-    : `lesson:${item.lesson}`
+    : `course:${item.course}`
 }
 
 function matchesContext(item, contextType, contextId) {
   if (!contextType || !contextId) return true
-  const field = contextType === 'BOOKING' ? 'booking' : 'lesson'
+  const field = contextType === 'BOOKING' ? 'booking' : 'course'
   return String(item?.[field]) === String(contextId)
 }
 
@@ -107,11 +107,11 @@ function QuizPanel({ assessment, answers, busy, onAnswer, onClose, onSubmit }) {
   )
 }
 
-function StudentAssessmentCard({ assessment, attempt, initialCompleted, lessonCompleted, onStart }) {
+function StudentAssessmentCard({ assessment, attempt, initialCompleted, courseCompleted, onStart }) {
   const isPostTest = assessment.attempt_type === 'POST_TEST'
   const awaitingInitial = isPostTest && !initialCompleted
   const locked = awaitingInitial || assessment.can_attempt === false || (
-    assessment.context_type !== 'BOOKING' && isPostTest && !lessonCompleted
+    assessment.context_type !== 'BOOKING' && isPostTest && !courseCompleted
   )
   const hasQuestions = assessment.questions.length > 0
 
@@ -174,22 +174,22 @@ function StudentAssessments({
   contextType,
 }) {
   const [searchParams] = useSearchParams()
-  const requestedLesson = searchParams.get('lesson')
+  const requestedCourse = searchParams.get('course')
   const requestedBooking = searchParams.get('booking')
   const attemptedByAssessment = new Map(attempts.map((attempt) => [attempt.assessment, attempt]))
-  const lessonCompletion = new Map()
-  library.forEach((course) => course.lessons.forEach((lesson) => {
-    lessonCompletion.set(lesson.id, Boolean(lesson.progress?.is_completed))
-  }))
+  const courseCompletion = new Map(library.map((course) => [
+    course.id,
+    Boolean(course.lessons?.length) && course.lessons.every((lesson) => lesson.progress?.is_completed),
+  ]))
   const orderedAssessments = [...assessments].sort((left, right) => {
     const leftRequested = (
-      String(left.lesson) === requestedLesson || String(left.booking) === requestedBooking
+      String(left.course) === requestedCourse || String(left.booking) === requestedBooking
     ) ? 0 : 1
     const rightRequested = (
-      String(right.lesson) === requestedLesson || String(right.booking) === requestedBooking
+      String(right.course) === requestedCourse || String(right.booking) === requestedBooking
     ) ? 0 : 1
     if (leftRequested !== rightRequested) return leftRequested - rightRequested
-    if (left.lesson !== right.lesson) return left.lesson - right.lesson
+    if (left.course !== right.course) return left.course - right.course
     return left.attempt_type === 'PRE_TEST' ? -1 : 1
   })
   const attemptsByContext = attempts.reduce((result, attempt) => {
@@ -220,7 +220,7 @@ function StudentAssessments({
         <div>
           <p className="eyebrow">Knowledge checks</p>
           <h1>See how your learning grows</h1>
-          <p>Take the pre-test, complete the lesson, then use the post-test to measure your progress.</p>
+          <p>Take the initial assessment, complete the course or booking, then use the final assessment to measure progress.</p>
         </div>
         <dl className="assessment-overview">
           <div><dt>Available</dt><dd>{assessments.length}</dd></div>
@@ -229,7 +229,7 @@ function StudentAssessments({
       </header> : null}
 
       <section className="assessment-section">
-        <div className="assessment-section-head"><div><span>{embedded ? 'CHECK' : '01'}</span><div><h2>{embedded ? `${contextType === 'BOOKING' ? 'Booking' : 'Lesson'} assessments` : 'Your assessments'}</h2><p>Each assessment can be submitted once.</p></div></div>{!embedded ? <Link to="/my-courses">Back to my courses</Link> : null}</div>
+        <div className="assessment-section-head"><div><span>{embedded ? 'CHECK' : '01'}</span><div><h2>{embedded ? `${contextType === 'BOOKING' ? 'Booking' : 'Course'} assessments` : 'Your assessments'}</h2><p>Each assessment can be submitted once.</p></div></div>{!embedded ? <Link to="/my-courses">Back to my courses</Link> : null}</div>
         {loading ? (
           <div className="assessment-card-list"><AssessmentSkeleton /><AssessmentSkeleton /></div>
         ) : error ? (
@@ -242,7 +242,7 @@ function StudentAssessments({
                 assessment={assessment}
                 attempt={attemptedByAssessment.get(assessment.id)}
                 initialCompleted={Boolean(attemptsByContext[getContextKey(assessment)]?.PRE_TEST)}
-                lessonCompleted={lessonCompletion.get(assessment.lesson)}
+                courseCompleted={courseCompletion.get(assessment.course)}
                 onStart={onStart}
               />
             ))}
@@ -290,7 +290,7 @@ function StudentAssessments({
             })}
           </div>
         ) : (
-          <div className="assessment-empty compact"><p>Complete a pre-test and post-test for the same lesson to see your learning outcome.</p></div>
+          <div className="assessment-empty compact"><p>Complete the initial and final assessments for the same course or booking to see your learning outcome.</p></div>
         )}
       </section>
     </>
@@ -319,23 +319,19 @@ function TutorAssessments({
   contextId,
   contextTitle,
 }) {
-  const lessons = courses.flatMap((course) => (course.lessons || []).map((lesson) => ({
-    ...lesson,
-    courseTitle: course.title,
-  })))
   const eligibleBookings = bookings.filter((booking) => ['CONFIRMED', 'COMPLETED'].includes(booking.status))
   const selectedContextItems = embedded
     ? [{ id: contextId, title: contextTitle }]
-    : assessmentForm.context_type === 'BOOKING' ? eligibleBookings : lessons
+    : assessmentForm.context_type === 'BOOKING' ? eligibleBookings : courses
 
   return (
     <>
       {!embedded ? <header className="assessment-page-head tutor-mode">
-        <div><p className="eyebrow">Tutor assessments</p><h1>Build checks that show real progress</h1><p>Create initial and final assessments for course lessons or confirmed bookings, then review student-confirmed outcomes.</p></div>
+        <div><p className="eyebrow">Tutor assessments</p><h1>Build checks that show real progress</h1><p>Create one initial and final assessment pair per course or confirmed booking, then review student-confirmed outcomes.</p></div>
         <dl className="assessment-overview"><div><dt>Assessments</dt><dd>{assessments.length}</dd></div><div><dt>Attempts</dt><dd>{attempts.length}</dd></div><div><dt>Avg. improvement</dt><dd>{formatPercent(impact?.average_improvement)}</dd></div></dl>
       </header> : (
         <header className="context-assessment-head">
-          <div><span>{contextType === 'BOOKING' ? 'Booking assessments' : 'Lesson assessments'}</span><h2>Measure learning for this {contextType === 'BOOKING' ? 'booking' : 'lesson'}</h2><p>Create the initial and final checks here so they stay connected to the correct learning activity.</p></div>
+          <div><span>{contextType === 'BOOKING' ? 'Booking assessments' : 'Course assessments'}</span><h2>Measure learning for this {contextType === 'BOOKING' ? 'booking' : 'course'}</h2><p>Create the single initial and final pair here so it measures the complete learning activity.</p></div>
           <strong>{assessments.length} assessment{assessments.length === 1 ? '' : 's'}</strong>
         </header>
       )}
@@ -349,21 +345,21 @@ function TutorAssessments({
 
       <section className="tutor-assessment-builder">
         <form onSubmit={onCreateAssessment} className="assessment-builder-form">
-          <div className="assessment-section-head"><div><span>01</span><div><h2>Create assessment</h2><p>Measure knowledge around a course lesson or an individual booking.</p></div></div></div>
-          {!embedded ? <><label><span>Learning context</span><select value={assessmentForm.context_type} onChange={(event) => onAssessmentChange('context_type', event.target.value)}><option value="COURSE_LESSON">Course lesson</option><option value="BOOKING">Confirmed booking</option></select></label>
+          <div className="assessment-section-head"><div><span>01</span><div><h2>Create assessment</h2><p>Measure knowledge around a complete course or an individual booking.</p></div></div></div>
+          {!embedded ? <><label><span>Learning context</span><select value={assessmentForm.context_type} onChange={(event) => onAssessmentChange('context_type', event.target.value)}><option value="COURSE">Course</option><option value="BOOKING">Confirmed booking</option></select></label>
           <label>
-            <span>{assessmentForm.context_type === 'BOOKING' ? 'Booking' : 'Lesson'}</span>
+            <span>{assessmentForm.context_type === 'BOOKING' ? 'Booking' : 'Course'}</span>
             <select value={assessmentForm.context_id} onChange={(event) => onAssessmentChange('context_id', event.target.value)} required>
-              <option value="">Choose {assessmentForm.context_type === 'BOOKING' ? 'booking' : 'lesson'}</option>
+              <option value="">Choose {assessmentForm.context_type === 'BOOKING' ? 'booking' : 'course'}</option>
               {selectedContextItems.map((item) => (
                 <option key={item.id} value={item.id}>
                   {assessmentForm.context_type === 'BOOKING'
                     ? `#${item.id} / ${item.subject_name} / ${item.student_name} / ${formatDate(item.start_datetime)}`
-                    : `${item.courseTitle} / ${item.title}`}
+                    : item.title}
                 </option>
               ))}
             </select>
-          </label></> : <div className="assessment-fixed-context"><span>Attached to</span><strong>{contextTitle || `${contextType === 'BOOKING' ? 'Booking' : 'Lesson'} #${contextId}`}</strong></div>}
+          </label></> : <div className="assessment-fixed-context"><span>Attached to</span><strong>{contextTitle || `${contextType === 'BOOKING' ? 'Booking' : 'Course'} #${contextId}`}</strong></div>}
           <div className="builder-two-columns">
             <label><span>Assessment stage</span><select value={assessmentForm.attempt_type} onChange={(event) => onAssessmentChange('attempt_type', event.target.value)}><option value="PRE_TEST">Initial assessment</option><option value="POST_TEST">Final assessment</option></select></label>
             <label><span>Total marks</span><input type="number" min="1" value={assessmentForm.marks} onChange={(event) => onAssessmentChange('marks', event.target.value)} required /></label>
@@ -392,9 +388,9 @@ function TutorAssessments({
       </section>
 
       <section className="assessment-section">
-        <div className="assessment-section-head"><div><span>03</span><div><h2>{embedded ? 'Checks for this learning activity' : 'Assessment library'}</h2><p>{embedded ? 'Initial and final checks remain attached to this context.' : 'Review question coverage across your lessons.'}</p></div></div>{!embedded ? <Link to="/tutor-teaching">Manage courses</Link> : null}</div>
+        <div className="assessment-section-head"><div><span>03</span><div><h2>{embedded ? 'Checks for this learning activity' : 'Assessment library'}</h2><p>{embedded ? 'Initial and final checks remain attached to this context.' : 'Review question coverage across your courses and bookings.'}</p></div></div>{!embedded ? <Link to="/tutor-teaching">Manage courses</Link> : null}</div>
         {loading ? <div className="assessment-card-list"><AssessmentSkeleton /><AssessmentSkeleton /></div> : assessments.length ? (
-          <div className="tutor-assessment-grid">{assessments.map((item) => <article key={item.id}><div><span>{item.attempt_type === 'PRE_TEST' ? 'INITIAL' : 'FINAL'}</span><small>{item.context_type === 'BOOKING' ? 'Booking' : 'Course lesson'}</small></div><h3>{item.title}</h3><p>{item.context_title}</p><p>{item.description}</p><p><strong>Expected:</strong> {item.expected_knowledge_outcomes}</p><footer><span>{item.questions.length} questions</span><span>{item.marks} marks</span></footer></article>)}</div>
+          <div className="tutor-assessment-grid">{assessments.map((item) => <article key={item.id}><div><span>{item.attempt_type === 'PRE_TEST' ? 'INITIAL' : 'FINAL'}</span><small>{item.context_type === 'BOOKING' ? 'Booking' : 'Course'}</small></div><h3>{item.title}</h3><p>{item.context_title}</p><p>{item.description}</p><p><strong>Expected:</strong> {item.expected_knowledge_outcomes}</p><footer><span>{item.questions.length} questions</span><span>{item.marks} marks</span></footer></article>)}</div>
         ) : <div className="assessment-empty compact"><p>Create your first assessment using the builder above.</p></div>}
       </section>
 
@@ -407,7 +403,7 @@ function TutorAssessments({
           <article><span>Average improvement</span><strong>{formatPercent(impact?.average_improvement)}</strong></article>
           <article><span>Positive outcomes</span><strong>{formatPercent(impact?.positive_outcome_rate)}</strong></article>
         </div>
-        {impact?.top_lessons?.length > 0 && <div className="impact-lessons">{impact.top_lessons.map((lesson) => <div key={lesson.lesson__id}><span>{lesson.lesson__course__title}</span><strong>{lesson.lesson__title}</strong><small>{formatPercent(lesson.average_improvement)} average improvement / {lesson.confirmations} confirmation{lesson.confirmations === 1 ? '' : 's'}</small></div>)}</div>}
+        {impact?.top_courses?.length > 0 && <div className="impact-lessons">{impact.top_courses.map((course) => <div key={course.course__id}><span>Course</span><strong>{course.course__title}</strong><small>{formatPercent(course.average_improvement)} average improvement / {course.confirmations} confirmation{course.confirmations === 1 ? '' : 's'}</small></div>)}</div>}
         {impact?.top_bookings?.length > 0 && <div className="impact-lessons">{impact.top_bookings.map((booking) => <div key={booking.booking__id}><span>Individual booking</span><strong>{booking.booking__subject__name || `Booking #${booking.booking__id}`}</strong><small>{formatPercent(booking.average_improvement)} average improvement / {booking.confirmations} confirmation{booking.confirmations === 1 ? '' : 's'}</small></div>)}</div>}
       </section> : null}
     </>
@@ -415,7 +411,7 @@ function TutorAssessments({
 }
 
 const EMPTY_ASSESSMENT = {
-  context_type: 'COURSE_LESSON',
+  context_type: 'COURSE',
   context_id: '',
   attempt_type: 'PRE_TEST',
   title: '',
@@ -444,12 +440,12 @@ export function AssessmentsPage({
       return { ...EMPTY_ASSESSMENT, context_type: contextType, context_id: String(contextId) }
     }
     const requestedBooking = pageSearchParams.get('booking')
-    const requestedLesson = pageSearchParams.get('lesson')
+    const requestedCourse = pageSearchParams.get('course')
     if (requestedBooking) {
       return { ...EMPTY_ASSESSMENT, context_type: 'BOOKING', context_id: requestedBooking }
     }
-    if (requestedLesson) {
-      return { ...EMPTY_ASSESSMENT, context_id: requestedLesson }
+    if (requestedCourse) {
+      return { ...EMPTY_ASSESSMENT, context_id: requestedCourse }
     }
     return EMPTY_ASSESSMENT
   })
@@ -517,8 +513,8 @@ export function AssessmentsPage({
   const assessments = (assessmentsQuery.data || []).filter((item) => matchesContext(item, contextType, contextId))
   const attempts = (attemptsQuery.data || []).filter((item) => matchesContext(item, contextType, contextId))
   const confirmations = (confirmationsQuery.data || []).filter((item) => matchesContext(item, contextType, contextId))
-  const contextualLibrary = contextType === 'COURSE_LESSON' && contextId
-    ? [{ lessons: [{ id: Number(contextId), progress: { is_completed: learningCompleted } }] }]
+  const contextualLibrary = contextType === 'COURSE' && contextId
+    ? [{ id: Number(contextId), lessons: [{ progress: { is_completed: learningCompleted } }] }]
     : libraryQuery.data || []
 
   function submitQuiz(event) {
@@ -539,7 +535,7 @@ export function AssessmentsPage({
     confirmationMutation.mutate({
       ...(pair.POST_TEST.context_type === 'BOOKING'
         ? { booking_id: pair.POST_TEST.booking }
-        : { lesson_id: pair.POST_TEST.lesson }),
+        : { course_id: pair.POST_TEST.course }),
       pre_test_attempt_id: pair.PRE_TEST.id,
       post_test_attempt_id: pair.POST_TEST.id,
       student_confirmation_status: status,
@@ -549,7 +545,7 @@ export function AssessmentsPage({
 
   function submitNewAssessment(event) {
     event.preventDefault()
-    const contextField = assessmentForm.context_type === 'BOOKING' ? 'booking' : 'lesson'
+    const contextField = assessmentForm.context_type === 'BOOKING' ? 'booking' : 'course'
     assessmentMutation.mutate({
       attempt_type: assessmentForm.attempt_type,
       title: assessmentForm.title,
@@ -594,7 +590,7 @@ export function AssessmentsPage({
           onAnswer={(questionId, answer) => setAnswers((current) => ({ ...current, [questionId]: answer }))}
           onClose={() => { setActiveAssessment(null); setAnswers({}) }}
           onSubmit={submitQuiz}
-          onComment={(lessonId, value) => setComments((current) => ({ ...current, [lessonId]: value }))}
+          onComment={(contextKey, value) => setComments((current) => ({ ...current, [contextKey]: value }))}
           onConfirm={submitConfirmation}
           onRetry={() => { assessmentsQuery.refetch(); attemptsQuery.refetch(); libraryQuery.refetch() }}
           embedded={embedded}

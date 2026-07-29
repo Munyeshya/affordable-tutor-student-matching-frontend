@@ -305,18 +305,18 @@ export function LearningPage() {
                     {completionMutation.isPending ? 'Saving progress...' : 'Mark lesson complete'}
                   </button>
                 )}
-                <a className="learning-assessment-link" href="#lesson-assessments">Lesson assessments</a>
+                <a className="learning-assessment-link" href="#course-assessments">Course assessments</a>
               </div>
-              <span>Use assessments to compare knowledge before and after this lesson.</span>
+              <span>Use the course assessment pair to compare knowledge before and after the full curriculum.</span>
             </div>
           </article>
         </section>
-        <section className="learning-context-assessments" id="lesson-assessments">
+        <section className="learning-context-assessments" id="course-assessments">
           <AssessmentsPage
-            contextType="COURSE_LESSON"
-            contextId={activeLesson.id}
-            contextTitle={activeLesson.title}
-            learningCompleted={Boolean(activeLesson.progress?.is_completed)}
+            contextType="COURSE"
+            contextId={activeCourse.course_id}
+            contextTitle={activeCourse.title}
+            learningCompleted={Boolean(activeCourse.lessons?.length) && activeCourse.lessons.every((lesson) => lesson.progress?.is_completed)}
             embedded
           />
         </section>

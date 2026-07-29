@@ -16,6 +16,7 @@ import {
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { FormattedTextEditor } from '../components/ui/FormattedText.jsx'
 import { toPlainFormattedText } from '../components/ui/formattedText.js'
+import { AssessmentsPage } from './AssessmentsPage.jsx'
 import { CourseWorkspaceNav } from './tutorTeaching/CourseWorkspaceNav.jsx'
 import {
   courseCompletion,
@@ -151,29 +152,17 @@ function CurriculumSection({ course, lessons, loading }) {
   )
 }
 
-function AssessmentsSection({ course, lessons }) {
-  const readyLessonIds = new Set(course.assessment_readiness?.ready_lesson_ids || [])
-
+function AssessmentsSection({ course }) {
   return (
     <section className="course-workspace-panel">
-      <header><div><span>Step 03</span><h1>Measure learning impact</h1><p>At least one lesson needs an initial and final assessment with questions.</p></div></header>
+      <header><div><span>Step 03</span><h1>Measure learning impact</h1><p>Create one initial and one final assessment for the complete course.</p></div></header>
       <div className={`assessment-requirement ${course.assessment_readiness?.is_ready ? 'is-ready' : ''}`}>
         <DashboardIcon name={course.assessment_readiness?.is_ready ? 'verification' : 'assessments'} size={22} />
-        <div><strong>{course.assessment_readiness?.is_ready ? 'Assessment requirement complete' : 'Assessment setup required'}</strong><p>{course.assessment_readiness?.requirement || 'One lesson must have initial and final assessments with questions.'}</p></div>
+        <div><strong>{course.assessment_readiness?.is_ready ? 'Assessment pair complete' : 'Assessment setup required'}</strong><p>{course.assessment_readiness?.requirement || 'The course needs one initial and one final assessment, each with questions.'}</p></div>
       </div>
-      {lessons.length ? (
-        <div className="course-assessment-lessons">
-          {lessons.map((lesson) => (
-            <article key={lesson.id}>
-              <span className={readyLessonIds.has(lesson.id) ? 'is-ready' : ''}>{readyLessonIds.has(lesson.id) ? '✓' : lesson.order_number}</span>
-              <div><strong>{lesson.title}</strong><small>{readyLessonIds.has(lesson.id) ? 'Initial and final checks ready' : 'Assessment pair is incomplete'}</small></div>
-              {isCourseEditable(course.status) ? <Link to={`/tutor-teaching/courses/${course.id}/lessons/${lesson.id}#lesson-assessments`}>{readyLessonIds.has(lesson.id) ? 'Manage checks' : 'Create checks'}</Link> : null}
-            </article>
-          ))}
-        </div>
-      ) : (
-        <div className="teaching-empty"><h3>Add a lesson first</h3><p>Assessments are attached to a specific lesson in the curriculum.</p><Link to={`/tutor-teaching/courses/${course.id}/curriculum`}>Open curriculum</Link></div>
-      )}
+      {isCourseEditable(course.status) ? (
+        <AssessmentsPage contextType="COURSE" contextId={course.id} contextTitle={course.title} embedded />
+      ) : <div className="teaching-empty compact"><p>Assessment editing is locked while this course is under review or published.</p></div>}
       <footer className="course-panel-footer">
         <Link to={`/tutor-teaching/courses/${course.id}/curriculum`}>Previous: curriculum</Link>
         <Link className="is-primary" to={`/tutor-teaching/courses/${course.id}/review`}>Next: review</Link>
@@ -345,7 +334,7 @@ export function TutorCoursePage({ section = 'details', isNew = false }) {
           />
         ) : null}
         {section === 'curriculum' ? <CurriculumSection course={course} lessons={lessons} loading={lessonsQuery.isLoading} /> : null}
-        {section === 'assessments' ? <AssessmentsSection course={course} lessons={lessons} /> : null}
+        {section === 'assessments' ? <AssessmentsSection course={course} /> : null}
         {section === 'review' ? <ReviewSection course={course} lessons={lessons} busy={submitMutation.isPending} onSubmit={() => submitMutation.mutate()} /> : null}
       </div>
     </section>
