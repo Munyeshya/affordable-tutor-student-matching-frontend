@@ -11,6 +11,63 @@
   color: var(--family-ink);
 }
 
+.parent-link-status-panel {
+  border: 1px solid var(--family-line);
+  background: #fff;
+  padding: 1rem 1.2rem;
+}
+
+.parent-link-status-panel > header,
+.parent-link-status-panel article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.parent-link-status-panel > header {
+  padding-bottom: 0.65rem;
+}
+
+.parent-link-status-panel h2 {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+}
+
+.parent-link-status-panel > header > span,
+.parent-link-status-panel small {
+  color: var(--family-muted);
+  font-size: 0.65rem;
+}
+
+.parent-link-status-panel article {
+  border-top: 1px solid var(--family-line);
+  padding: 0.7rem 0;
+}
+
+.parent-link-status-panel article > div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.parent-link-status-panel article strong,
+.parent-link-status-panel article b {
+  font-size: 0.72rem;
+}
+
+.parent-link-status-panel article b {
+  border: 1px solid #e2b46d;
+  background: #fff8e8;
+  padding: 0.35rem 0.5rem;
+  color: #805100;
+}
+
+.parent-link-status-panel article b.is-rejected {
+  border-color: #dfb3aa;
+  background: #fff4f1;
+  color: #8f3224;
+}
+
 .parent-students-header,
 .parent-student-profile-header {
   display: flex;

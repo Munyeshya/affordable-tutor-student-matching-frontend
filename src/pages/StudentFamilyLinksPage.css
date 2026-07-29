@@ -1,0 +1,74 @@
+.student-family-page {
+  display: grid;
+  gap: 1rem;
+  color: #171717;
+}
+
+.student-family-hero,
+.student-family-panel {
+  border: 1px solid #e8ddd5;
+  background: #fff;
+}
+
+.student-family-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.student-family-hero h1 {
+  margin: 0.3rem 0 0.45rem;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.student-family-hero p:last-child {
+  max-width: 680px;
+  margin: 0;
+  color: #70665f;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.student-family-hero aside {
+  display: grid;
+  min-width: 150px;
+  border-left: 3px solid #b45309;
+  background: #fff6ee;
+  padding: 0.8rem 1rem;
+}
+
+.student-family-hero aside strong { font-size: 1.5rem; }
+.student-family-hero aside span { color: #776c65; font-size: 0.65rem; }
+
+.student-family-panel { padding: clamp(1rem, 3vw, 1.5rem); }
+.student-family-panel > header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.student-family-panel h2 { margin: 0.2rem 0 0; font-size: 1rem; }
+.student-family-panel > header > span { color: #81756e; font-size: 0.7rem; }
+.student-family-list { display: grid; }
+
+.student-family-list article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(150px, auto) auto;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid #eee5df;
+  padding: 0.9rem 0;
+}
+
+.student-family-list article.is-pending { border-left: 3px solid #b45309; padding-left: 0.75rem; }
+.student-family-icon { display: grid; width: 38px; height: 38px; place-items: center; background: #fff2e7; color: #a14c00; }
+.student-family-person, .student-family-status { display: grid; gap: 0.12rem; }
+.student-family-person > span { color: #a14c00; font-size: 0.62rem; font-weight: 850; text-transform: uppercase; }
+.student-family-person strong { font-size: 0.78rem; }
+.student-family-person small, .student-family-status small { color: #81756e; font-size: 0.64rem; }
+.student-family-status b { font-size: 0.7rem; }
+.student-family-actions { display: flex; gap: 0.5rem; }
+.student-family-actions button { min-height: 38px; font-size: 0.7rem; }
+
+@media (max-width: 760px) {
+  .student-family-hero { align-items: stretch; flex-direction: column; }
+  .student-family-list article { grid-template-columns: auto minmax(0, 1fr); }
+  .student-family-status, .student-family-actions { grid-column: 2; }
+}

@@ -21,3 +21,11 @@ export function listParentLinks() {
 export function getParentStudent(id) {
   return apiClient.get(API_ENDPOINTS.parents.studentDetail(id))
 }
+
+export function listStudentParentLinkRequests() {
+  return apiClient.get(API_ENDPOINTS.parents.linkRequests).then(normalizeListResponse)
+}
+
+export function respondToParentLinkRequest(id, action) {
+  return apiClient.patch(API_ENDPOINTS.parents.linkRequestDetail(id), { action })
+}

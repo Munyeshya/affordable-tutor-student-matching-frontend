@@ -51,6 +51,12 @@ export const dashboardRoleGuides = {
         to: '/messages',
         linkLabel: 'Open messages',
       },
+      {
+        title: 'Control family access',
+        description: 'Accept or reject parent-link requests before another account can view your bookings, payments, progress, assessments, or reports.',
+        to: '/family-links',
+        linkLabel: 'Review family access',
+      },
     ],
     limits: [
       'Tutor contact, private lessons, and paid course content are available only through eligible bookings or purchases.',
@@ -67,7 +73,7 @@ export const dashboardRoleGuides = {
     actions: [
       {
         title: 'Link and view students',
-        description: 'Link an existing student account, open each learner individually, and review the information available for that student.',
+        description: 'Request access to an existing student account. The learner must approve the request before you can open their records.',
         to: '/parent-students',
         linkLabel: 'Manage linked students',
       },
@@ -181,6 +187,7 @@ export const dashboardRoleGuides = {
       'Submitted and published course content is locked from silent changes. Wait for a decision or requested changes before editing.',
       'You cannot approve your own verification or course, alter student payments, or access another tutor\'s bookings, messages, learners, or earnings.',
       'Public impact figures use eligible assessment results and student-confirmed outcomes; they must not be invented or edited manually.',
+      'Payout requests are available whenever your tutor account is active and has a withdrawable balance; suspended or deactivated accounts cannot withdraw.',
     ],
     tip: 'Follow the numbered teaching workspace from left to right. The Review step shows exactly what remains before course submission.',
   },

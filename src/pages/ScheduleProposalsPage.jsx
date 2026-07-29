@@ -147,6 +147,7 @@ function ProposalCard({ proposal, user, onAction, onCounter, onPay, busy, highli
 function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, busy }) {
   if (!pendingAction) return null
   const requiresMessage = ['REJECT', 'CANCEL'].includes(pendingAction.action)
+  const revision = pendingAction.proposal.current_revision
   const titles = {
     ACCEPT: 'Accept this complete schedule?',
     REJECT: 'Reject this schedule proposal?',
@@ -154,19 +155,41 @@ function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, 
   }
 
   return (
-    <ConfirmationDialog open onClose={onClose} labelledBy="schedule-action-title" backdropClassName="booking-dialog-backdrop" dialogClassName="booking-action-dialog">
-      <p className="eyebrow">Proposal #{pendingAction.proposal.id}</p>
-      <h2 id="schedule-action-title">{titles[pendingAction.action]}</h2>
-      <p>
+    <ConfirmationDialog open onClose={onClose} labelledBy="schedule-action-title" backdropClassName="booking-dialog-backdrop" dialogClassName="booking-action-dialog schedule-action-dialog">
+      <header className="schedule-dialog-header">
+        <span className="schedule-dialog-icon"><InlineIcon name={pendingAction.action === 'ACCEPT' ? 'verification' : 'schedule'} /></span>
+        <div>
+          <p className="eyebrow">Proposal #{pendingAction.proposal.id}</p>
+          <h2 id="schedule-action-title">{titles[pendingAction.action]}</h2>
+        </div>
+      </header>
+      <p className="schedule-dialog-intro">
         {pendingAction.action === 'ACCEPT'
-          ? 'Every proposed lesson will be checked again. Existing booked times can never be overridden.'
-          : 'The other party will receive your reason as an unread notification.'}
+          ? 'Review the complete financial and lesson commitment before confirming it.'
+          : 'Your reason will be saved in the negotiation history and sent as an unread notification.'}
       </p>
-      <label className="booking-field">
-        <span>{requiresMessage ? 'Reason' : 'Message'} {!requiresMessage ? <small>Optional</small> : null}</span>
-        <textarea rows="3" value={message} onChange={(event) => setMessage(event.target.value)} />
+      <dl className="schedule-action-summary">
+        <div><dt>Lessons</dt><dd>{revision.sessions.length}</dd></div>
+        <div><dt>Mode</dt><dd>{revision.mode === 'IN_PERSON' ? 'In person' : 'Online'}</dd></div>
+        <div><dt>Hourly rate</dt><dd>{formatMoney(revision.hourly_rate, revision.currency)}</dd></div>
+        <div><dt>Total</dt><dd>{formatMoney(revision.estimated_total, revision.currency)}</dd></div>
+      </dl>
+      {pendingAction.action === 'ACCEPT' ? (
+        <aside className="schedule-dialog-assurance">
+          <InlineIcon name="verification" />
+          <span>Booked times remain protected. Acceptance only reserves lesson times that are still free.</span>
+        </aside>
+      ) : null}
+      <label className="booking-field schedule-action-note">
+        <span>{requiresMessage ? 'Reason for this decision' : 'Add a note for the other person'} {!requiresMessage ? <small>Optional</small> : null}</span>
+        <textarea
+          rows="3"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          placeholder={requiresMessage ? 'Explain your decision clearly...' : 'Add any final coordination note...'}
+        />
       </label>
-      <div className="booking-review-actions">
+      <div className="booking-review-actions schedule-dialog-actions">
         <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Go back</button>
         <button className={pendingAction.action === 'ACCEPT' ? 'primary-button' : 'schedule-proposal-danger'} type="button" onClick={onConfirm} disabled={busy || (requiresMessage && !message.trim())}>
           {busy ? 'Updating...' : pendingAction.action === 'ACCEPT' ? 'Accept schedule' : pendingAction.action === 'REJECT' ? 'Reject proposal' : 'Cancel proposal'}
@@ -178,6 +201,13 @@ function ActionDialog({ pendingAction, message, setMessage, onClose, onConfirm, 
 
 function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
   if (!counter) return null
+  const totalHours = counter.sessions.reduce((total, session) => {
+    const start = new Date(session.start_datetime)
+    const end = new Date(session.end_datetime)
+    const hours = (end - start) / 3_600_000
+    return total + (Number.isFinite(hours) && hours > 0 ? hours : 0)
+  }, 0)
+  const estimatedTotal = Number(counter.hourlyRate || 0) * totalHours
 
   function updateSession(index, field, value) {
     setCounter((current) => ({
@@ -205,10 +235,18 @@ function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
 
   return (
     <ConfirmationDialog open onClose={onClose} labelledBy="counter-title" backdropClassName="booking-dialog-backdrop" dialogClassName="schedule-counter-dialog">
-      <p className="eyebrow">Proposal #{counter.proposal.id}</p>
-      <h2 id="counter-title">Send a revised schedule.</h2>
-      <p>Change only what is needed. The complete revised schedule will replace the current offer for review.</p>
-      <div className="booking-field-grid">
+      <header className="schedule-dialog-header">
+        <span className="schedule-dialog-icon"><InlineIcon name="schedule" /></span>
+        <div>
+          <p className="eyebrow">Proposal #{counter.proposal.id} / Counter-offer</p>
+          <h2 id="counter-title">Revise the lesson agreement</h2>
+          <p>Change the terms that need attention. This complete offer replaces the current revision.</p>
+        </div>
+      </header>
+
+      <section className="schedule-counter-section">
+        <div className="schedule-counter-section-title"><span>01</span><div><strong>Lesson terms</strong><small>Delivery, timezone, and agreed price</small></div></div>
+        <div className="booking-field-grid">
         <label className="booking-field">
           <span>Mode</span>
           <select value={counter.mode} onChange={(event) => setCounter((current) => ({ ...current, mode: event.target.value }))}>
@@ -230,18 +268,26 @@ function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
             onChange={(event) => setCounter((current) => ({ ...current, hourlyRate: event.target.value }))}
           />
         </label>
-      </div>
-      {counter.mode === 'IN_PERSON' ? (
-        <label className="booking-field">
-          <span>Location</span>
-          <input value={counter.location} onChange={(event) => setCounter((current) => ({ ...current, location: event.target.value }))} />
-        </label>
-      ) : null}
-      <div className="schedule-counter-sessions">
+        </div>
+        {counter.mode === 'IN_PERSON' ? (
+          <label className="booking-field">
+            <span>Location</span>
+            <input value={counter.location} onChange={(event) => setCounter((current) => ({ ...current, location: event.target.value }))} />
+          </label>
+        ) : null}
+        <dl className="schedule-counter-totals">
+          <div><dt>Total teaching time</dt><dd>{totalHours.toFixed(1)} hours</dd></div>
+          <div><dt>Estimated agreement total</dt><dd>{formatMoney(estimatedTotal, counter.currency)}</dd></div>
+        </dl>
+      </section>
+
+      <section className="schedule-counter-section">
+        <div className="schedule-counter-section-title"><span>02</span><div><strong>Proposed lesson dates</strong><small>{counter.sessions.length} lesson{counter.sessions.length === 1 ? '' : 's'} in this revision</small></div></div>
+        <div className="schedule-counter-sessions">
         {counter.sessions.map((session, index) => (
           <div key={`${index}-${session.start_datetime}`}>
             <label className="booking-field">
-              <span>Starts</span>
+              <span>Lesson {index + 1} starts</span>
               <input type="datetime-local" value={session.start_datetime} onChange={(event) => updateSession(index, 'start_datetime', event.target.value)} />
             </label>
             <label className="booking-field">
@@ -253,17 +299,22 @@ function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
             </button>
           </div>
         ))}
-        <button className="secondary-button" type="button" onClick={addSession}>Add lesson date</button>
-      </div>
-      <label className="booking-field">
-        <span>Explain the changes</span>
-        <textarea rows="3" value={counter.message} onChange={(event) => setCounter((current) => ({ ...current, message: event.target.value }))} />
-      </label>
-      <label className="booking-field">
-        <span>Learning notes <small>Optional</small></span>
-        <textarea rows="3" value={counter.notes} onChange={(event) => setCounter((current) => ({ ...current, notes: event.target.value }))} />
-      </label>
-      <div className="booking-review-actions">
+          <button className="secondary-button schedule-add-session" type="button" onClick={addSession}>+ Add another lesson</button>
+        </div>
+      </section>
+
+      <section className="schedule-counter-section">
+        <div className="schedule-counter-section-title"><span>03</span><div><strong>Explain the revision</strong><small>Help the other person make a clear decision</small></div></div>
+        <label className="booking-field">
+          <span>What did you change?</span>
+          <textarea rows="3" value={counter.message} onChange={(event) => setCounter((current) => ({ ...current, message: event.target.value }))} placeholder="For example: I moved the Tuesday lesson and adjusted the hourly rate because..." />
+        </label>
+        <label className="booking-field">
+          <span>Learning notes <small>Optional</small></span>
+          <textarea rows="3" value={counter.notes} onChange={(event) => setCounter((current) => ({ ...current, notes: event.target.value }))} placeholder="Goals, materials, or preparation notes..." />
+        </label>
+      </section>
+      <div className="booking-review-actions schedule-dialog-actions">
         <button className="secondary-button" type="button" onClick={onClose} disabled={busy}>Go back</button>
         <button className="primary-button" type="button" onClick={onSubmit} disabled={busy || !counter.message.trim() || Number(counter.hourlyRate) <= 0}>
           {busy ? 'Sending...' : 'Send counter-offer'}

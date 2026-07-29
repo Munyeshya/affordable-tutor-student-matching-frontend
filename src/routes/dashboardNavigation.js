@@ -74,6 +74,7 @@ const navigationByRole = {
         { label: 'Payments', to: '/payments', icon: 'payments' },
         { label: 'Reports', to: '/reports', icon: 'reports' },
         { label: 'Reviews', to: '/reviews', icon: 'reviews' },
+        { label: 'Family access', to: '/family-links', icon: 'students' },
       ],
     },
     {

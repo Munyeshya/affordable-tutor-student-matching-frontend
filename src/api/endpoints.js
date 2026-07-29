@@ -50,6 +50,8 @@
     profile: '/parents/me/',
     links: '/parents/students/',
     studentDetail: (id) => `/parents/students/${id}/`,
+    linkRequests: '/parents/link-requests/',
+    linkRequestDetail: (id) => `/parents/link-requests/${id}/`,
   },
   notifications: {
     list: '/notifications/',

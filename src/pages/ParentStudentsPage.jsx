@@ -7,7 +7,7 @@ import { apiClient } from '../api/client'
 import { API_ENDPOINTS } from '../api/endpoints'
 import { getApiErrorMessage } from '../api/errors'
 import { queryKeys } from '../api/queryKeys'
-import { getParentDashboard } from '../api/services/parents'
+import { getParentDashboard, listParentLinks } from '../api/services/parents'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
@@ -82,6 +82,10 @@ export function ParentStudentsPage() {
     queryFn: () => getParentDashboard().then((response) => response.data),
     staleTime: 30_000,
   })
+  const linksQuery = useQuery({
+    queryKey: queryKeys.parents.links,
+    queryFn: () => listParentLinks().then((response) => response.data),
+  })
 
   const createMutation = useMutation({
     mutationFn: (payload) => apiClient.post(API_ENDPOINTS.parents.links, payload),
@@ -90,7 +94,7 @@ export function ParentStudentsPage() {
       setLabel('')
       setIsPrimary(false)
       setShowLinkForm(false)
-      toast.success('Student linked successfully.')
+      toast.success('Link request sent. The student must approve it before records become available.')
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.parents.links }),
         queryClient.invalidateQueries({ queryKey: queryKeys.parents.dashboard }),
@@ -100,6 +104,8 @@ export function ParentStudentsPage() {
   })
 
   const students = dashboardQuery.data?.linked_students || EMPTY_STUDENTS
+  const pendingLinks = (linksQuery.data || []).filter((link) => link.status === 'PENDING')
+  const declinedLinks = (linksQuery.data || []).filter((link) => link.status === 'REJECTED')
   const normalizedSearch = search.trim().toLowerCase()
   const visibleStudents = useMemo(() => students.filter((item) => {
     if (!normalizedSearch) return true
@@ -183,6 +189,23 @@ export function ParentStudentsPage() {
               {createMutation.isPending ? 'Linking student...' : 'Link student account'}
             </button>
           </form>
+        </section>
+      ) : null}
+
+      {pendingLinks.length || declinedLinks.length ? (
+        <section className="parent-link-status-panel">
+          <header>
+            <div><p className="eyebrow">Link requests</p><h2>Waiting for student consent</h2></div>
+            <span>{pendingLinks.length} pending</span>
+          </header>
+          <div>
+            {[...pendingLinks, ...declinedLinks].map((link) => (
+              <article key={link.id}>
+                <div><strong>{link.student_name || link.student_email}</strong><small>{link.label || 'Student account'}</small></div>
+                <b className={`is-${link.status.toLowerCase()}`}>{link.status === 'PENDING' ? 'Awaiting student' : 'Declined'}</b>
+              </article>
+            ))}
+          </div>
         </section>
       ) : null}
 

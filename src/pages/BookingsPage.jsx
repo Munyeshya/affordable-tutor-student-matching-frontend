@@ -469,7 +469,7 @@ function DisputeTracker({ disputes, loading, error, onRetry, user }) {
               label: dispute.status,
               detail: 'This case has been updated.',
             }
-            const latestDecision = dispute.decisions?.at(-1)
+            const latestDecision = dispute.decisions?.[0]
 
             return (
               <article id={'dispute-' + dispute.id} key={dispute.id}>
