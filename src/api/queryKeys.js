@@ -83,6 +83,7 @@ export const queryKeys = {
     eligible: ['reviews', 'eligible'],
     bookings: ['reviews', 'bookings'],
     lessons: ['reviews', 'lessons'],
+    courses: ['reviews', 'courses'],
   },
   tutors: {
     all: ['tutors'],

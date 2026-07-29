@@ -465,9 +465,12 @@ export function AssessmentsPage({
     mutationFn: submitAssessmentAttempt,
     onSuccess: async (response) => {
       toast.success(`Assessment submitted: ${formatPercent(response.data.percentage)}.`)
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: queryKeys.assessments.attempts, type: 'active' }),
+        queryClient.refetchQueries({ queryKey: queryKeys.assessments.list, type: 'active' }),
+      ])
       setActiveAssessment(null)
       setAnswers({})
-      await queryClient.invalidateQueries({ queryKey: queryKeys.assessments.attempts })
     },
     onError: (error) => toast.error(getApiErrorMessage(error, 'Could not submit this assessment.')),
   })

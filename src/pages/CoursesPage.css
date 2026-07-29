@@ -243,6 +243,19 @@
   white-space: nowrap;
 }
 
+.market-course-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.35rem 0 0.7rem;
+  color: #b45700;
+  font-size: 0.72rem;
+}
+
+.market-course-rating span {
+  color: #737373;
+}
+
 .market-course-body > h2 {
   margin: 9px 0 8px;
   font-size: 1.12rem;

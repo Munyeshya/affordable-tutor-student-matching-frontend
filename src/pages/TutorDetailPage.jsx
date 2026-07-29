@@ -414,6 +414,7 @@ export function TutorDetailPage() {
                               <span className="tutor-course-subject">{course.subject_name}</span>
                               <h3>{course.title}</h3>
                               <p>{formatLabel(course.academic_level)}</p>
+                              <Rating compact value={course.average_rating} count={course.review_count} />
                             </div>
                             <strong className="tutor-course-price">{formatMoney(course.price, course.currency, ' / course')}</strong>
                           </div>
@@ -435,11 +436,6 @@ export function TutorDetailPage() {
                                 <span>{lesson.topic || 'General topic'} / {lesson.duration} min</span>
                               </div>
                             </div>
-                            <Rating
-                              compact
-                              value={lesson.average_rating}
-                              count={lesson.review_count}
-                            />
                           </div>
                         ))}
                       </div>

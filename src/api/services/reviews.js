@@ -21,6 +21,14 @@ export function createLessonReview(payload) {
   return apiClient.post(API_ENDPOINTS.reviews.lessonCreate, payload)
 }
 
+export function listCourseReviews() {
+  return apiClient.get(API_ENDPOINTS.reviews.courseList).then(normalizeListResponse)
+}
+
+export function createCourseReview(payload) {
+  return apiClient.post(API_ENDPOINTS.reviews.courseCreate, payload)
+}
+
 export function createReviewReport(payload) {
   return apiClient.post(API_ENDPOINTS.reviews.reportCreate, payload)
 }

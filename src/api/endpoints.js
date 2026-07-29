@@ -69,6 +69,8 @@
     bookingCreate: '/reviews/create/',
     lessonList: '/reviews/lesson/',
     lessonCreate: '/reviews/lesson/create/',
+    courseList: '/reviews/course/',
+    courseCreate: '/reviews/course/create/',
     reportCreate: '/reviews/reports/',
     adminReports: '/reviews/admin/reports/',
     adminReportDetail: (id) => `/reviews/admin/reports/${id}/`,

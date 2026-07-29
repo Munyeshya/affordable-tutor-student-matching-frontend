@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { getApiErrorMessage } from '../api/errors'
 import { getTutorEarnings } from '../api/services/payments'
-import { listBookingReviews, listLessonReviews } from '../api/services/reviews'
+import { listBookingReviews, listCourseReviews } from '../api/services/reviews'
 import { getTutorChecklist, getTutorDashboard } from '../api/services/tutors'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { queryKeys } from '../api/queryKeys'
@@ -94,9 +94,9 @@ export function TutorDashboardPage() {
     queryFn: () => listBookingReviews().then((response) => response.data),
     staleTime: 30_000,
   })
-  const lessonReviewsQuery = useQuery({
-    queryKey: queryKeys.reviews.lessons,
-    queryFn: () => listLessonReviews().then((response) => response.data),
+  const courseReviewsQuery = useQuery({
+    queryKey: queryKeys.reviews.courses,
+    queryFn: () => listCourseReviews().then((response) => response.data),
     staleTime: 30_000,
   })
 
@@ -105,8 +105,8 @@ export function TutorDashboardPage() {
   const bookings = bookingsQuery.data || []
   const earnings = earningsQuery.data || {}
   const bookingReviews = bookingReviewsQuery.data || []
-  const lessonReviews = lessonReviewsQuery.data || []
-  const reviews = [...bookingReviews, ...lessonReviews]
+  const courseReviews = courseReviewsQuery.data || []
+  const reviews = [...bookingReviews, ...courseReviews]
     .sort((left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime())
   const upcomingBookings = bookings
     .filter((booking) => ['PENDING', 'CONFIRMED'].includes(booking.status))
@@ -144,11 +144,11 @@ export function TutorDashboardPage() {
       detail: `${booking.subject_name || 'Lesson'} with ${booking.student_name || 'a student'}`,
     })),
     ...reviews.slice(0, 5).map((review) => ({
-      key: `review-${review.lesson ? 'lesson' : 'booking'}-${review.id}`,
+      key: `review-${review.course ? 'course' : 'booking'}-${review.id}`,
       date: review.created_at,
       icon: 'reviews',
       title: `New ${review.rating || 0}/5 review`,
-      detail: review.lesson_title || `Feedback from ${review.student_name || 'a student'}`,
+      detail: review.course_title || `Feedback from ${review.student_name || 'a student'}`,
     })),
     ...(earnings.recent_payments || []).slice(0, 3).map((payment) => ({
       key: `payment-${payment.id}`,
@@ -167,7 +167,7 @@ export function TutorDashboardPage() {
   const retryOverview = () => {
     overviewQueries.forEach((query) => query.refetch())
     bookingReviewsQuery.refetch()
-    lessonReviewsQuery.refetch()
+    courseReviewsQuery.refetch()
   }
 
   return (
@@ -201,7 +201,7 @@ export function TutorDashboardPage() {
         <DashboardStatCard icon={<DashboardIcon name="bookings" />} iconClassName="tutor-stat-icon" label="Upcoming bookings" value={bookingsQuery.isLoading ? '--' : upcomingBookings.length} />
         <DashboardStatCard icon={<DashboardIcon name="courses" />} iconClassName="tutor-stat-icon" label="Published courses" value={dashboardQuery.isLoading ? '--' : courseStats.published_courses ?? 0} />
         <DashboardStatCard icon={<DashboardIcon name="earnings" />} iconClassName="tutor-stat-icon" label="Total earnings" value={earningsQuery.isLoading ? '--' : formatMoney(earnings.total_earnings, currency)} />
-        <DashboardStatCard icon={<DashboardIcon name="reviews" />} iconClassName="tutor-stat-icon" label="Average rating" value={bookingReviewsQuery.isLoading || lessonReviewsQuery.isLoading ? '--' : averageRating ? averageRating + '/5' : 'New'} />
+        <DashboardStatCard icon={<DashboardIcon name="reviews" />} iconClassName="tutor-stat-icon" label="Average rating" value={bookingReviewsQuery.isLoading || courseReviewsQuery.isLoading ? '--' : averageRating ? averageRating + '/5' : 'New'} />
       </section>
 
       <section className="tutor-verification-overview" aria-labelledby="verification-progress-title">
@@ -388,9 +388,9 @@ export function TutorDashboardPage() {
 
           <section className="tutor-overview-panel">
             <SectionHeading eyebrow="Trust" title="Recent reviews" action="/reviews" actionLabel="View all" />
-            {bookingReviewsQuery.isLoading || lessonReviewsQuery.isLoading ? (
+            {bookingReviewsQuery.isLoading || courseReviewsQuery.isLoading ? (
               <OverviewSkeleton rows={2} />
-            ) : bookingReviewsQuery.isError || lessonReviewsQuery.isError ? (
+            ) : bookingReviewsQuery.isError || courseReviewsQuery.isError ? (
               <p className="tutor-panel-message">Reviews are temporarily unavailable.</p>
             ) : reviews.length ? (
               <>
@@ -400,7 +400,7 @@ export function TutorDashboardPage() {
                 </div>
                 <div className="tutor-review-list">
                   {reviews.slice(0, 2).map((review) => (
-                    <blockquote key={`${review.lesson ? 'lesson' : 'booking'}-${review.id}`}>
+                    <blockquote key={`${review.course ? 'course' : 'booking'}-${review.id}`}>
                       <p>{review.comment || 'The student left a rating without a written comment.'}</p>
                       <footer>{review.student_name || 'Student'} / {review.rating}/5</footer>
                     </blockquote>

@@ -294,9 +294,7 @@ export function LearningPage() {
 
             <div className="learning-viewer-actions">
               <div>
-                {activeLesson.progress?.is_completed ? (
-                  <Link to={`/reviews?lesson=${activeLesson.id}`}>Review this lesson</Link>
-                ) : (
+                {!activeLesson.progress?.is_completed ? (
                   <button
                     type="button"
                     onClick={() => completionMutation.mutate(activeLesson)}
@@ -304,7 +302,10 @@ export function LearningPage() {
                   >
                     {completionMutation.isPending ? 'Saving progress...' : 'Mark lesson complete'}
                   </button>
-                )}
+                ) : null}
+                {activeCourse.lessons.every((lesson) => lesson.progress?.is_completed) ? (
+                  <Link to={`/reviews?course=${activeCourse.course_id}`}>Rate this course</Link>
+                ) : null}
                 <a className="learning-assessment-link" href="#course-assessments">Course assessments</a>
               </div>
               <span>Use the course assessment pair to compare knowledge before and after the full curriculum.</span>

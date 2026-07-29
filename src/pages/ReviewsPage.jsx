@@ -6,11 +6,11 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../api/errors'
 import {
   createBookingReview,
-  createLessonReview,
+  createCourseReview,
   createReviewReport,
   listBookingReviews,
+  listCourseReviews,
   listEligibleReviews,
-  listLessonReviews,
 } from '../api/services/reviews'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -49,15 +49,15 @@ function EmptyState({ kind }) {
     <div className="review-empty">
       <span className="review-empty-mark">{isBooking ? '01' : '02'}</span>
       <div>
-        <h3>No {isBooking ? 'sessions' : 'lessons'} waiting for feedback</h3>
+        <h3>No {isBooking ? 'sessions' : 'courses'} waiting for feedback</h3>
         <p>
           {isBooking
             ? 'A completed tutoring session will appear here automatically.'
-            : 'Finish a lesson from a purchased course and it will appear here.'}
+            : 'Finish every lesson in a purchased course and it will appear here.'}
         </p>
       </div>
-      <Link className="review-text-link" to={isBooking ? '/bookings' : '/courses'}>
-        {isBooking ? 'View bookings' : 'Browse courses'}
+      <Link className="review-text-link" to={isBooking ? '/bookings' : '/my-courses'}>
+        {isBooking ? 'View bookings' : 'Open my courses'}
       </Link>
     </div>
   )
@@ -72,8 +72,8 @@ function ReviewHistoryCard({ item, kind, canReport, onReport }) {
         <span>/ 5</span>
       </div>
       <div className="review-history-copy">
-        <span>{isBooking ? 'Tutoring session' : 'Course lesson'}</span>
-        <h3>{isBooking ? item.tutor_name : item.lesson_title}</h3>
+        <span>{isBooking ? 'Tutoring session' : 'Completed course'}</span>
+        <h3>{isBooking ? item.tutor_name : item.course_title}</h3>
         <p>{item.comment || 'No written comment was added.'}</p>
       </div>
       <div className="review-history-meta">
@@ -90,9 +90,9 @@ export function ReviewsPage() {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const requestedBooking = searchParams.get('booking') || ''
-  const requestedLesson = searchParams.get('lesson') || ''
-  const [activeKind, setActiveKind] = useState(requestedLesson ? 'lessons' : 'bookings')
-  const [selectedId, setSelectedId] = useState(requestedLesson || requestedBooking)
+  const requestedCourse = searchParams.get('course') || ''
+  const [activeKind, setActiveKind] = useState(requestedCourse ? 'courses' : 'bookings')
+  const [selectedId, setSelectedId] = useState(requestedCourse || requestedBooking)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [reportTarget, setReportTarget] = useState(null)
@@ -111,15 +111,15 @@ export function ReviewsPage() {
     queryFn: () => listBookingReviews().then((response) => response.data),
     enabled: isAuthenticated,
   })
-  const lessonReviewsQuery = useQuery({
-    queryKey: queryKeys.reviews.lessons,
-    queryFn: () => listLessonReviews().then((response) => response.data),
+  const courseReviewsQuery = useQuery({
+    queryKey: queryKeys.reviews.courses,
+    queryFn: () => listCourseReviews().then((response) => response.data),
     enabled: isAuthenticated,
   })
 
   const reviewMutation = useMutation({
     mutationFn: ({ kind, payload }) => (
-      kind === 'bookings' ? createBookingReview(payload) : createLessonReview(payload)
+      kind === 'bookings' ? createBookingReview(payload) : createCourseReview(payload)
     ),
     onSuccess: async (_, variables) => {
       toast.success('Your review has been published.')
@@ -129,7 +129,7 @@ export function ReviewsPage() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.reviews.eligible }),
         queryClient.invalidateQueries({
-          queryKey: variables.kind === 'bookings' ? queryKeys.reviews.bookings : queryKeys.reviews.lessons,
+          queryKey: variables.kind === 'bookings' ? queryKeys.reviews.bookings : queryKeys.reviews.courses,
         }),
       ])
     },
@@ -145,7 +145,7 @@ export function ReviewsPage() {
       setReportCategory('INAPPROPRIATE')
       setReportDetails('')
       await queryClient.invalidateQueries({
-        queryKey: kind === 'bookings' ? queryKeys.reviews.bookings : queryKeys.reviews.lessons,
+        queryKey: kind === 'bookings' ? queryKeys.reviews.bookings : queryKeys.reviews.courses,
       })
     },
     onError: (error) => toast.error(getApiErrorMessage(error, 'The review could not be reported.')),
@@ -155,8 +155,8 @@ export function ReviewsPage() {
     return (
       <section className="review-signin">
         <p className="eyebrow">Reviews</p>
-        <h1>Your feedback starts after the lesson</h1>
-        <p>Sign in to review completed tutoring sessions and course lessons.</p>
+        <h1>Your feedback starts after learning</h1>
+        <p>Sign in to review completed tutoring bookings and courses.</p>
         <div>
           <Link className="primary-button" to="/sign-in">Sign in</Link>
           <Link className="secondary-button" to="/join">Create account</Link>
@@ -165,15 +165,15 @@ export function ReviewsPage() {
     )
   }
 
-  const eligible = eligibleQuery.data || { bookings: [], lessons: [] }
+  const eligible = eligibleQuery.data || { bookings: [], courses: [] }
   const options = eligible[activeKind] || []
   const selectedItem = options.find((item) => String(item.id) === String(selectedId))
   const history = activeKind === 'bookings'
     ? (bookingReviewsQuery.data || [])
-    : (lessonReviewsQuery.data || [])
-  const historyQuery = activeKind === 'bookings' ? bookingReviewsQuery : lessonReviewsQuery
+    : (courseReviewsQuery.data || [])
+  const historyQuery = activeKind === 'bookings' ? bookingReviewsQuery : courseReviewsQuery
   const bookingCount = bookingReviewsQuery.data?.length || 0
-  const lessonCount = lessonReviewsQuery.data?.length || 0
+  const courseCount = courseReviewsQuery.data?.length || 0
 
   function changeKind(kind) {
     setActiveKind(kind)
@@ -185,14 +185,14 @@ export function ReviewsPage() {
   function submitReview(event) {
     event.preventDefault()
     if (!selectedItem) {
-      toast.error(`Choose a completed ${activeKind === 'bookings' ? 'session' : 'lesson'} first.`)
+      toast.error(`Choose a completed ${activeKind === 'bookings' ? 'session' : 'course'} first.`)
       return
     }
 
     reviewMutation.mutate({
       kind: activeKind,
       payload: {
-        [activeKind === 'bookings' ? 'booking_id' : 'lesson_id']: selectedItem.id,
+        [activeKind === 'bookings' ? 'booking_id' : 'course_id']: selectedItem.id,
         rating,
         comment: comment.trim(),
       },
@@ -218,7 +218,7 @@ export function ReviewsPage() {
       return
     }
     reportMutation.mutate({
-      review_type: reportTarget.kind === 'bookings' ? 'BOOKING' : 'LESSON',
+      review_type: reportTarget.kind === 'bookings' ? 'BOOKING' : 'COURSE',
       review_id: reportTarget.item.id,
       category: reportCategory,
       details: reportDetails.trim(),
@@ -231,11 +231,11 @@ export function ReviewsPage() {
         <div>
           <p className="eyebrow">Student feedback</p>
           <h1>Review your learning experience</h1>
-          <p>Only completed sessions and lessons are available, keeping every review useful and trustworthy.</p>
+          <p>Only completed bookings and courses are available, keeping every review useful and trustworthy.</p>
         </div>
         <dl className="review-totals">
           <div><dt>Session reviews</dt><dd>{bookingCount}</dd></div>
-          <div><dt>Lesson reviews</dt><dd>{lessonCount}</dd></div>
+          <div><dt>Course reviews</dt><dd>{courseCount}</dd></div>
         </dl>
       </header>
 
@@ -250,11 +250,11 @@ export function ReviewsPage() {
         </button>
         <button
           type="button"
-          className={activeKind === 'lessons' ? 'is-active' : ''}
-          onClick={() => changeKind('lessons')}
+          className={activeKind === 'courses' ? 'is-active' : ''}
+          onClick={() => changeKind('courses')}
         >
-          Course lessons
-          {canReview && <span>{eligible.lessons.length} ready</span>}
+          Courses
+          {canReview && <span>{eligible.courses.length} ready</span>}
         </button>
       </nav>
 
@@ -287,7 +287,7 @@ export function ReviewsPage() {
             <form className="review-compose" onSubmit={submitReview}>
               <div className="review-compose-main">
                 <label className="review-field" htmlFor="review-item">
-                  <span>{activeKind === 'bookings' ? 'Completed session' : 'Completed lesson'}</span>
+                  <span>{activeKind === 'bookings' ? 'Completed session' : 'Completed course'}</span>
                   <select
                     id="review-item"
                     value={selectedItem ? selectedId : ''}
@@ -299,7 +299,7 @@ export function ReviewsPage() {
                       <option key={item.id} value={item.id}>
                         {activeKind === 'bookings'
                           ? `${item.subject_name} with ${item.tutor_name} - ${formatDate(item.end_datetime)}`
-                          : `${item.lesson_title} - ${item.course_title}`}
+                          : `${item.course_title} with ${item.tutor_name}`}
                       </option>
                     ))}
                   </select>
@@ -307,8 +307,8 @@ export function ReviewsPage() {
 
                 {selectedItem && (
                   <div className="review-selection-summary">
-                    <span>{activeKind === 'bookings' ? selectedItem.mode.replace('_', ' ') : selectedItem.topic || 'Course lesson'}</span>
-                    <strong>{activeKind === 'bookings' ? selectedItem.subject_name : selectedItem.lesson_title}</strong>
+                    <span>{activeKind === 'bookings' ? selectedItem.mode.replace('_', ' ') : `${selectedItem.lesson_count} completed lessons`}</span>
+                    <strong>{activeKind === 'bookings' ? selectedItem.subject_name : selectedItem.course_title}</strong>
                     <p>
                       {selectedItem.tutor_name} / {activeKind === 'bookings'
                         ? formatDate(selectedItem.end_datetime)
@@ -374,7 +374,7 @@ export function ReviewsPage() {
             <span>02</span>
             <div>
               <h2 id="review-history-title">{canReview ? 'Your published reviews' : 'Published reviews'}</h2>
-              <p>{history.length} {activeKind === 'bookings' ? 'session' : 'lesson'} review{history.length === 1 ? '' : 's'}</p>
+              <p>{history.length} {activeKind === 'bookings' ? 'session' : 'course'} review{history.length === 1 ? '' : 's'}</p>
             </div>
           </div>
         </div>
@@ -391,7 +391,7 @@ export function ReviewsPage() {
             {history.map((item) => <ReviewHistoryCard key={item.id} item={item} kind={activeKind} canReport={canReport} onReport={openReport} />)}
           </div>
         ) : (
-          <div className="review-history-empty">No published {activeKind === 'bookings' ? 'session' : 'lesson'} reviews yet.</div>
+          <div className="review-history-empty">No published {activeKind === 'bookings' ? 'session' : 'course'} reviews yet.</div>
         )}
       </section>
 

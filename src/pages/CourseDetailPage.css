@@ -134,7 +134,7 @@
 
 .course-detail-facts {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 1.6rem;
   border: 1px solid #ded7d1;
 }
@@ -150,6 +150,13 @@
 .course-detail-facts span,
 .course-detail-facts strong {
   display: block;
+}
+
+.course-detail-facts strong .inline-icon {
+  display: inline-block;
+  margin-right: 0.2rem;
+  color: #b45700;
+  vertical-align: -0.15rem;
 }
 
 .course-detail-facts span {

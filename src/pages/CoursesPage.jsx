@@ -40,6 +40,11 @@ function CourseCard({ course }) {
           <span>{course.academic_level || 'All levels'}</span>
         </div>
         <h2>{course.title}</h2>
+        <div className="market-course-rating">
+          <InlineIcon name="star" />
+          <strong>{course.review_count ? Number(course.average_rating).toFixed(1) : 'New'}</strong>
+          <span>{course.review_count ? `${course.review_count} course review${course.review_count === 1 ? '' : 's'}` : 'No course reviews yet'}</span>
+        </div>
         <p>{toPlainFormattedText(course.description) || 'A focused course created by a verified Isomo tutor.'}</p>
 
         <div className="market-course-tutor">

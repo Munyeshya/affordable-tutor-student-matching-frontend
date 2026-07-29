@@ -9,6 +9,7 @@ import { listCoursePurchases } from '../api/services/payments'
 import { listParentLinks } from '../api/services/parents'
 import { PaymentCheckoutDialog } from '../components/payments/PaymentCheckoutDialog.jsx'
 import { FormattedText } from '../components/ui/FormattedText.jsx'
+import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { toPlainFormattedText } from '../components/ui/formattedText.js'
 import { UserAvatar } from '../components/ui/UserAvatar.jsx'
 import { formatEducationLevel } from '../constants/educationLevels.js'
@@ -176,6 +177,7 @@ export function CourseDetailPage() {
             <div><span>Price</span><strong>{formatMoney(course.price)}</strong></div>
             <div><span>Course lessons</span><strong>{lessonCount}</strong></div>
             <div><span>Estimated learning time</span><strong>{formatDuration(totalDuration)}</strong></div>
+            <div><span>Student rating</span><strong><InlineIcon name="star" /> {course.review_count ? `${Number(course.average_rating).toFixed(1)} / 5` : 'New'}</strong></div>
           </div>
         </div>
       </section>

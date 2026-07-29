@@ -96,7 +96,7 @@ export function StudentDashboardPage() {
   const activeCourses = courses.filter((course) => Number(course.progress_percent || 0) < 100)
   const activeCourse = activeCourses[0] || courses[0]
   const nextLesson = activeCourse?.lessons?.find((lesson) => !lesson.progress?.is_completed) || activeCourse?.lessons?.[0]
-  const reviewCount = (eligibleReviews.bookings?.length || 0) + (eligibleReviews.lessons?.length || 0)
+  const reviewCount = (eligibleReviews.bookings?.length || 0) + (eligibleReviews.courses?.length || 0)
   const firstName = (user?.first_name || user?.username || user?.email || 'Student').split(/\s|@/)[0]
   const overviewQueries = [libraryQuery, bookingsQuery, assessmentsQuery, attemptsQuery, reviewsQuery, paymentsQuery]
   const failedQuery = overviewQueries.find((query) => query.isError)
