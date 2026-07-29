@@ -1,6 +1,8 @@
 import { apiClient } from '../client'
 import { API_ENDPOINTS } from '../endpoints'
 
+const EMAIL_DELIVERY_TIMEOUT_MS = 30_000
+
 export function login(credentials) {
   return apiClient.post(API_ENDPOINTS.auth.login, credentials)
 }
@@ -36,11 +38,19 @@ export function verifyEmail(data) {
 }
 
 export function resendVerification(email) {
-  return apiClient.post(API_ENDPOINTS.auth.resendVerification, { email })
+  return apiClient.post(
+    API_ENDPOINTS.auth.resendVerification,
+    { email },
+    { timeout: EMAIL_DELIVERY_TIMEOUT_MS },
+  )
 }
 
 export function requestPasswordReset(email) {
-  return apiClient.post(API_ENDPOINTS.auth.passwordReset, { email })
+  return apiClient.post(
+    API_ENDPOINTS.auth.passwordReset,
+    { email },
+    { timeout: EMAIL_DELIVERY_TIMEOUT_MS },
+  )
 }
 
 export function confirmPasswordReset(data) {

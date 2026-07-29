@@ -61,8 +61,10 @@ export function JoinPage() {
 
     try {
       await signUp(form)
-      setSuccessMessage('Account created. Enter the six-digit code sent to your email.')
-      navigate('/verify-email', { state: { registeredEmail: form.email } })
+      setSuccessMessage('Account created. Preparing email verification...')
+      navigate('/verify-email', {
+        state: { registeredEmail: form.email, sendVerificationCode: true },
+      })
     } catch {
       // The authentication context provides a safe, actionable error message.
     }

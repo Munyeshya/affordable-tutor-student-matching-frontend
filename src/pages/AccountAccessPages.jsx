@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -116,6 +116,27 @@ export function VerifyEmailPage() {
   const [busy, setBusy] = useState(false)
   const [resending, setResending] = useState(false)
   const [complete, setComplete] = useState(false)
+  const [deliveryStatus, setDeliveryStatus] = useState(
+    location.state?.sendVerificationCode ? 'sending' : 'idle',
+  )
+  const automaticDeliveryStarted = useRef(false)
+
+  useEffect(() => {
+    if (!location.state?.sendVerificationCode || !email || automaticDeliveryStarted.current) return
+
+    automaticDeliveryStarted.current = true
+    setResending(true)
+    resendVerification(email)
+      .then(() => {
+        setDeliveryStatus('sent')
+        toast.success('Your verification code has been sent.')
+      })
+      .catch((error) => {
+        setDeliveryStatus('failed')
+        toast.error(getApiErrorMessage(error, 'Your account was created, but the code could not be sent. Try again below.'))
+      })
+      .finally(() => setResending(false))
+  }, [email, location.state?.sendVerificationCode])
 
   async function submit(event) {
     event.preventDefault()
@@ -137,11 +158,14 @@ export function VerifyEmailPage() {
       return
     }
     setResending(true)
+    setDeliveryStatus('sending')
     try {
       await resendVerification(email)
       setCode('')
+      setDeliveryStatus('sent')
       toast.success('If the account is awaiting verification, a new code has been sent.')
     } catch (error) {
+      setDeliveryStatus('failed')
       toast.error(getApiErrorMessage(error, 'Could not send a new verification code.'))
     } finally {
       setResending(false)
@@ -152,6 +176,13 @@ export function VerifyEmailPage() {
     <AccountAccessShell eyebrow="Email verification" title={complete ? 'Email verified' : 'Enter your verification code'} text={complete ? 'Your Isomo account is ready. You can now sign in.' : 'Enter the six-digit code sent to your email. Only the latest code works and it expires shortly.'}>
       {complete ? <Link className="primary-button" to="/sign-in">Continue to sign in</Link> : (
         <form onSubmit={submit}>
+          {deliveryStatus !== 'idle' ? (
+            <p className={`account-access-delivery is-${deliveryStatus}`} role="status">
+              {deliveryStatus === 'sending' ? 'Account created. Sending your verification code now...' : null}
+              {deliveryStatus === 'sent' ? 'Code sent. Check your inbox and spam folder.' : null}
+              {deliveryStatus === 'failed' ? 'Your account exists, but email delivery failed. Use Send a new code to retry.' : null}
+            </p>
+          ) : null}
           <label><span>Email address</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
           <OTPInput value={code} onChange={setCode} autoFocus={Boolean(email)} />
           <button className="primary-button" type="submit" disabled={busy || code.length !== 6}>{busy ? 'Verifying...' : 'Verify email'}</button>

@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   confirmPasswordReset,
   requestPasswordReset,
+  resendVerification,
   verifyEmail,
 } from '../api/services/auth.js'
 import {
@@ -48,6 +49,23 @@ describe('account OTP pages', () => {
 
     expect(verifyEmail).toHaveBeenCalledWith({ email: 'student@example.com', code: '123456' })
     expect(await screen.findByRole('link', { name: 'Continue to sign in' })).toBeInTheDocument()
+  })
+
+  it('automatically sends the verification code after registration', async () => {
+    resendVerification.mockResolvedValue({ data: { message: 'Sent' } })
+
+    render(
+      <MemoryRouter initialEntries={[{
+        pathname: '/verify-email',
+        state: { registeredEmail: 'new-student@example.com', sendVerificationCode: true },
+      }]}>
+        <Routes><Route path="/verify-email" element={<VerifyEmailPage />} /></Routes>
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Code sent. Check your inbox and spam folder.')).toBeInTheDocument()
+    expect(resendVerification).toHaveBeenCalledTimes(1)
+    expect(resendVerification).toHaveBeenCalledWith('new-student@example.com')
   })
 
   it('carries the recovery email to the OTP password form', async () => {
