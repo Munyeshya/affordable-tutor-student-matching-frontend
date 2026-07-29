@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 export function RouteLoader() {
   return (
     <section className="page-card card access-route-loader" aria-busy="true" aria-live="polite">
-      <p className="eyebrow">Isomo</p>
+      <p className="eyebrow">YigaReach</p>
       <h1>Loading your account...</h1>
       <div className="skeleton skeleton-line skeleton-title" />
       <div className="skeleton skeleton-line" />

@@ -24,7 +24,7 @@ function HomePage() {
           <p className="hero-greeting">Hi, there!</p>
           <p className="eyebrow">Trusted learning marketplace</p>
           <h1>
-            <span>ISOMO</span> is here to make tutor matching clear, premium, and affordable.
+            <span>YigaReach</span> is here to make tutor matching clear, premium, and affordable.
           </h1>
           <p className="supporting-text">
             Search by tutor name, lesson, or topic. Compare verified tutors, lesson-specific
@@ -46,7 +46,7 @@ function HomePage() {
             <img
               className="hero-image"
               src="/aking-notes.svg"
-              alt="Stylized tutor illustration for the Isomo homepage hero"
+              alt="Stylized tutor illustration for the YigaReach homepage hero"
             />
           </div>
 
@@ -97,12 +97,12 @@ function HomePage() {
           <img
             className="showcase-image"
             src="/researcher.svg"
-            alt="Illustration of a researcher representing the Isomo platform"
+            alt="Illustration of a researcher representing the YigaReach platform"
           />
         </div>
 
         <div className="showcase-copy">
-          <p className="eyebrow">Why Isomo</p>
+          <p className="eyebrow">Why YigaReach</p>
           <h2>Affordable tutor matching built around trust and speed.</h2>
           <p className="supporting-text">
             Students can search by tutor name, lesson, topic, or level. Tutors can present their

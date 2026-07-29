@@ -162,7 +162,7 @@ export function TutorDocumentsPage() {
       const disposition = response.headers?.['content-disposition'] || ''
       const filenameMatch = disposition.match(/filename="?([^";]+)"?/i)
       anchor.href = url
-      anchor.download = filenameMatch?.[1] || 'isomo-tutor-agreement.pdf'
+      anchor.download = filenameMatch?.[1] || 'yigareach-tutor-agreement.pdf'
       anchor.click()
       window.URL.revokeObjectURL(url)
       toast.success('Personalized PDF agreement downloaded.')
@@ -186,7 +186,7 @@ export function TutorDocumentsPage() {
         <div>
           <p className="tutor-documents-eyebrow">Tutor verification</p>
           <h1>Documents and agreement</h1>
-          <p>{verificationApproved ? 'Your approved verification record is read-only. You can review the files already accepted by Isomo.' : 'Complete your identity, qualification, and integrity requirements before your profile can appear in tutor search.'}</p>
+          <p>{verificationApproved ? 'Your approved verification record is read-only. You can review the files already accepted by YigaReach.' : 'Complete your identity, qualification, and integrity requirements before your profile can appear in tutor search.'}</p>
         </div>
         <div className="tutor-documents-header-actions">
           {!verificationApproved ? <button className="secondary-button" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}>{downloadingAgreement ? 'Preparing...' : 'Download agreement'}</button> : null}
@@ -224,7 +224,7 @@ export function TutorDocumentsPage() {
           <div>
             <p>Verification approved</p>
             <h2>No further uploads are required</h2>
-            <small>Your documents and signed agreement remain available below as a read-only submission history. If Isomo needs an updated file, an administrator will reopen the relevant requirement and notify you.</small>
+            <small>Your documents and signed agreement remain available below as a read-only submission history. If YigaReach needs an updated file, an administrator will reopen the relevant requirement and notify you.</small>
           </div>
           <Link className="secondary-button" to="/tutor-teaching">Manage teaching</Link>
         </section>

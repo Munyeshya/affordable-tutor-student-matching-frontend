@@ -82,7 +82,7 @@ export function HowItWorksPage() {
     <div className="how-page">
       <section className="how-hero" aria-labelledby="how-title">
         <div className="how-hero-copy">
-          <p className="how-eyebrow">How Isomo works</p>
+          <p className="how-eyebrow">How YigaReach works</p>
           <h1 id="how-title">One clear path from &quot;I need help&quot; to &quot;I can do this.&quot;</h1>
           <p className="how-hero-text">
             Tell us what you want to learn, compare verified support by fit and price, then follow
@@ -151,7 +151,7 @@ export function HowItWorksPage() {
           <p className="how-eyebrow">Beyond the booking</p>
           <h2 id="impact-title">Learning support should show what changed.</h2>
           <p>
-            A completed payment or lesson is not the final result. Isomo keeps the learner’s starting
+            A completed payment or lesson is not the final result. YigaReach keeps the learner’s starting
             point, teaching activity, and final outcome connected so progress can be understood.
           </p>
           <div className="how-affordability-note">
@@ -180,7 +180,7 @@ export function HowItWorksPage() {
             <p>Yes. Discovery, tutor availability, and course details are public. An account is required when you confirm a published lesson time, propose a schedule, purchase, or manage learning records.</p>
           </details>
           <details>
-            <summary>How does Isomo verify tutors?</summary>
+            <summary>How does YigaReach verify tutors?</summary>
             <p>Tutors submit identity and qualification documents, a signed integrity agreement, and their teaching levels. Administrators review these before making a profile visible.</p>
           </details>
           <details>

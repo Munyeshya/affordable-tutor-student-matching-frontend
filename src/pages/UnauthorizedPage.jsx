@@ -7,7 +7,7 @@ export function UnauthorizedPage() {
       <p className="eyebrow">Access restricted</p>
       <h1>You do not have permission to open this page.</h1>
       <p className="supporting-text">
-        Your account is active, but this feature belongs to a different ISOMO role.
+        Your account is active, but this feature belongs to a different YigaReach role.
       </p>
       <div className="hero-actions">
         <Link className="primary-button" to="/account">Go to your account</Link>

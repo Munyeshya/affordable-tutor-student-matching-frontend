@@ -387,7 +387,7 @@ export function AdminDashboardPage() {
                     ) : <p className="admin-panel-message">Subject revenue will appear after paid activity.</p>}
                   </div>
                 </div>
-                <p className="admin-revenue-note">Figures include only transactions currently verified as paid and represent gross marketplace activity, not ISOMO net profit.</p>
+                <p className="admin-revenue-note">Figures include only transactions currently verified as paid and represent gross marketplace activity, not YigaReach net profit.</p>
               </>
             )}
           </section>

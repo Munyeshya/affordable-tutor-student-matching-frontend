@@ -51,7 +51,7 @@ export function getApiErrorMessage(error, fallback = 'We could not complete this
     return 'The request took too long. Check your connection and try again.'
   }
   if (error?.code === 'ERR_NETWORK' || (!error?.response && error?.request)) {
-    return 'The server could not be reached. Check your internet connection and confirm the Isomo service is running.'
+    return 'The server could not be reached. Check your internet connection and confirm the YigaReach service is running.'
   }
 
   const status = error?.response?.status

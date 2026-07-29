@@ -63,7 +63,7 @@ export function DashboardRoleGuide({ open, role, onClose }) {
         <header className="dashboard-guide-header">
           <div>
             <span>{guide.name} manual</span>
-            <h2 id="dashboard-guide-title">What you can do in Isomo</h2>
+            <h2 id="dashboard-guide-title">What you can do in YigaReach</h2>
             <p>{guide.summary}</p>
           </div>
           <button ref={closeButtonRef} type="button" onClick={onClose} aria-label="Close role guide">

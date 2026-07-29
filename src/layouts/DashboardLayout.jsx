@@ -20,7 +20,7 @@ function getDisplayName(user) {
     || [user?.first_name, user?.last_name].filter(Boolean).join(' ').trim()
     || user?.username
     || user?.email
-    || 'Isomo member'
+    || 'YigaReach member'
 }
 
 export function DashboardLayout() {

@@ -7,8 +7,8 @@ export function DashboardSidebar({ displayName, homePath, navigation, role, onNa
   return (
     <div className="dashboard-sidebar-inner">
       <div className="dashboard-sidebar-brand">
-        <Link to={homePath} onClick={onNavigate} aria-label="Isomo dashboard home">
-          <img src="/logo-long-white.png" alt="Isomo" />
+        <Link to={homePath} onClick={onNavigate} aria-label="YigaReach dashboard home">
+          <img src="/logo-long-yigareach-white.png" alt="YigaReach" />
         </Link>
         <button className="dashboard-sidebar-close" type="button" onClick={onClose} aria-label="Close dashboard navigation">
           <DashboardIcon name="close" />

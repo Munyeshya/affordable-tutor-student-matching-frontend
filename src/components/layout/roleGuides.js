@@ -41,7 +41,7 @@ export const dashboardRoleGuides = {
       },
       {
         title: 'Open your productivity report card',
-        description: 'Print or save an Isomo-branded report card showing course completion, tutoring attendance, confirmed assessment growth, and tutor progress notes.',
+        description: 'Print or save a YigaReach-branded report card showing course completion, tutoring attendance, confirmed assessment growth, and tutor progress notes.',
         to: '/reports',
         linkLabel: 'Open report card',
       },

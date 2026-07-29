@@ -46,7 +46,7 @@ const reportDetailsByRole = {
   ADMIN: {
     eyebrow: 'Platform impact report',
     title: 'Measure reach, quality, and platform health.',
-    description: 'Use aggregate operational, educational, marketplace, and financial indicators to understand ISOMO without browsing private schedules.',
+    description: 'Use aggregate operational, educational, marketplace, and financial indicators to understand YigaReach without browsing private schedules.',
     sections: [
       ['Educational impact', 'Students reached, verified initial and final scores, and positive outcomes.', 'assessments'],
       ['Marketplace health', 'Users, verified tutors, courses, moderation queues, and demand trends.', 'verification'],
@@ -77,7 +77,7 @@ export function ReportsPage() {
 
   const role = String(user?.role || 'STUDENT').toUpperCase()
   const details = reportDetailsByRole[role] || reportDetailsByRole.STUDENT
-  const displayName = user?.full_name || [user?.first_name, user?.last_name].filter(Boolean).join(' ') || user?.username || user?.email || 'ISOMO user'
+  const displayName = user?.full_name || [user?.first_name, user?.last_name].filter(Boolean).join(' ') || user?.username || user?.email || 'YigaReach user'
   const isAdmin = role === 'ADMIN'
 
   async function openReport() {

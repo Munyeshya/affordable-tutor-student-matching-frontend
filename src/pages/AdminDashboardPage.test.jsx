@@ -111,7 +111,7 @@ describe('AdminDashboardPage revenue analytics', () => {
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('3 paid transactions')).toBeInTheDocument()
     expect(screen.getAllByText('RWF 16,000').length).toBeGreaterThan(0)
-    expect(screen.getByText(/gross marketplace activity, not ISOMO net profit/i)).toBeInTheDocument()
+    expect(screen.getByText(/gross marketplace activity, not YigaReach net profit/i)).toBeInTheDocument()
   })
 
   it('shows lesson views and the course performance rankings', async () => {

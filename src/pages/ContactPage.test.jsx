@@ -16,7 +16,7 @@ describe('ContactPage', () => {
     expect(screen.getByText('Kigali City', { selector: '.contact-map-selection strong' })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Northern' }))
     expect(screen.getByText('Northern', { selector: '.contact-map-selection strong' })).toBeInTheDocument()
-    expect(screen.getByRole('form', { name: 'Email Isomo support' })).toHaveAttribute(
+    expect(screen.getByRole('form', { name: 'Email YigaReach support' })).toHaveAttribute(
       'action',
       expect.stringContaining('mailto:treanparentcharityupdates@gmail.com'),
     )

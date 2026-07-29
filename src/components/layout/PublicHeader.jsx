@@ -76,8 +76,8 @@ export function PublicHeader() {
 
       <header className="site-header" ref={headerRef}>
         <div className="header-inner public-header-inner">
-          <Link to="/" className="brand-wrap" aria-label="Isomo home" onClick={closeMenu}>
-            <img className="brand-logo brand-logo-wide" src="/logo-long-white.png" alt="Isomo" />
+          <Link to="/" className="brand-wrap" aria-label="YigaReach home" onClick={closeMenu}>
+            <img className="brand-logo brand-logo-wide" src="/logo-long-yigareach.png" alt="YigaReach" />
           </Link>
 
           <nav className="public-desktop-nav" aria-label="Primary navigation">

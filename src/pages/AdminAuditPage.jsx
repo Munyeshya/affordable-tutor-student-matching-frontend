@@ -149,7 +149,7 @@ export function AdminAuditPage() {
         <div>
           <p className="admin-overview-eyebrow">Security and accountability</p>
           <h1>System audit trail</h1>
-          <p>Review important account, moderation, booking, payment, and security events across Isomo.</p>
+          <p>Review important account, moderation, booking, payment, and security events across YigaReach.</p>
         </div>
         <div className="admin-audit-actions">
           <button className="secondary-button" type="button" onClick={() => window.print()}>

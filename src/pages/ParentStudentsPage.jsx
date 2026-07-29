@@ -170,7 +170,7 @@ export function ParentStudentsPage() {
           <div>
             <p className="eyebrow">Add a learner</p>
             <h2>Link an existing student account</h2>
-            <p>The student must already have an Isomo student account. Their private data remains available only to linked parents.</p>
+            <p>The student must already have a YigaReach student account. Their private data remains available only to linked parents.</p>
           </div>
           <form onSubmit={handleLinkStudent}>
             <label>

@@ -64,7 +64,7 @@ export function SignInPage() {
   return (
     <section className="sign-in-page" aria-labelledby="sign-in-title">
       <div className="sign-in-frame">
-        <aside className="sign-in-story" aria-label="Isomo account access">
+        <aside className="sign-in-story" aria-label="YigaReach account access">
           <div className="sign-in-story-accent" aria-hidden="true"><span /><span /><span /><span /></div>
           <div className="sign-in-story-copy">
             <p className="sign-in-kicker">Learn / Connect / Grow</p>
@@ -88,7 +88,7 @@ export function SignInPage() {
           <header className="sign-in-heading">
             <span>Account access / Step {step} of 2</span>
             <h2 id="sign-in-title">{step === 1 ? 'Sign in to manage your activity.' : 'Enter your account password.'}</h2>
-            <p>{step === 1 ? 'Start with the email address connected to your Isomo account.' : 'Your email is confirmed for this attempt. Enter your password to continue.'}</p>
+            <p>{step === 1 ? 'Start with the email address connected to your YigaReach account.' : 'Your email is confirmed for this attempt. Enter your password to continue.'}</p>
           </header>
 
           <div className="auth-form-progress is-two" aria-label={`Sign-in step ${step} of 2`}>
@@ -177,11 +177,11 @@ export function SignInPage() {
           </form>
 
           <div className="sign-in-join">
-            <p><strong>New to Isomo?</strong><span>Create a student, parent, or tutor account.</span></p>
+            <p><strong>New to YigaReach?</strong><span>Create a student, parent, or tutor account.</span></p>
             <Link to="/join">Create account</Link>
           </div>
 
-          {isAuthenticated ? <p className="sign-in-session-note" role="status">You already have an active Isomo session.</p> : null}
+          {isAuthenticated ? <p className="sign-in-session-note" role="status">You already have an active YigaReach session.</p> : null}
         </article>
       </div>
 

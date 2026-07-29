@@ -33,7 +33,7 @@ function formatMoney(value, currency = 'RWF') {
 
 function paymentErrorMessage(error) {
   if (error?.code === 'ERR_NETWORK' || (!error?.response && error?.request)) {
-    return 'The Isomo payment service is not reachable. Confirm the backend service is running, then retry. No payment or course access was recorded.'
+    return 'The YigaReach payment service is not reachable. Confirm the backend service is running, then retry. No payment or course access was recorded.'
   }
   return getApiErrorMessage(error, 'Could not complete this payment simulation.')
 }
@@ -194,7 +194,7 @@ export function PaymentCheckoutDialog({
   return (
     <ConfirmationDialog open={open} onClose={closeDialog} labelledBy="payment-checkout-title" backdropClassName="payment-dialog-backdrop" dialogClassName="payment-checkout-dialog">
       <header className="payment-dialog-head">
-        <div><p className="eyebrow">Isomo checkout</p><h2 id="payment-checkout-title">{title}</h2></div>
+        <div><p className="eyebrow">YigaReach checkout</p><h2 id="payment-checkout-title">{title}</h2></div>
         <button type="button" onClick={closeDialog} aria-label="Close payment dialog">Close</button>
       </header>
 
@@ -252,7 +252,7 @@ export function PaymentCheckoutDialog({
           {providersQuery.isLoading ? <div className="payment-provider-skeleton" aria-busy="true"><span /><span /></div> : providersQuery.isError ? (
             <div className="payment-provider-error" role="alert"><strong>Payment service unavailable</strong><p>{paymentErrorMessage(providersQuery.error)}</p><button type="button" onClick={() => providersQuery.refetch()}>Retry connection</button></div>
           ) : !availableProviders.length ? (
-            <div className="payment-provider-error"><p>No payment simulation is configured. Contact the Isomo administrator.</p></div>
+            <div className="payment-provider-error"><p>No payment simulation is configured. Contact the YigaReach administrator.</p></div>
           ) : (
             <>
               <div className="payment-provider-options">

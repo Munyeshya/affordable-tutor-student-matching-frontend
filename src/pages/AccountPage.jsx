@@ -287,7 +287,7 @@ export function AccountPage() {
   const defaultStatus = role === 'TUTOR'
     ? 'Your public profile becomes visible after tutor approval requirements are complete.'
     : role === 'STUDENT'
-      ? 'These details help Isomo recommend tutors that fit your learning needs and budget.'
+      ? 'These details help YigaReach recommend tutors that fit your learning needs and budget.'
       : role === 'PARENT'
         ? 'These details help you manage learning support for linked students.'
         : 'Keep your account identity accurate and up to date.'
@@ -298,7 +298,7 @@ export function AccountPage() {
         <div>
           <p className="admin-overview-eyebrow">Account preferences</p>
           <h1>Profile settings</h1>
-          <p>Keep your identity, contact details, and {roleLabel.toLowerCase()} profile accurate across Isomo.</p>
+          <p>Keep your identity, contact details, and {roleLabel.toLowerCase()} profile accurate across YigaReach.</p>
         </div>
         <div className="account-settings-header-meta">
           <span>{roleLabel} account</span>
@@ -393,7 +393,7 @@ export function AccountPage() {
                 </div>
               </SettingsSection>
 
-              <SettingsSection icon="reports" label="Platform impact" title="Optional employment context" description="Help Isomo measure whether tutor earnings are creating meaningful work opportunities.">
+              <SettingsSection icon="reports" label="Platform impact" title="Optional employment context" description="Help YigaReach measure whether tutor earnings are creating meaningful work opportunities.">
                 <label className="account-field">
                   <span>Age group</span>
                   <select value={form.age_group} onChange={(event) => updateField('age_group', event.target.value)}>

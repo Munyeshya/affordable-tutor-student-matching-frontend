@@ -73,10 +73,10 @@ export function JoinPage() {
   return (
     <section className="sign-in-page join-page" aria-labelledby="join-title">
       <div className="sign-in-frame join-frame">
-        <aside className="sign-in-story join-story" aria-label="Isomo account options">
+        <aside className="sign-in-story join-story" aria-label="YigaReach account options">
           <div className="sign-in-story-accent" aria-hidden="true"><span /><span /><span /><span /></div>
           <div className="sign-in-story-copy">
-            <p className="sign-in-kicker">Start your Isomo journey</p>
+            <p className="sign-in-kicker">Start your YigaReach journey</p>
             <h1>Create one account for purposeful learning.</h1>
             <p>Choose your role, complete the essential details, and enter a trusted learning marketplace built around quality and affordability.</p>
           </div>
@@ -97,7 +97,7 @@ export function JoinPage() {
           <header className="sign-in-heading">
             <span>Create your account / Step {step} of 3</span>
             <h2 id="join-title">{step === 1 ? 'Choose who this account is for.' : step === 2 ? 'Add your contact details.' : 'Secure your new account.'}</h2>
-            <p>{step === 1 ? 'Tell us your name and select the role that matches how you will use Isomo.' : step === 2 ? 'Add accurate contact information for account and lesson coordination.' : 'Create a private password, then review and submit your account.'}</p>
+            <p>{step === 1 ? 'Tell us your name and select the role that matches how you will use YigaReach.' : step === 2 ? 'Add accurate contact information for account and lesson coordination.' : 'Create a private password, then review and submit your account.'}</p>
           </header>
 
           <div className="auth-form-progress" aria-label={`Account creation step ${step} of 3`}>
@@ -184,7 +184,7 @@ export function JoinPage() {
             </div>
           </form>
 
-          {step === 3 ? <p className="join-terms">By creating an account, you agree to use Isomo responsibly and provide accurate account information.</p> : null}
+          {step === 3 ? <p className="join-terms">By creating an account, you agree to use YigaReach responsibly and provide accurate account information.</p> : null}
 
           <div className="sign-in-join">
             <p><strong>Already have an account?</strong><span>Return to your learning or teaching workspace.</span></p>

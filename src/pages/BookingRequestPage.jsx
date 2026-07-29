@@ -390,7 +390,7 @@ export function BookingRequestPage() {
           <h2>{selectedTutor?.full_name || 'Choose a tutor'}</h2>
           {selectedTutor ? (
             <>
-              <p>{selectedTutor.headline || 'Verified Isomo tutor'}</p>
+              <p>{selectedTutor.headline || 'Verified YigaReach tutor'}</p>
               <BookingSummary form={form} selectedTutor={selectedTutor} selectedSubject={selectedSubject} selectedStudent={selectedStudent} selectedSlot={selectedSlot} />
             </>
           ) : <p>Select a tutor to see pricing, subjects, and available times.</p>}

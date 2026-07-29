@@ -12,7 +12,7 @@ export function PageNotFoundPage() {
         <span><DashboardIcon name="search" size={22} /></span>
         <p className="eyebrow">Page not found</p>
         <h1>This learning path does not exist.</h1>
-        <p>The address may be incorrect, or the page may have moved. Continue from one of Isomo's main areas.</p>
+        <p>The address may be incorrect, or the page may have moved. Continue from one of YigaReach's main areas.</p>
         <div className="not-found-actions">
           <Link className="primary-button" to="/tutors">Find a tutor</Link>
           <Link className="secondary-button" to="/courses">Browse courses</Link>

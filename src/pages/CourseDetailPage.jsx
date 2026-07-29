@@ -158,10 +158,10 @@ export function CourseDetailPage() {
         </div>
 
         <div className="course-detail-intro">
-          <p className="eyebrow">{course.subject_name || 'Isomo course'} / {formatLevel(course.academic_level)}</p>
+          <p className="eyebrow">{course.subject_name || 'YigaReach course'} / {formatLevel(course.academic_level)}</p>
           <h1>{course.title}</h1>
           <p className="course-detail-summary">
-            {toPlainFormattedText(course.description) || 'A focused course created by a verified Isomo tutor.'}
+            {toPlainFormattedText(course.description) || 'A focused course created by a verified YigaReach tutor.'}
           </p>
           <Link className="course-detail-tutor" to={`/tutors/${course.tutor}`}>
             <UserAvatar
@@ -170,7 +170,7 @@ export function CourseDetailPage() {
               fallback="T"
               alt=""
             />
-            <span><small>Course tutor</small><strong>{course.tutor_name || 'Verified Isomo tutor'}</strong></span>
+            <span><small>Course tutor</small><strong>{course.tutor_name || 'Verified YigaReach tutor'}</strong></span>
           </Link>
 
           <div className="course-detail-facts">

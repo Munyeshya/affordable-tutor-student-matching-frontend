@@ -45,7 +45,7 @@ function CourseCard({ course }) {
           <strong>{course.review_count ? Number(course.average_rating).toFixed(1) : 'New'}</strong>
           <span>{course.review_count ? `${course.review_count} course review${course.review_count === 1 ? '' : 's'}` : 'No course reviews yet'}</span>
         </div>
-        <p>{toPlainFormattedText(course.description) || 'A focused course created by a verified Isomo tutor.'}</p>
+        <p>{toPlainFormattedText(course.description) || 'A focused course created by a verified YigaReach tutor.'}</p>
 
         <div className="market-course-tutor">
           <UserAvatar
@@ -56,7 +56,7 @@ function CourseCard({ course }) {
           />
           <div>
             <small>Verified tutor</small>
-            <strong>{course.tutor_name || 'Isomo tutor'}</strong>
+            <strong>{course.tutor_name || 'YigaReach tutor'}</strong>
           </div>
         </div>
 

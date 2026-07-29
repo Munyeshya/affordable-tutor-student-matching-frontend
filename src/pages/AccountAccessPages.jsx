@@ -67,7 +67,7 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <AccountAccessShell eyebrow="Account recovery" title="Reset your password" text="Enter the email used for your Isomo account. We will send a six-digit recovery code.">
+    <AccountAccessShell eyebrow="Account recovery" title="Reset your password" text="Enter the email used for your YigaReach account. We will send a six-digit recovery code.">
       <form onSubmit={submit}>
         <label><span>Email address</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
         <button className="primary-button" type="submit" disabled={busy}>{busy ? 'Sending code...' : 'Send recovery code'}</button>
@@ -173,7 +173,7 @@ export function VerifyEmailPage() {
   }
 
   return (
-    <AccountAccessShell eyebrow="Email verification" title={complete ? 'Email verified' : 'Enter your verification code'} text={complete ? 'Your Isomo account is ready. You can now sign in.' : 'Enter the six-digit code sent to your email. Only the latest code works and it expires shortly.'}>
+    <AccountAccessShell eyebrow="Email verification" title={complete ? 'Email verified' : 'Enter your verification code'} text={complete ? 'Your YigaReach account is ready. You can now sign in.' : 'Enter the six-digit code sent to your email. Only the latest code works and it expires shortly.'}>
       {complete ? <Link className="primary-button" to="/sign-in">Continue to sign in</Link> : (
         <form onSubmit={submit}>
           {deliveryStatus !== 'idle' ? (

@@ -54,9 +54,9 @@ function InteractiveRwandaMap() {
 export function ContactPage() {
   return (
     <section className="contact-page" aria-labelledby="contact-title">
-      <aside className="contact-map-panel" aria-label="Isomo support in Rwanda">
+      <aside className="contact-map-panel" aria-label="YigaReach support in Rwanda">
         <div className="contact-map-heading">
-          <p>Isomo / Rwanda</p>
+          <p>YigaReach / Rwanda</p>
           <h1 id="contact-title">Learning support starts with one clear conversation.</h1>
         </div>
 
@@ -70,15 +70,15 @@ export function ContactPage() {
 
       <article className="contact-form-panel">
         <header>
-          <p>Contact Isomo</p>
+          <p>Contact YigaReach</p>
           <h2>How can we help?</h2>
           <span>Complete the form and review the message in your email application before sending it to <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</span>
         </header>
 
         <form
           className="contact-form"
-          aria-label="Email Isomo support"
-          action={`mailto:${SUPPORT_EMAIL}?subject=Isomo%20support%20request`}
+          aria-label="Email YigaReach support"
+          action={`mailto:${SUPPORT_EMAIL}?subject=YigaReach%20support%20request`}
           method="post"
           encType="text/plain"
         >

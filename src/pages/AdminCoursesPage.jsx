@@ -216,7 +216,7 @@ export function AdminCoursesPage() {
         <div>
           <p className="admin-overview-eyebrow">Administration</p>
           <h1>Course moderation</h1>
-          <p>Preview course content and lesson structure before approving it for Isomo&apos;s public learning marketplace.</p>
+          <p>Preview course content and lesson structure before approving it for YigaReach&apos;s public learning marketplace.</p>
         </div>
         <div className="admin-courses-summary"><strong>{coursePage.count}</strong><span>Matching courses</span></div>
       </header>

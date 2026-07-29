@@ -17,7 +17,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import './NotificationsPage.css'
 
 function formatKind(value) {
-  if (!value) return 'Isomo update'
+  if (!value) return 'YigaReach update'
   const label = String(value).replaceAll('_', ' ').replaceAll('.', ' ').toLowerCase()
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
@@ -79,7 +79,7 @@ function NotificationRow({ item, onRead, busy }) {
           </time>
         </div>
         <p>{item.body}</p>
-        <small>From {item.actor_name || 'Isomo'}</small>
+        <small>From {item.actor_name || 'YigaReach'}</small>
       </div>
 
       <div className="notification-row-actions">
@@ -274,7 +274,7 @@ export function NotificationsPage() {
             <p>
               {normalizedSearch
                 ? 'Try a different title, category, or sender.'
-                : 'You are all caught up. New Isomo activity will appear here.'}
+                : 'You are all caught up. New YigaReach activity will appear here.'}
             </p>
             {normalizedSearch ? <button type="button" onClick={() => setSearchTerm('')}>Clear search</button> : null}
           </div>

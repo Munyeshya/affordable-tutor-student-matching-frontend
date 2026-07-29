@@ -653,7 +653,7 @@ export function TutorDetailPage() {
             </div>
             <div>
               <span>Verification</span>
-              <strong>Approved by Isomo</strong>
+              <strong>Approved by YigaReach</strong>
             </div>
           </div>
           {canBook ? (

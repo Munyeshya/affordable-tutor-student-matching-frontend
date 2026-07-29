@@ -17,7 +17,7 @@ export function AboutPage() {
           <p className="eyebrow">Mission</p>
           <h2>Help students find the right tutor quickly and affordably.</h2>
           <p className="supporting-text">
-            Isomo keeps tutor discovery simple: search, compare, and request with confidence.
+            YigaReach keeps tutor discovery simple: search, compare, and request with confidence.
           </p>
         </article>
 

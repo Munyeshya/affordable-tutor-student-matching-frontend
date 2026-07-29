@@ -15,7 +15,7 @@ const footerGroups = [
     ],
   },
   {
-    title: 'Isomo',
+    title: 'YigaReach',
     links: [
       { label: 'About us', to: '/about' },
       { label: 'Contact and support', to: '/contact' },
@@ -40,13 +40,13 @@ export function PublicFooter() {
         </div>
         <div className="isomo-footer-actions">
           <Link to="/tutors">Find a tutor <ShellIcon name="arrow" /></Link>
-          <Link to="/join">Join Isomo <ShellIcon name="arrow" /></Link>
+          <Link to="/join">Join YigaReach <ShellIcon name="arrow" /></Link>
         </div>
       </section>
 
       <div className="isomo-footer-main">
         <div className="isomo-footer-brand">
-          <Link to="/" aria-label="Isomo home">
+          <Link to="/" aria-label="YigaReach home">
             <img src="/logo-small-white.png" alt="" />
           </Link>
           <div>
@@ -67,7 +67,7 @@ export function PublicFooter() {
       </div>
 
       <div className="isomo-footer-bottom">
-        <p>Copyright &copy; 2026 Isomo. All rights reserved.</p>
+        <p>Copyright &copy; 2026 YigaReach. All rights reserved.</p>
         <p>Connecting students, parents, and tutors across Rwanda.</p>
       </div>
     </footer>
