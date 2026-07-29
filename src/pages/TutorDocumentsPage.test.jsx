@@ -96,4 +96,28 @@ describe('TutorDocumentsPage', () => {
     await waitFor(() => expect(uploadTutorDocument).toHaveBeenCalledWith(expect.any(FormData)))
     expect(toast.success).toHaveBeenCalledWith('Document uploaded successfully.')
   })
+
+  it('hides all submission forms after tutor approval', async () => {
+    getTutorChecklist.mockResolvedValue({
+      data: {
+        ...checklist,
+        marketplace_ready: true,
+        verification_status: 'APPROVED',
+        completion_percentage: 100,
+        document_summary: {
+          all_required_uploaded: true,
+          all_required_approved: true,
+          action_required: [],
+        },
+      },
+    })
+    getTutorAgreementDetails.mockResolvedValue({ data: { status: 'SIGNED', signed_file: '/agreement.pdf' } })
+
+    renderWithProviders(<TutorDocumentsPage />)
+
+    expect(await screen.findByRole('heading', { name: 'No further uploads are required' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Upload verification document' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Sign the integrity agreement' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Uploaded documents' })).toBeInTheDocument()
+  })
 })

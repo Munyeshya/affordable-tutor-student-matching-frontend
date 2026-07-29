@@ -80,8 +80,8 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await loginRequest(credentials)
-      const { access, user: nextUser } = response.data
-      setAuthSession({ accessToken: access })
+      const { access, session_key: sessionKey, user: nextUser } = response.data
+      setAuthSession({ accessToken: access, sessionKey })
       setUser(nextUser)
       toast.success(`Welcome back, ${nextUser?.full_name || nextUser?.email || 'user'}.`)
       return nextUser

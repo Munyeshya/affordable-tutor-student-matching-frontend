@@ -178,6 +178,7 @@ export function TutorDocumentsPage() {
   const setupSteps = Array.isArray(checklist.steps) ? checklist.steps : []
   const completion = checklist.completion_percentage || 0
   const agreementStatus = agreementQuery.data?.status || 'PENDING'
+  const verificationApproved = checklist.verification_status === 'APPROVED'
 
   return (
     <section className="tutor-documents-page">
@@ -185,10 +186,10 @@ export function TutorDocumentsPage() {
         <div>
           <p className="tutor-documents-eyebrow">Tutor verification</p>
           <h1>Documents and agreement</h1>
-          <p>Complete your identity, qualification, and integrity requirements before your profile can appear in tutor search.</p>
+          <p>{verificationApproved ? 'Your approved verification record is read-only. You can review the files already accepted by Isomo.' : 'Complete your identity, qualification, and integrity requirements before your profile can appear in tutor search.'}</p>
         </div>
         <div className="tutor-documents-header-actions">
-          <button className="secondary-button" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}>{downloadingAgreement ? 'Preparing...' : 'Download agreement'}</button>
+          {!verificationApproved ? <button className="secondary-button" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}>{downloadingAgreement ? 'Preparing...' : 'Download agreement'}</button> : null}
           <Link className="primary-button" to="/tutor-dashboard">Back to dashboard</Link>
         </div>
       </header>
@@ -217,9 +218,21 @@ export function TutorDocumentsPage() {
         <article><span><DashboardIcon name="audit" size={19} /></span><div><small>Integrity agreement</small><strong>{agreementQuery.isLoading ? '...' : formatStatus(agreementStatus)}</strong><p>{agreementQuery.data?.signed_file ? 'Signed copy uploaded' : 'Signed copy required'}</p></div></article>
       </section>
 
-      <DocumentActionSummary summary={documentSummary} onSelectDocument={selectDocumentForUpload} />
+      {verificationApproved ? (
+        <section className="tutor-documents-approved-lock" role="status">
+          <span><DashboardIcon name="verification" size={25} /></span>
+          <div>
+            <p>Verification approved</p>
+            <h2>No further uploads are required</h2>
+            <small>Your documents and signed agreement remain available below as a read-only submission history. If Isomo needs an updated file, an administrator will reopen the relevant requirement and notify you.</small>
+          </div>
+          <Link className="secondary-button" to="/tutor-teaching">Manage teaching</Link>
+        </section>
+      ) : (
+        <>
+          <DocumentActionSummary summary={documentSummary} onSelectDocument={selectDocumentForUpload} />
 
-      <section className="tutor-document-workflow">
+          <section className="tutor-document-workflow">
         <article className="tutor-document-form-card" id="document-upload">
           <header><span><DashboardIcon name="documents" size={21} /></span><div><p>Step 1</p><h2>Upload verification document</h2><small>Submit a readable PDF or image of your national ID or qualification certificate.</small></div></header>
           <form onSubmit={(event) => {
@@ -265,7 +278,9 @@ export function TutorDocumentsPage() {
             <button className="primary-button" type="submit" disabled={agreementMutation.isPending}>{agreementMutation.isPending ? 'Uploading...' : 'Upload signed agreement'}</button>
           </form>
         </article>
-      </section>
+          </section>
+        </>
+      )}
 
       <section className="tutor-uploaded-documents">
         <header><div><p>Submission history</p><h2>Uploaded documents</h2></div><span>{documents.length} file{documents.length === 1 ? '' : 's'}</span></header>

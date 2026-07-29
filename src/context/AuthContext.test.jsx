@@ -74,6 +74,7 @@ describe('AuthProvider', () => {
       data: {
         access: 'access-token',
         refresh: 'refresh-token',
+        session_key: 'browser-session-key',
         user: { id: 8, email: 'student@isomo.test', full_name: 'Test Student', role: 'STUDENT' },
       },
     })
@@ -83,7 +84,10 @@ describe('AuthProvider', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in probe' }))
 
     expect(await screen.findByText('student@isomo.test')).toBeInTheDocument()
-    expect(setAuthSession).toHaveBeenCalledWith({ accessToken: 'access-token' })
+    expect(setAuthSession).toHaveBeenCalledWith({
+      accessToken: 'access-token',
+      sessionKey: 'browser-session-key',
+    })
     expect(toast.success).toHaveBeenCalledWith('Welcome back, Test Student.')
   })
 
