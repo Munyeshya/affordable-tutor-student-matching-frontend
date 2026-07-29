@@ -101,7 +101,7 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await registerRequest(payload)
-      toast.success(response.data?.message || 'Account created. Check your email to verify it before signing in.')
+      toast.success(response.data?.message || 'Account created. Enter the six-digit code sent to your email.')
       return response.data
     } catch (requestError) {
       const message = getApiErrorMessage(requestError)

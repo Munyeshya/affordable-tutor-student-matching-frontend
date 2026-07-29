@@ -19,7 +19,7 @@ function renderJoin() {
     <MemoryRouter initialEntries={['/join']}>
       <Routes>
         <Route path="/join" element={<JoinPage />} />
-        <Route path="/resend-verification" element={<VerificationDestination />} />
+        <Route path="/verify-email" element={<VerificationDestination />} />
       </Routes>
     </MemoryRouter>,
   )

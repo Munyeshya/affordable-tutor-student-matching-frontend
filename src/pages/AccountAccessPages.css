@@ -27,7 +27,11 @@
 .account-access-card form { display: grid; gap: 1rem; margin-top: 1.4rem; }
 .account-access-card label { display: grid; gap: .45rem; font-weight: 700; }
 .account-access-card input { min-height: 46px; border: 1px solid #c9c9c9; padding: 0 .8rem; border-radius: 0; }
+.account-access-card .account-access-otp { font-size: 1.15rem; font-weight: 800; letter-spacing: .35em; }
 .account-access-card .primary-button { justify-content: center; text-align: center; }
+.account-access-secondary { min-height: 42px; border: 1px solid #b8b8b8; border-radius: 0; background: #fff; color: #222; font: inherit; font-weight: 800; cursor: pointer; }
+.account-access-secondary:hover:not(:disabled), .account-access-secondary:focus-visible { border-color: var(--orange, #d96b00); color: #9b4900; }
+.account-access-secondary:disabled { cursor: wait; opacity: .65; }
 .account-access-link { display: inline-block; margin-top: 1.1rem; color: #222; font-weight: 700; }
 .account-access-status { margin: 1.35rem 0 .3rem; border-left: 3px solid var(--orange, #d96b00); background: #fff5eb; padding: 1rem; line-height: 1.55; }
 .account-access-loader { width: 32px; height: 32px; margin-top: 1.2rem; border: 3px solid #ddd; border-top-color: var(--orange, #d96b00); border-radius: 50%; animation: account-spin .8s linear infinite; }
