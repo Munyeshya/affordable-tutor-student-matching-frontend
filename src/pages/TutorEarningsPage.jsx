@@ -97,8 +97,8 @@ export function TutorEarningsPage() {
     mutationFn: requestPayout,
     onSuccess: async () => {
       setPayoutAmount('')
-      setFormMessage('Your payout request was submitted for review.')
-      toast.success('Payout request submitted.')
+      setFormMessage('Your payout was completed and added to your withdrawal history.')
+      toast.success('Payout completed.')
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.payments.tutorPayouts }),
         queryClient.invalidateQueries({ queryKey: ['payments', 'tutor-earnings'] }),
@@ -273,7 +273,7 @@ export function TutorEarningsPage() {
             <div><p className="eyebrow">Withdraw funds</p><h2>Request a payout</h2></div>
             <span><DashboardIcon name="payments" /></span>
           </header>
-          <p>Requested funds are reserved immediately while an administrator reviews the payout.</p>
+          <p>Active tutor accounts can withdraw any available balance immediately. Suspended or deactivated accounts cannot withdraw.</p>
           <label>
             <span>Payout amount (RWF)</span>
             <div>
@@ -307,7 +307,7 @@ export function TutorEarningsPage() {
             type="submit"
             disabled={payoutMutation.isPending || availableBalance <= 0}
           >
-            {payoutMutation.isPending ? 'Submitting request...' : 'Request payout'}
+            {payoutMutation.isPending ? 'Processing payout...' : 'Withdraw funds'}
           </button>
           {availableBalance <= 0 && !earningsQuery.isLoading ? (
             <small>There is no withdrawable balance yet. Completed lesson and course payments will appear here.</small>

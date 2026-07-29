@@ -187,7 +187,7 @@ export const dashboardRoleGuides = {
       'Submitted and published course content is locked from silent changes. Wait for a decision or requested changes before editing.',
       'You cannot approve your own verification or course, alter student payments, or access another tutor\'s bookings, messages, learners, or earnings.',
       'Public impact figures use eligible assessment results and student-confirmed outcomes; they must not be invented or edited manually.',
-      'Payout requests are available whenever your tutor account is active and has a withdrawable balance; suspended or deactivated accounts cannot withdraw.',
+      'Available earnings can be withdrawn without administrator approval while your account is active; suspended or deactivated accounts cannot withdraw.',
     ],
     tip: 'Follow the numbered teaching workspace from left to right. The Review step shows exactly what remains before course submission.',
   },
