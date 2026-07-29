@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useBookingChatSocket } from '../hooks/useBookingChatSocket.js'
 import {
@@ -39,6 +40,30 @@ function formatDateTime(value) {
   }).format(date)
 }
 
+function formatMessageDay(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+  const dateKey = date.toDateString()
+
+  if (dateKey === today.toDateString()) return 'Today'
+  if (dateKey === yesterday.toDateString()) return 'Yesterday'
+  return new Intl.DateTimeFormat('en-RW', { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
+}
+
+function getInitials(value) {
+  const words = String(value || 'YigaReach member').trim().split(/\s+/).filter(Boolean)
+  return words.slice(0, 2).map((word) => word[0]).join('').toUpperCase()
+}
+
+function formatStatus(value) {
+  return String(value || 'Active').replaceAll('_', ' ').toLowerCase().replace(/^./, (letter) => letter.toUpperCase())
+}
+
 function createClientMessageId() {
   const randomPart = globalThis.crypto?.randomUUID?.()
     ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`
@@ -54,15 +79,18 @@ function ThreadItem({ thread, isActive, onClick }) {
       onClick={onClick}
       aria-pressed={isActive}
     >
-      <span className="messages-thread-row">
-        <strong>{thread.participant_name}</strong>
-        <time>{formatDateTime(thread.last_message_at || thread.start_datetime)}</time>
-      </span>
-      <span className="messages-thread-subject">{thread.subject_name} / Booking #{thread.booking_id}</span>
-      <span className="messages-thread-preview">{thread.last_message}</span>
-      <span className="messages-thread-meta">
-        <span className="messages-thread-status">{thread.booking_status}</span>
-        {thread.unread_count ? <span className="messages-thread-unread">{thread.unread_count}</span> : null}
+      <span className="messages-thread-avatar" aria-hidden="true">{getInitials(thread.participant_name)}</span>
+      <span className="messages-thread-content">
+        <span className="messages-thread-row">
+          <strong>{thread.participant_name}</strong>
+          <time>{formatDateTime(thread.last_message_at || thread.start_datetime)}</time>
+        </span>
+        <span className="messages-thread-subject">{thread.subject_name} / Booking #{thread.booking_id}</span>
+        <span className="messages-thread-preview">{thread.last_message}</span>
+        <span className="messages-thread-meta">
+          <span className="messages-thread-status">{formatStatus(thread.booking_status)}</span>
+          {thread.unread_count ? <span className="messages-thread-unread">{thread.unread_count}</span> : null}
+        </span>
       </span>
     </button>
   )
@@ -70,13 +98,17 @@ function ThreadItem({ thread, isActive, onClick }) {
 
 function MessageBubble({ message, isMine }) {
   return (
-    <article className={'messages-bubble ' + (isMine ? 'is-mine' : '')}>
-      <p>{message.message}</p>
-      <div className="messages-bubble-meta">
-        <span>{isMine ? 'You' : message.sender_name}</span>
-        <time>{formatDateTime(message.created_at)}</time>
-      </div>
-    </article>
+    <div className={'messages-bubble-row ' + (isMine ? 'is-mine' : '')}>
+      <span className="messages-message-avatar" aria-hidden="true">{getInitials(isMine ? 'You' : message.sender_name)}</span>
+      <article className="messages-bubble">
+        <p>{message.message}</p>
+        <div className="messages-bubble-meta">
+          <span>{isMine ? 'You' : message.sender_name}</span>
+          <time>{formatDateTime(message.created_at)}</time>
+          {isMine ? <span className={message.is_read ? 'is-read' : ''}>{message.is_read ? 'Read' : 'Sent'}</span> : null}
+        </div>
+      </article>
+    </div>
   )
 }
 
@@ -227,16 +259,17 @@ export function MessagesPage() {
   return (
     <section className="messages-workspace">
       <header className="messages-workspace-hero">
-        <div>
-          <p className="eyebrow">Messages</p>
-          <h1>Keep lesson conversations together.</h1>
-          <p className="supporting-text">
-            Each conversation stays connected to one booking so schedules, goals, and updates remain easy to follow.
-          </p>
+        <div className="messages-hero-title">
+          <span className="messages-hero-icon"><DashboardIcon name="messages" size={22} /></span>
+          <div>
+            <p className="eyebrow">Lesson inbox</p>
+            <h1>Messages</h1>
+            <p className="supporting-text">Keep every learner, tutor, and booking conversation in context.</p>
+          </div>
         </div>
-        <div className="messages-unread-card">
-          <strong>{unreadQuery.data?.unread_count ?? 0}</strong>
-          <span>Unread messages</span>
+        <div className="messages-summary" aria-label="Inbox summary">
+          <div><strong>{threads.length}</strong><span>Conversations</span></div>
+          <div><strong>{unreadQuery.data?.unread_count ?? 0}</strong><span>Unread</span></div>
         </div>
       </header>
 
@@ -247,14 +280,17 @@ export function MessagesPage() {
               <h2>Booking conversations</h2>
               <span>{threads.length}</span>
             </div>
-            <input
-              className="messages-thread-search"
-              type="search"
-              placeholder="Search tutor, subject, or booking"
-              aria-label="Search conversations"
-              value={threadSearch}
-              onChange={(event) => setThreadSearch(event.target.value)}
-            />
+            <label className="messages-thread-search">
+              <DashboardIcon name="search" size={17} />
+              <span className="sr-only">Search conversations</span>
+              <input
+                type="search"
+                placeholder="Search conversations"
+                aria-label="Search conversations"
+                value={threadSearch}
+                onChange={(event) => setThreadSearch(event.target.value)}
+              />
+            </label>
           </div>
 
           <div className="messages-thread-list">
@@ -306,18 +342,29 @@ export function MessagesPage() {
           ) : (
             <>
               <header className="messages-conversation-head">
-                <div>
-                  <p className="eyebrow">Booking #{selectedBookingId}</p>
-                  <h2>{activeThread?.participant_name || 'Booking conversation'}</h2>
+                <div className="messages-active-person">
+                  <span className="messages-active-avatar" aria-hidden="true">{getInitials(activeThread?.participant_name)}</span>
+                  <div>
+                    <h2>{activeThread?.participant_name || 'Booking conversation'}</h2>
+                    <p>Booking #{selectedBookingId} / {activeThread?.subject_name || 'Lesson'}</p>
+                  </div>
                 </div>
-                <div className="messages-conversation-context">
-                  <strong>{activeThread?.subject_name || 'Lesson'}</strong>
-                  <span> / {activeThread?.booking_status || 'Active'}</span>
+                <div className="messages-conversation-actions">
                   <span className={`messages-live-status is-${connectionStatus}`}>
                     {CONNECTION_COPY[connectionStatus] || 'REST fallback'}
                   </span>
+                  <Link to={`/bookings/${selectedBookingId}`} className="messages-booking-link">
+                    <DashboardIcon name="bookings" size={16} />
+                    View booking
+                  </Link>
                 </div>
               </header>
+
+              <div className="messages-context-strip">
+                <span>{activeThread?.subject_name || 'Lesson'}</span>
+                <span>{formatStatus(activeThread?.booking_status)}</span>
+                <span>Secure booking conversation</span>
+              </div>
 
               <div className="messages-feed" aria-live="polite">
                 {messagesQuery.isLoading ? (
@@ -325,13 +372,16 @@ export function MessagesPage() {
                     <p>Loading messages...</p>
                   </div>
                 ) : messages.length ? (
-                  messages.map((message) => (
-                    <MessageBubble
-                      key={message.id}
-                      message={message}
-                      isMine={message.sender === user?.id}
-                    />
-                  ))
+                  messages.map((message, index) => {
+                    const day = formatMessageDay(message.created_at)
+                    const previousDay = formatMessageDay(messages[index - 1]?.created_at)
+                    return (
+                      <React.Fragment key={message.id}>
+                        {day && day !== previousDay ? <div className="messages-day-separator"><span>{day}</span></div> : null}
+                        <MessageBubble message={message} isMine={String(message.sender) === String(user?.id)} />
+                      </React.Fragment>
+                    )
+                  })
                 ) : (
                   <div className="messages-panel-state">
                     <p className="eyebrow">Start the conversation</p>
@@ -363,8 +413,9 @@ export function MessagesPage() {
                     disabled={sendMutation.isPending}
                   />
                   <div className="messages-composer-actions">
-                    <small>{draft.length}/2000</small>
+                    <small>Keep personal contact and payment details inside YigaReach. <span>{draft.length}/2000</span></small>
                     <button className="primary-button" type="submit" disabled={sendMutation.isPending}>
+                      <DashboardIcon name="messages" size={16} />
                       {sendMutation.isPending ? 'Sending...' : 'Send message'}
                     </button>
                   </div>

@@ -285,8 +285,14 @@
 }
 
 .quiz-panel {
+  min-width: 0;
   border: 1px solid #bfbfbf;
   background: #fff;
+  overflow: clip;
+}
+
+.quiz-panel form {
+  min-width: 0;
 }
 
 .quiz-panel-head {
@@ -350,12 +356,15 @@
 }
 
 .quiz-question-list {
+  min-width: 0;
   max-width: 900px;
   margin: 0 auto;
   padding: 12px 30px 30px;
+  overflow-anchor: none;
 }
 
 .quiz-question {
+  min-width: 0;
   margin: 0;
   padding: 26px 0;
   border: 0;
@@ -387,6 +396,7 @@
 }
 
 .quiz-question label {
+  position: relative;
   display: grid;
   min-width: 0;
   grid-template-columns: 26px minmax(0, 1fr);
@@ -398,6 +408,12 @@
   cursor: pointer;
 }
 
+.quiz-question label:focus-within {
+  border-color: #b45309;
+  box-shadow: inset 0 0 0 1px #b45309;
+  outline: none;
+}
+
 .quiz-question label.is-selected {
   border-color: #b45309;
   background: #fff3e7;
@@ -405,8 +421,13 @@
 
 .quiz-question label input {
   position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .quiz-question label > span {
