@@ -1,6 +1,15 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'
+function getLocalApiBaseUrl() {
+  const url = new URL(window.location.origin)
+  url.port = '8000'
+  url.pathname = '/api'
+  url.search = ''
+  url.hash = ''
+  return url.toString().replace(/\/$/, '')
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || getLocalApiBaseUrl()
 export const AUTH_SESSION_EXPIRED_EVENT = 'auth:session-expired'
 const AUTH_SESSION_KEY_STORAGE = 'isomo.auth.session-key'
 

@@ -23,6 +23,7 @@ vi.mock('axios', () => ({
 import {
   bootstrapAuthSession,
   clearAuthSession,
+  getApiBaseUrl,
   getStoredAccessToken,
   setAuthSession,
 } from './client.js'
@@ -53,5 +54,13 @@ describe('API authentication refresh coordination', () => {
     await expect(firstBootstrap).resolves.toBe('rotated-access-token')
     await expect(strictModeBootstrap).resolves.toBe('rotated-access-token')
     expect(getStoredAccessToken()).toBe('rotated-access-token')
+  })
+
+  it('keeps the local API on the same hostname as the frontend', () => {
+    const apiUrl = new URL(getApiBaseUrl())
+
+    expect(apiUrl.hostname).toBe(window.location.hostname)
+    expect(apiUrl.port).toBe('8000')
+    expect(apiUrl.pathname).toBe('/api')
   })
 })
