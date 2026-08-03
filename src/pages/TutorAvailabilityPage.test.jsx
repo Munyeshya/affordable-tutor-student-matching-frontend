@@ -10,6 +10,7 @@ import {
 } from '../api/services/availability.js'
 import { renderWithProviders } from '../test/render.jsx'
 import { TutorAvailabilityPage } from './TutorAvailabilityPage.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }))
 
@@ -19,6 +20,7 @@ vi.mock('../api/services/availability.js', () => ({
   deleteAvailability: vi.fn(),
   listMyAvailability: vi.fn(),
 }))
+vi.mock('../context/AuthContext.jsx', () => ({ useAuth: vi.fn() }))
 
 const slots = [
   {
@@ -43,6 +45,16 @@ describe('TutorAvailabilityPage', () => {
     listMyAvailability.mockResolvedValue({ data: slots })
     createAvailability.mockResolvedValue({ data: { id: 3 } })
     deleteAvailability.mockResolvedValue({ status: 204 })
+    useAuth.mockReturnValue({ user: { profile: { data: { hourly_rate: '15000.00' } } } })
+  })
+
+  it('directs tutors to pricing before they can publish availability', async () => {
+    useAuth.mockReturnValue({ user: { profile: { data: { hourly_rate: null } } } })
+    renderWithProviders(<TutorAvailabilityPage />)
+
+    expect(await screen.findByRole('heading', { name: 'Set your hourly rate first' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Publish availability' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Set hourly rate' })).toHaveAttribute('href', '/account?section=pricing')
   })
 
   it('shows open and booked availability while protecting reserved time', async () => {

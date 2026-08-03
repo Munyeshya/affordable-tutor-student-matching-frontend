@@ -51,11 +51,26 @@
 }
 
 .tutor-availability-form,
-.tutor-availability-list {
+.tutor-availability-list,
+.tutor-availability-prerequisite {
   border: 1px solid #eadfd7;
   background: #fff;
   padding: 1.25rem;
 }
+
+.tutor-availability-prerequisite {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  min-height: 360px;
+  gap: 9px;
+}
+
+.tutor-availability-prerequisite > svg { color: #d96b00; }
+.tutor-availability-prerequisite h2,
+.tutor-availability-prerequisite p { margin: 0; }
+.tutor-availability-prerequisite > p:not(.eyebrow) { color: #6b625d; font-size: 0.76rem; line-height: 1.6; }
+.tutor-availability-prerequisite .primary-button { margin-top: 8px; }
 
 .tutor-availability-form {
   display: grid;

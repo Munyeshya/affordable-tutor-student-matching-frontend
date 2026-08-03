@@ -40,6 +40,7 @@ export function TutorDocumentsPage() {
   const queryClient = useQueryClient()
   const [documentForm, setDocumentForm] = useState({ doc_type: 'ID', file: null })
   const [agreementForm, setAgreementForm] = useState({ signed_name: '', signed_file: null, agreed_to_terms: false })
+  const [activeAction, setActiveAction] = useState('documents')
   const [notice, setNotice] = useState('')
   const [downloadingAgreement, setDownloadingAgreement] = useState(false)
 
@@ -144,12 +145,26 @@ export function TutorDocumentsPage() {
 
   function selectDocumentForUpload(docType) {
     setDocumentForm({ doc_type: docType, file: null })
+    setActiveAction('documents')
     window.setTimeout(() => {
       document.getElementById('document-upload')?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       })
     }, 0)
+  }
+
+  function acceptNonEmptyFile(file, onAccept) {
+    if (!file) {
+      onAccept(null)
+      return
+    }
+    if (file.size === 0) {
+      toast.error('This file is empty. Choose a complete PDF or image.')
+      onAccept(null)
+      return
+    }
+    onAccept(file)
   }
 
   async function handleAgreementDownload() {
@@ -232,8 +247,17 @@ export function TutorDocumentsPage() {
         <>
           <DocumentActionSummary summary={documentSummary} onSelectDocument={selectDocumentForUpload} />
 
+          <nav className="tutor-document-action-nav" aria-label="Verification actions">
+            <button type="button" className={activeAction === 'documents' ? 'is-active' : ''} onClick={() => setActiveAction('documents')}>
+              <span>01</span><div><strong>Verification evidence</strong><small>Identity and qualifications</small></div>
+            </button>
+            <button type="button" className={activeAction === 'agreement' ? 'is-active' : ''} onClick={() => setActiveAction('agreement')}>
+              <span>02</span><div><strong>Integrity agreement</strong><small>Download, sign, and return</small></div>
+            </button>
+          </nav>
+
           <section className="tutor-document-workflow">
-        <article className="tutor-document-form-card" id="document-upload">
+        {activeAction === 'documents' ? <article className="tutor-document-form-card" id="document-upload">
           <header><span><DashboardIcon name="documents" size={21} /></span><div><p>Step 1</p><h2>Upload verification document</h2><small>Submit a readable PDF or image of your national ID or qualification certificate.</small></div></header>
           <form onSubmit={(event) => {
             event.preventDefault()
@@ -249,20 +273,20 @@ export function TutorDocumentsPage() {
               <DashboardIcon name="documents" size={24} />
               <span>{documentForm.file ? documentForm.file.name : 'Choose PDF, PNG, or JPEG'}</span>
               <small>{documentForm.file ? 'Ready to upload' : 'Maximum file size is validated when submitted.'}</small>
-              <input aria-label="Document file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => setDocumentForm((current) => ({ ...current, file: event.target.files?.[0] || null }))} />
+              <input aria-label="Document file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setDocumentForm((current) => ({ ...current, file })))} />
             </label>
-            <button className="primary-button" type="submit" disabled={documentMutation.isPending}>{documentMutation.isPending ? 'Uploading...' : 'Upload document'}</button>
+            <button className="primary-button" type="submit" disabled={documentMutation.isPending || !documentForm.file}>{documentMutation.isPending ? 'Uploading...' : 'Upload document'}</button>
           </form>
-        </article>
+        </article> : null}
 
-        <article className="tutor-document-form-card">
+        {activeAction === 'agreement' ? <article className="tutor-document-form-card">
           <header><span><DashboardIcon name="audit" size={21} /></span><div><p>Step 2</p><h2>Sign the integrity agreement</h2><small>Download the template, sign it, and upload the completed copy with your legal name.</small></div></header>
           <button className="tutor-agreement-download" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}><DashboardIcon name="documents" size={17} /><span>{downloadingAgreement ? 'Preparing template...' : 'Download agreement template'}</span></button>
           <form onSubmit={(event) => {
             event.preventDefault()
-            if (!agreementForm.signed_file || !agreementForm.agreed_to_terms) {
-              setNotice('Please sign the agreement and confirm the terms.')
-              toast.warn('Please sign the agreement and confirm the terms.')
+            if (!agreementForm.signed_name.trim() || !agreementForm.signed_file || !agreementForm.agreed_to_terms) {
+              setNotice('Enter your legal name, attach the signed agreement, and confirm the terms.')
+              toast.warn('Complete every agreement field before uploading.')
               return
             }
             agreementMutation.mutate()
@@ -272,12 +296,12 @@ export function TutorDocumentsPage() {
               <DashboardIcon name="documents" size={24} />
               <span>{agreementForm.signed_file ? agreementForm.signed_file.name : 'Choose signed agreement'}</span>
               <small>{agreementForm.signed_file ? 'Ready to upload' : 'PDF, PNG, or JPEG'}</small>
-              <input aria-label="Signed agreement file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => setAgreementForm((current) => ({ ...current, signed_file: event.target.files?.[0] || null }))} />
+              <input aria-label="Signed agreement file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setAgreementForm((current) => ({ ...current, signed_file: file })))} />
             </label>
             <label className="tutor-agreement-check"><input type="checkbox" checked={agreementForm.agreed_to_terms} onChange={(event) => setAgreementForm((current) => ({ ...current, agreed_to_terms: event.target.checked }))} /><span><strong>Integrity confirmation</strong><small>I agree to the platform terms and understand that false information may lead to account or legal action.</small></span></label>
-            <button className="primary-button" type="submit" disabled={agreementMutation.isPending}>{agreementMutation.isPending ? 'Uploading...' : 'Upload signed agreement'}</button>
+            <button className="primary-button" type="submit" disabled={agreementMutation.isPending || !agreementForm.signed_name.trim() || !agreementForm.signed_file || !agreementForm.agreed_to_terms}>{agreementMutation.isPending ? 'Uploading...' : 'Upload signed agreement'}</button>
           </form>
-        </article>
+        </article> : null}
           </section>
         </>
       )}

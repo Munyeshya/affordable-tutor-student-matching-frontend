@@ -8,6 +8,7 @@ const TutorDocumentsPage = lazyNamed(() => import('../pages/TutorDocumentsPage.j
 const TutorEarningsPage = lazyNamed(() => import('../pages/TutorEarningsPage.jsx'), 'TutorEarningsPage')
 const TutorLessonPage = lazyNamed(() => import('../pages/TutorLessonPage.jsx'), 'TutorLessonPage')
 const TutorTeachingPage = lazyNamed(() => import('../pages/TutorTeachingPage.jsx'), 'TutorTeachingPage')
+const TutorSubjectPage = lazyNamed(() => import('../pages/TutorSubjectPage.jsx'), 'TutorSubjectPage')
 const TutorAvailabilityPage = lazyNamed(() => import('../pages/TutorAvailabilityPage.jsx'), 'TutorAvailabilityPage')
 
 export const tutorRoutes = [
@@ -16,6 +17,7 @@ export const tutorRoutes = [
   { path: '/tutor-documents', element: <TutorDocumentsPage /> },
   { path: '/tutor-availability', element: <TutorAvailabilityPage /> },
   { path: '/tutor-teaching', element: <TutorTeachingPage /> },
+  { path: '/tutor-teaching/subjects/:tutorSubjectId', element: <TutorSubjectPage /> },
   { path: '/tutor-teaching/courses/new', element: <TutorCoursePage isNew /> },
   { path: '/tutor-teaching/courses/:courseId', element: <TutorCoursePage /> },
   { path: '/tutor-teaching/courses/:courseId/details', element: <TutorCoursePage /> },

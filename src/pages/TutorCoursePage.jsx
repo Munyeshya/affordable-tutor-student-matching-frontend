@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 import { getApiErrorMessage } from '../api/errors'
@@ -16,6 +16,7 @@ import {
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { FormattedTextEditor } from '../components/ui/FormattedText.jsx'
 import { toPlainFormattedText } from '../components/ui/formattedText.js'
+import { EDUCATION_LEVEL_OPTIONS } from '../constants/educationLevels.js'
 import { AssessmentsPage } from './AssessmentsPage.jsx'
 import { CourseWorkspaceNav } from './tutorTeaching/CourseWorkspaceNav.jsx'
 import {
@@ -83,8 +84,8 @@ function CourseDetailsSection({ course, form, editable, busy, tutorSubjects, onC
       <form className="course-details-form" onSubmit={onSubmit}>
         <label className="is-wide"><span>Course title</span><input required disabled={!editable} value={form.title} onChange={(event) => onChange('title', event.target.value)} placeholder="For example, Mastering lower secondary algebra" /></label>
         <label><span>Teaching subject</span><select required disabled={!editable} value={form.subject} onChange={(event) => onChange('subject', event.target.value)}><option value="">Choose subject</option>{tutorSubjects.map((item) => <option key={item.id} value={item.subject}>{item.subject_name} / {item.level_display}</option>)}</select></label>
-        <label><span>Academic level</span><input required disabled={!editable} value={form.academic_level} onChange={(event) => onChange('academic_level', event.target.value)} placeholder="Primary, O'Level, A'Level, or University" /></label>
-        <label><span>Course price (RWF)</span><input required disabled={!editable} type="number" min="0" value={form.price} onChange={(event) => onChange('price', event.target.value)} /></label>
+        <label><span>Academic level</span><select required disabled={!editable} value={form.academic_level} onChange={(event) => onChange('academic_level', event.target.value)}><option value="">Choose level</option>{EDUCATION_LEVEL_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label><span>Course price (RWF)</span><input required disabled={!editable} type="number" min="0" step="100" value={form.price} onChange={(event) => onChange('price', event.target.value)} /><small>Set the total amount a learner pays for this complete course.</small></label>
         <label><span>Marketplace image</span><input disabled={!editable} type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => onFile(event.target.files?.[0] || null)} /><small>JPEG, PNG, or WebP. Maximum 10 MB.</small></label>
         <div className="course-description-field is-wide">
           <label htmlFor="course-description">Course description</label>
@@ -227,9 +228,14 @@ function ReviewSection({ course, lessons, busy, onSubmit }) {
 
 export function TutorCoursePage({ section = 'details', isNew = false }) {
   const { courseId } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [form, setForm] = useState(isNew ? EMPTY_COURSE : null)
+  const [form, setForm] = useState(() => isNew ? {
+    ...EMPTY_COURSE,
+    subject: searchParams.get('subject') || '',
+    academic_level: searchParams.get('level') || '',
+  } : null)
   const coursesQuery = useQuery({
     queryKey: queryKeys.catalog.tutorCourses,
     queryFn: () => listMyCourses().then((response) => response.data),
@@ -288,7 +294,7 @@ export function TutorCoursePage({ section = 'details', isNew = false }) {
     const tutorSubjects = tutorSubjectsQuery.data || []
     return (
       <section className="tutor-teaching-page">
-        <div className="new-course-breadcrumb"><Link to="/tutor-teaching">Teaching workspace</Link><span>/</span><strong>New course</strong></div>
+        <div className="new-course-breadcrumb"><Link to={searchParams.get('teachingArea') ? `/tutor-teaching/subjects/${searchParams.get('teachingArea')}` : '/tutor-teaching'}>Teaching workspace</Link><span>/</span><strong>New course</strong></div>
         {!tutorSubjectsQuery.isLoading && !tutorSubjects.length ? (
           <div className="course-prerequisite">
             <DashboardIcon name="verification" size={24} />

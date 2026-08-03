@@ -213,6 +213,46 @@
   align-items: start;
 }
 
+.teaching-subject-directory {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.teaching-subject-directory > a {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto 20px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--teaching-line);
+  border-left: 3px solid transparent;
+  padding: 14px;
+  color: var(--teaching-ink);
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.teaching-subject-directory > a:hover,
+.teaching-subject-directory > a:focus-visible {
+  border-left-color: var(--teaching-orange);
+  background: #fffaf5;
+}
+
+.teaching-subject-directory > a > span {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  background: var(--teaching-orange-soft);
+  color: var(--teaching-orange-dark);
+}
+
+.teaching-subject-directory > a > div { display: grid; gap: 3px; }
+.teaching-subject-directory > a > div:nth-of-type(2) { justify-items: end; }
+.teaching-subject-directory strong { font-size: 0.78rem; }
+.teaching-subject-directory small { color: var(--teaching-muted); font-size: 0.66rem; }
+.teaching-subject-form label small { color: var(--teaching-muted); font-size: 0.64rem; line-height: 1.45; }
+
 .teaching-course-list {
   display: grid;
   gap: 0;

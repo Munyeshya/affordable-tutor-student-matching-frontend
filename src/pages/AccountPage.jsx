@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { getApiErrorMessage } from '../api/errors'
@@ -98,6 +98,7 @@ function SettingsSection({ icon, label, title, description, children }) {
 
 export function AccountPage() {
   const { user, loading, refreshUser } = useAuth()
+  const [searchParams] = useSearchParams()
   const subjectsQuery = useSubjectsQuery({ enabled: user?.role === 'STUDENT' })
   const [form, setForm] = useState(() => getProfileDefaults(user))
   const [statusMessage, setStatusMessage] = useState('')
@@ -184,6 +185,10 @@ export function AccountPage() {
   const role = user.role || 'USER'
   const profileType = user.profile?.type || 'none'
   const profile = user.profile?.data ?? {}
+  const requestedTutorSection = searchParams.get('section') || 'identity'
+  const tutorSection = ['identity', 'professional', 'pricing', 'impact'].includes(requestedTutorSection)
+    ? requestedTutorSection
+    : 'identity'
 
   function updateField(name, value) {
     setStatusMessage('')
@@ -306,6 +311,13 @@ export function AccountPage() {
         </div>
       </header>
 
+      {role === 'TUTOR' ? <nav className="account-settings-tabs" aria-label="Tutor profile settings">
+        <Link className={tutorSection === 'identity' ? 'is-active' : ''} to="/account?section=identity"><span>01</span><strong>Identity</strong></Link>
+        <Link className={tutorSection === 'professional' ? 'is-active' : ''} to="/account?section=professional"><span>02</span><strong>Professional profile</strong></Link>
+        <Link className={tutorSection === 'pricing' ? 'is-active' : ''} to="/account?section=pricing"><span>03</span><strong>Pricing and format</strong></Link>
+        <Link className={tutorSection === 'impact' ? 'is-active' : ''} to="/account?section=impact"><span>04</span><strong>Impact context</strong></Link>
+      </nav> : null}
+
       <div className="account-settings-layout">
         <aside className="account-profile-panel" aria-labelledby="profile-photo-heading">
           <div className="account-profile-identity">
@@ -335,7 +347,7 @@ export function AccountPage() {
         </aside>
 
         <form className="account-settings-form" onSubmit={handleSubmit}>
-          <SettingsSection icon="account" label="Identity" title="Personal information" description="Use the name people should see when interacting with your account.">
+          {role !== 'TUTOR' || tutorSection === 'identity' ? <><SettingsSection icon="account" label="Identity" title="Personal information" description="Use the name people should see when interacting with your account.">
             <label className="account-field"><span>First name</span><input type="text" value={toInputValue(form.first_name)} onChange={(event) => updateField('first_name', event.target.value)} /></label>
             <label className="account-field"><span>Last name</span><input type="text" value={toInputValue(form.last_name)} onChange={(event) => updateField('last_name', event.target.value)} /></label>
             {(role === 'STUDENT' || role === 'TUTOR' || role === 'PARENT') ? <label className="account-field account-field-wide"><span>Full name</span><input type="text" value={toInputValue(form.full_name)} onChange={(event) => updateField('full_name', event.target.value)} /></label> : null}
@@ -347,7 +359,7 @@ export function AccountPage() {
               <label className="account-field"><span>Phone number</span><input type="tel" value={toInputValue(form.phone_number)} onChange={(event) => updateField('phone_number', event.target.value)} /></label>
               <label className="account-field"><span>Location</span><input type="text" value={toInputValue(form.location)} onChange={(event) => updateField('location', event.target.value)} /></label>
             </SettingsSection>
-          ) : null}
+          ) : null}</> : null}
 
           {role === 'STUDENT' ? (
             <>
@@ -377,23 +389,23 @@ export function AccountPage() {
 
           {role === 'TUTOR' ? (
             <>
-              <SettingsSection icon="courses" label="Marketplace profile" title="Professional introduction" description="Present your experience clearly so families can assess whether you are the right fit.">
+              {tutorSection === 'professional' ? <SettingsSection icon="courses" label="Marketplace profile" title="Professional introduction" description="Present your experience clearly so families can assess whether you are the right fit.">
                 <label className="account-field account-field-wide"><span>Headline</span><input type="text" value={toInputValue(form.headline)} onChange={(event) => updateField('headline', event.target.value)} /></label>
                 <label className="account-field account-field-wide"><span>Bio</span><textarea rows="5" value={toInputValue(form.bio)} onChange={(event) => updateField('bio', event.target.value)} /></label>
                 <label className="account-field account-field-wide"><span>Education level</span><input type="text" value={toInputValue(form.education_level)} onChange={(event) => updateField('education_level', event.target.value)} /></label>
                 <label className="account-field account-field-wide"><span>Teaching experience</span><textarea rows="4" value={toInputValue(form.teaching_experience)} onChange={(event) => updateField('teaching_experience', event.target.value)} /></label>
-              </SettingsSection>
+              </SettingsSection> : null}
 
-              <SettingsSection icon="earnings" label="Lesson offer" title="Pricing and teaching format" description="Keep your rate and supported lesson formats accurate for affordability matching.">
-                <label className="account-field"><span>Hourly rate</span><input type="number" step="0.01" value={toInputValue(form.hourly_rate)} onChange={(event) => updateField('hourly_rate', event.target.value)} /></label>
+              {tutorSection === 'pricing' ? <SettingsSection icon="earnings" label="Lesson offer" title="Pricing and teaching format" description="Keep your rate and supported lesson formats accurate for affordability matching.">
+                <label className="account-field"><span>Hourly rate (RWF)</span><input type="number" min="1" step="100" value={toInputValue(form.hourly_rate)} onChange={(event) => updateField('hourly_rate', event.target.value)} /><small>Required before you can publish bookable availability.</small></label>
                 <label className="account-field"><span>Currency</span><input type="text" value={toInputValue(form.currency)} onChange={(event) => updateField('currency', event.target.value)} /></label>
                 <div className="account-preference-grid account-field-wide">
                   <label className="account-check"><input type="checkbox" checked={form.teaches_online} onChange={() => toggleField('teaches_online')} /><span><strong>Teach online</strong><small>Accept remote lesson requests.</small></span></label>
                   <label className="account-check"><input type="checkbox" checked={form.teaches_in_person} onChange={() => toggleField('teaches_in_person')} /><span><strong>Teach in person</strong><small>Accept location-based lesson requests.</small></span></label>
                 </div>
-              </SettingsSection>
+              </SettingsSection> : null}
 
-              <SettingsSection icon="reports" label="Platform impact" title="Optional employment context" description="Help YigaReach measure whether tutor earnings are creating meaningful work opportunities.">
+              {tutorSection === 'impact' ? <SettingsSection icon="reports" label="Platform impact" title="Optional employment context" description="Help YigaReach measure whether tutor earnings are creating meaningful work opportunities.">
                 <label className="account-field">
                   <span>Age group</span>
                   <select value={form.age_group} onChange={(event) => updateField('age_group', event.target.value)}>
@@ -411,7 +423,7 @@ export function AccountPage() {
                   <strong>Aggregate impact reporting only</strong>
                   <small>These optional answers are not shown on your public tutor profile. Choose “Prefer not to say” if you do not want to provide this context.</small>
                 </div>
-              </SettingsSection>
+              </SettingsSection> : null}
             </>
           ) : null}
 

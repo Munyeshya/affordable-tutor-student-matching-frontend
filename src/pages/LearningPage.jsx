@@ -8,6 +8,7 @@ import { recordLessonView, updateLessonProgress } from '../api/services/payments
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLearningLibraryQuery } from '../hooks/useCommonQueries'
 import { AssessmentsPage } from './AssessmentsPage.jsx'
+import { getEmbeddableVideo } from '../utils/videoEmbed.js'
 import './LearningPage.css'
 
 function formatDate(value) {
@@ -109,6 +110,7 @@ export function LearningPage() {
   const activeLesson = lessons.find((lesson) => String(lesson.id) === requestedLessonId)
     || firstIncompleteLesson
     || lessons[0]
+  const externalVideo = getEmbeddableVideo(activeLesson?.video_url)
   function chooseLesson(lesson) {
     navigate(`/my-courses/${activeCourse.course_id}/lessons/${lesson.id}`)
   }
@@ -267,12 +269,12 @@ export function LearningPage() {
                   <source src={activeLesson.video_file_url} />
                   Your browser does not support this lesson video.
                 </video>
+              ) : externalVideo?.type === 'video' ? (
+                <video controls preload="metadata" onEnded={() => !activeLesson.progress?.is_completed && completionMutation.mutate(activeLesson)}><source src={externalVideo.src} />Your browser does not support this lesson video.</video>
+              ) : externalVideo?.type === 'embed' ? (
+                <iframe className="learning-video-embed" src={externalVideo.src} title={`${activeLesson.title} on ${externalVideo.provider}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
               ) : activeLesson.video_url ? (
-                <div className="learning-external-media">
-                  <span>External lesson video</span>
-                  <p>This lesson is hosted by the tutor on an external video service.</p>
-                  <a href={activeLesson.video_url} target="_blank" rel="noreferrer">Open lesson video</a>
-                </div>
+                <div className="learning-external-media"><span>External lesson video</span><p>This provider does not permit reliable in-app playback. Open it in a new tab to continue.</p><a href={activeLesson.video_url} target="_blank" rel="noreferrer">Open lesson video</a></div>
               ) : (
                 <div className="learning-no-media">
                   <span>Reading lesson</span>

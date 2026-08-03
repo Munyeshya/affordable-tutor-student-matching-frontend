@@ -122,7 +122,7 @@ describe('AccountPage', () => {
   it('submits optional tutor employment context for aggregate reporting', async () => {
     useAuth.mockReturnValue({ user: tutor, loading: false, refreshUser })
     const user = userEvent.setup()
-    renderWithProviders(<AccountPage />)
+    renderWithProviders(<AccountPage />, { route: '/account?section=impact' })
 
     await user.selectOptions(screen.getByLabelText('Age group'), 'AGE_25_34')
     await user.selectOptions(screen.getByLabelText('Employment status'), 'UNDEREMPLOYED')

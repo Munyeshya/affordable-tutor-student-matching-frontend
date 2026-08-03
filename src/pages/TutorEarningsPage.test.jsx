@@ -83,7 +83,7 @@ describe('TutorEarningsPage', () => {
 
     const input = await screen.findByLabelText('Payout amount')
     fireEvent.change(input, { target: { value: '9000' } })
-    await user.click(screen.getByRole('button', { name: 'Request payout' }))
+    await user.click(screen.getByRole('button', { name: 'Withdraw funds' }))
 
     expect(requestPayout).not.toHaveBeenCalled()
     expect(toast.error).toHaveBeenCalledWith('You can request up to 8,000 RWF.')
@@ -96,10 +96,10 @@ describe('TutorEarningsPage', () => {
     fireEvent.change(await screen.findByLabelText('Payout amount'), {
       target: { value: '6000' },
     })
-    await user.click(screen.getByRole('button', { name: 'Request payout' }))
+    await user.click(screen.getByRole('button', { name: 'Withdraw funds' }))
 
     await waitFor(() => expect(requestPayout).toHaveBeenCalled())
     expect(requestPayout.mock.calls[0][0]).toEqual({ amount: '6000' })
-    expect(toast.success).toHaveBeenCalledWith('Payout request submitted.')
+    expect(toast.success).toHaveBeenCalledWith('Payout completed.')
   })
 })

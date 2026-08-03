@@ -490,3 +490,31 @@
     width: 100%;
   }
 }
+.account-settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid #e5ddd6;
+  background: #fff;
+}
+
+.account-settings-tabs a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 52px;
+  border-right: 1px solid #ebe4de;
+  border-bottom: 2px solid transparent;
+  padding: 10px 13px;
+  color: #746b64;
+  text-decoration: none;
+}
+
+.account-settings-tabs a:last-child { border-right: 0; }
+.account-settings-tabs a.is-active { border-bottom-color: #d86400; background: #fff9f3; color: #211d1a; }
+.account-settings-tabs span { color: #d86400; font-size: 0.62rem; font-weight: 900; }
+.account-settings-tabs strong { font-size: 0.7rem; }
+
+@media (max-width: 760px) {
+  .account-settings-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .account-settings-tabs a:nth-child(2) { border-right: 0; }
+}

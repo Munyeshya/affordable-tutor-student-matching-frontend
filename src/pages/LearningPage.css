@@ -469,6 +469,14 @@
   background: #000;
 }
 
+.learning-video-embed {
+  width: 100%;
+  min-height: 360px;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #000;
+}
+
 .learning-external-media,
 .learning-no-media {
   max-width: 420px;

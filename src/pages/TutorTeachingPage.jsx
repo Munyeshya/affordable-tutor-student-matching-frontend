@@ -11,18 +11,14 @@ import {
   listTutorSubjects,
 } from '../api/services/catalog.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
-import { EDUCATION_LEVEL_OPTIONS } from '../constants/educationLevels.js'
-import { useSubjectsQuery } from '../hooks/useCommonQueries'
+import { EDUCATION_LEVEL_OPTIONS, formatEducationLevel } from '../constants/educationLevels.js'
 import {
-  courseCompletion,
-  formatCourseStatus,
-  formatMoney,
   isCourseEditable,
 } from './tutorTeaching/courseHelpers.js'
 import './TutorTeachingPage.css'
 
 const EMPTY_SUBJECT = {
-  subject: '',
+  subject_name: '',
   level: 'PRIMARY',
   experience_years: '',
 }
@@ -37,54 +33,9 @@ function TeachingSkeleton() {
   )
 }
 
-function CourseRow({ course }) {
-  const completion = courseCompletion(course)
-  const lessonCount = course.lessons?.length || 0
-
-  return (
-    <article className="teaching-course-row">
-      <div className="teaching-course-row-main">
-        <div className="teaching-course-icon"><DashboardIcon name="courses" size={20} /></div>
-        <div>
-          <div className="teaching-course-title">
-            <h3>{course.title}</h3>
-            <span className={`teaching-status is-${String(course.status).toLowerCase().replaceAll('_', '-')}`}>
-              {formatCourseStatus(course.status)}
-            </span>
-          </div>
-          <p>{course.subject_name} <span aria-hidden="true">/</span> {course.academic_level || 'Level not set'}</p>
-          <dl className="teaching-course-meta">
-            <div><dt>Lessons</dt><dd>{lessonCount}</dd></div>
-            <div><dt>Price</dt><dd>{formatMoney(course.price)}</dd></div>
-            <div><dt>Setup</dt><dd>{completion.percent}%</dd></div>
-          </dl>
-        </div>
-      </div>
-      <div className="teaching-course-progress" aria-label={`${completion.percent}% setup complete`}>
-        <span style={{ width: `${completion.percent}%` }} />
-      </div>
-      {course.latest_moderation?.reason ? (
-        <p className="teaching-review-note">
-          <strong>Administrator feedback</strong>
-          <span>{course.latest_moderation.reason}</span>
-        </p>
-      ) : null}
-      <div className="teaching-course-actions">
-        <Link to={`/tutor-teaching/courses/${course.id}/details`}>
-          {isCourseEditable(course.status) ? 'Continue setup' : 'View course'}
-        </Link>
-        <Link to={`/tutor-teaching/courses/${course.id}/curriculum`}>Curriculum</Link>
-        <Link className="is-primary" to={`/tutor-teaching/courses/${course.id}/review`}>Review readiness</Link>
-      </div>
-    </article>
-  )
-}
-
 export function TutorTeachingPage() {
   const queryClient = useQueryClient()
   const [subjectForm, setSubjectForm] = useState(EMPTY_SUBJECT)
-  const [showSubjectForm, setShowSubjectForm] = useState(false)
-  const subjectsQuery = useSubjectsQuery()
   const tutorSubjectsQuery = useQuery({
     queryKey: queryKeys.catalog.tutorSubjects,
     queryFn: () => listTutorSubjects().then((response) => response.data),
@@ -96,7 +47,7 @@ export function TutorTeachingPage() {
 
   const createSubjectMutation = useMutation({
     mutationFn: () => createTutorSubject({
-      subject: Number(subjectForm.subject),
+      subject_input: subjectForm.subject_name.trim(),
       level: subjectForm.level,
       experience_years: subjectForm.experience_years
         ? Number(subjectForm.experience_years)
@@ -105,7 +56,6 @@ export function TutorTeachingPage() {
     onSuccess: async () => {
       toast.success('Teaching subject added.')
       setSubjectForm(EMPTY_SUBJECT)
-      setShowSubjectForm(false)
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.catalog.tutorSubjects }),
         queryClient.invalidateQueries({ queryKey: queryKeys.tutors.dashboard }),
@@ -115,7 +65,6 @@ export function TutorTeachingPage() {
     onError: (error) => toast.error(getApiErrorMessage(error, 'Could not add this teaching subject.')),
   })
 
-  const subjects = subjectsQuery.data || []
   const tutorSubjects = tutorSubjectsQuery.data || []
   const courses = coursesQuery.data || []
   const draftCount = courses.filter((course) => isCourseEditable(course.status)).length
@@ -135,10 +84,7 @@ export function TutorTeachingPage() {
           <h1>Build and publish your learning offer</h1>
           <p>Move from your approved subjects to a complete course, lesson curriculum, assessments, and review.</p>
         </div>
-        <Link className="teaching-primary-action" to="/tutor-teaching/courses/new">
-          <DashboardIcon name="courses" size={18} />
-          Create course
-        </Link>
+        <a className="teaching-primary-action" href="#add-teaching-subject"><DashboardIcon name="courses" size={18} />Add teaching subject</a>
       </header>
 
       <section className="teaching-summary" aria-label="Course summary">
@@ -176,60 +122,56 @@ export function TutorTeachingPage() {
       </section>
 
       <section className="teaching-content-grid">
-        <div className="teaching-course-library">
+        <div className="teaching-course-library" id="subjects">
           <div className="teaching-section-heading">
-            <div><span>Course library</span><h2>Your courses</h2></div>
-            <Link to="/tutor-teaching/courses/new">New course</Link>
+            <div><span>Level 1</span><h2>Your subjects and levels</h2></div>
+            <span>{tutorSubjects.length} teaching area{tutorSubjects.length === 1 ? '' : 's'}</span>
           </div>
-          {coursesQuery.isLoading ? (
+          {tutorSubjectsQuery.isLoading || coursesQuery.isLoading ? (
             <TeachingSkeleton />
-          ) : coursesQuery.isError ? (
+          ) : tutorSubjectsQuery.isError || coursesQuery.isError ? (
             <div className="teaching-empty" role="alert">
-              <h3>Courses could not be loaded</h3>
-              <p>{getApiErrorMessage(coursesQuery.error)}</p>
-              <button type="button" onClick={() => coursesQuery.refetch()}>Try again</button>
+              <h3>Teaching areas could not be loaded</h3>
+              <p>{getApiErrorMessage(tutorSubjectsQuery.error || coursesQuery.error)}</p>
+              <button type="button" onClick={() => Promise.all([tutorSubjectsQuery.refetch(), coursesQuery.refetch()])}>Try again</button>
             </div>
-          ) : courses.length ? (
-            <div className="teaching-course-list">
-              {courses.map((course) => <CourseRow key={course.id} course={course} />)}
+          ) : tutorSubjects.length ? (
+            <div className="teaching-subject-directory">
+              {tutorSubjects.map((item) => {
+                const subjectCourses = courses.filter((course) => (
+                  Number(course.subject) === Number(item.subject)
+                  && formatEducationLevel(course.academic_level) === item.level_display
+                ))
+                return (
+                  <Link key={item.id} to={`/tutor-teaching/subjects/${item.id}`}>
+                    <span><DashboardIcon name="courses" size={19} /></span>
+                    <div><strong>{item.subject_name}</strong><small>{item.level_display} / {item.experience_years ?? 0} years experience</small></div>
+                    <div><strong>{subjectCourses.length}</strong><small>course{subjectCourses.length === 1 ? '' : 's'}</small></div>
+                    <DashboardIcon name="arrowRight" size={17} />
+                  </Link>
+                )
+              })}
             </div>
           ) : (
             <div className="teaching-empty">
               <DashboardIcon name="courses" size={28} />
-              <h3>Create your first course</h3>
-              <p>Start with the course details. You will add lessons and assessments after it is saved.</p>
-              <Link to="/tutor-teaching/courses/new">Create course</Link>
+              <h3>Add the first subject you teach</h3>
+              <p>Courses are created inside a subject and education level, so learners always understand where they belong.</p>
+              <a href="#add-teaching-subject">Add teaching subject</a>
             </div>
           )}
         </div>
 
-        <aside className="teaching-subject-panel" id="subjects">
+        <aside className="teaching-subject-panel" id="add-teaching-subject">
           <div className="teaching-section-heading">
-            <div><span>Foundation</span><h2>Teaching subjects</h2></div>
-            <button type="button" onClick={() => setShowSubjectForm((current) => !current)}>
-              {showSubjectForm ? 'Close' : 'Add'}
-            </button>
+            <div><span>Start here</span><h2>Add a teaching subject</h2></div>
           </div>
-          <p>Courses can only use subjects already listed in your teaching profile.</p>
-          {tutorSubjectsQuery.isLoading ? <TeachingSkeleton /> : (
-            <div className="teaching-subject-list">
-              {tutorSubjects.map((item) => (
-                <div key={item.id}>
-                  <span><DashboardIcon name="verification" size={16} /></span>
-                  <div><strong>{item.subject_name}</strong><small>{item.level_display} / {item.experience_years ?? 0} years</small></div>
-                </div>
-              ))}
-              {!tutorSubjects.length ? <p className="teaching-subject-empty">No teaching subjects added yet.</p> : null}
-            </div>
-          )}
-          {showSubjectForm ? (
-            <form className="teaching-subject-form" onSubmit={submitSubject}>
+          <p>Type the subject exactly as learners know it, then choose the education level where you teach it.</p>
+            <form className="teaching-subject-form is-always-open" onSubmit={submitSubject}>
               <label>
-                <span>Subject</span>
-                <select required value={subjectForm.subject} onChange={(event) => setSubjectForm((current) => ({ ...current, subject: event.target.value }))}>
-                  <option value="">Choose a subject</option>
-                  {subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}
-                </select>
+                <span>Subject name</span>
+                <input required minLength="2" value={subjectForm.subject_name} onChange={(event) => setSubjectForm((current) => ({ ...current, subject_name: event.target.value }))} placeholder="For example, Mathematics" />
+                <small>You are not limited to a predefined subject list.</small>
               </label>
               <label>
                 <span>Education level</span>
@@ -247,7 +189,6 @@ export function TutorTeachingPage() {
                 {createSubjectMutation.isPending ? 'Adding...' : 'Add teaching subject'}
               </button>
             </form>
-          ) : null}
         </aside>
       </section>
     </section>

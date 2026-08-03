@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
+import { Link } from 'react-router-dom'
 
 import { getApiErrorMessage } from '../api/errors.js'
 import { queryKeys } from '../api/queryKeys.js'
@@ -12,6 +13,7 @@ import {
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog.jsx'
 import { EmptyState, ErrorState, SkeletonLoader } from '../components/ui/DashboardPrimitives.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import './TutorAvailabilityPage.css'
 
 function pad(value) {
@@ -50,6 +52,7 @@ function formatTime(value) {
 }
 
 export function TutorAvailabilityPage() {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const [form, setForm] = useState(initialForm)
   const [slotToDelete, setSlotToDelete] = useState(null)
@@ -83,6 +86,8 @@ export function TutorAvailabilityPage() {
   )
   const upcomingSlots = slots.filter((slot) => new Date(slot.end_datetime) >= new Date())
   const openCount = upcomingSlots.filter((slot) => !slot.is_booked).length
+  const hourlyRate = Number(user?.profile?.data?.hourly_rate || 0)
+  const canPublishAvailability = hourlyRate > 0
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }))
@@ -90,6 +95,10 @@ export function TutorAvailabilityPage() {
 
   function submitAvailability(event) {
     event.preventDefault()
+    if (!canPublishAvailability) {
+      toast.error('Set a positive hourly rate before publishing availability.')
+      return
+    }
     const start = new Date(`${form.date}T${form.startTime}:00`)
     const end = new Date(`${form.date}T${form.endTime}:00`)
     if (end <= start) {
@@ -122,7 +131,7 @@ export function TutorAvailabilityPage() {
       </header>
 
       <div className="tutor-availability-layout">
-        <form className="tutor-availability-form" onSubmit={submitAvailability}>
+        {canPublishAvailability ? <form className="tutor-availability-form" onSubmit={submitAvailability}>
           <header>
             <p className="eyebrow">Add a time</p>
             <h2>New available slot</h2>
@@ -161,7 +170,13 @@ export function TutorAvailabilityPage() {
           <aside>
             Accepted bookings and schedule proposals mark every overlapping open slot as booked. Already booked time can never be overridden.
           </aside>
-        </form>
+        </form> : <section className="tutor-availability-prerequisite">
+          <DashboardIcon name="earnings" size={26} />
+          <p className="eyebrow">Pricing required</p>
+          <h2>Set your hourly rate first</h2>
+          <p>Learners need a clear lesson price before they can book any time you publish.</p>
+          <Link className="primary-button" to="/account?section=pricing">Set hourly rate</Link>
+        </section>}
 
         <section className="tutor-availability-list" aria-labelledby="upcoming-availability-title">
           <header>

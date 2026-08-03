@@ -268,10 +268,42 @@
 }
 
 .tutor-document-workflow {
+  display: block;
+}
+
+.tutor-document-action-nav {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  align-items: start;
+  border: 1px solid #e8e2dc;
+  background: #fff;
+}
+
+.tutor-document-action-nav button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-right: 1px solid #eee6df;
+  background: #fff;
+  padding: 14px 18px;
+  color: #766c64;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.tutor-document-action-nav button:last-child { border-right: 0; }
+.tutor-document-action-nav button.is-active { border-left-color: #d86400; background: #fff8f1; color: #201c19; }
+.tutor-document-action-nav button > span { color: #d86400; font-size: 0.7rem; font-weight: 900; }
+.tutor-document-action-nav button div { display: grid; gap: 3px; }
+.tutor-document-action-nav button strong { font-size: 0.78rem; }
+.tutor-document-action-nav button small { color: #887d75; font-size: 0.65rem; }
+
+.tutor-document-workflow .tutor-document-form-card {
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .tutor-document-form-card > header {
@@ -626,12 +658,12 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .tutor-document-workflow {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 720px) {
+  .tutor-document-action-nav { grid-template-columns: 1fr; }
+  .tutor-document-action-nav button { border-right: 0; border-bottom: 1px solid #eee6df; }
+  .tutor-document-action-nav button:last-child { border-bottom: 0; }
   .tutor-documents-header {
     display: grid;
     padding: 22px 18px;
