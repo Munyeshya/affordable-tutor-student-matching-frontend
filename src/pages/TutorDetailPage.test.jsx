@@ -190,4 +190,42 @@ describe('TutorDetailPage', () => {
     expect(screen.queryByText('Choose')).not.toBeInTheDocument()
     expect(screen.getByText('Booking requests are available to students and parents.')).toBeInTheDocument()
   })
+
+  it('keeps lesson booking and custom schedules closed until the tutor sets a rate', async () => {
+    getTutor.mockResolvedValue({
+      data: {
+        id: 2,
+        user_id: 8,
+        full_name: 'Course Only Tutor',
+        headline: 'Structured science courses',
+        bio: 'Self-paced learning support.',
+        hourly_rate: null,
+        currency: 'RWF',
+        teaches_online: true,
+        teaches_in_person: false,
+        subject_levels: [],
+        upcoming_availability: [],
+        reviews: [],
+        courses: [{
+          id: 15,
+          title: 'Science Essentials',
+          description: 'A complete self-paced science course.',
+          price: '10000.00',
+          lessons: [],
+        }],
+      },
+    })
+
+    renderWithProviders(
+      <Routes><Route path="/tutors/:id" element={<TutorDetailPage />} /></Routes>,
+      { route: '/tutors/2' },
+    )
+
+    expect(await screen.findByRole('heading', { name: 'Course Only Tutor' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Hourly lessons not available' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Request lesson' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Propose a custom schedule/i })).not.toBeInTheDocument()
+    expect(screen.getByText(/open after the tutor publishes an hourly rate/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Science Essentials' })).toBeInTheDocument()
+  })
 })

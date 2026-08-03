@@ -135,4 +135,21 @@ describe('AccountPage', () => {
     }))
     expect(screen.getByText('Aggregate impact reporting only')).toBeInTheDocument()
   })
+
+  it('accepts any positive tutor hourly rate without fixed increments', async () => {
+    useAuth.mockReturnValue({ user: tutor, loading: false, refreshUser })
+    const user = userEvent.setup()
+    renderWithProviders(<AccountPage />, { route: '/account?section=pricing' })
+
+    const rateInput = screen.getByRole('spinbutton', { name: /Hourly rate \(RWF\)/i })
+    expect(rateInput).toHaveAttribute('step', 'any')
+    await user.clear(rateInput)
+    await user.type(rateInput, '1234.56')
+    await user.click(screen.getByRole('button', { name: 'Save profile' }))
+
+    await waitFor(() => expect(updateCurrentUser).toHaveBeenCalledWith(
+      expect.objectContaining({ hourly_rate: 1234.56 }),
+      expect.anything(),
+    ))
+  })
 })

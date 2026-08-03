@@ -27,6 +27,7 @@ export function courseCompletion(course) {
     { complete: Boolean(String(course?.title || '').trim()), label: 'course title' },
     { complete: Boolean(course?.subject), label: 'teaching subject' },
     { complete: Boolean(String(course?.academic_level || '').trim()), label: 'academic level' },
+    { complete: Number(course?.price) > 0, label: 'positive course price' },
     {
       complete: descriptionLength >= 20,
       label: `course description (${descriptionLength}/20 visible characters)`,

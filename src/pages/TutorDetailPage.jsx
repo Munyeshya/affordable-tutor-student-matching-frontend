@@ -271,7 +271,9 @@ export function TutorDetailPage() {
     if (!Number.isFinite(price)) return lowest
     return lowest === null || price < lowest ? price : lowest
   }, null)
-  const canBook = !isAuthenticated || user?.role === 'STUDENT' || user?.role === 'PARENT'
+  const hasBookableHourlyRate = Number(tutor.hourly_rate) > 0
+  const hasBookingRole = !isAuthenticated || user?.role === 'STUDENT' || user?.role === 'PARENT'
+  const canBook = hasBookingRole && hasBookableHourlyRate
   const baseBookingPath = `/book?tutor=${tutor.user_id}&profile=${tutor.id}`
   const bookingLabel = isAuthenticated ? 'Request a lesson' : 'Sign in to request'
 
@@ -632,11 +634,13 @@ export function TutorDetailPage() {
 
         <aside className="tutor-booking-card">
           <p className="eyebrow">Affordable learning</p>
-          <h2>{formatMoney(tutor.hourly_rate, tutor.currency, ' / hour')}</h2>
+          <h2>{hasBookableHourlyRate ? formatMoney(tutor.hourly_rate, tutor.currency, ' / hour') : 'Hourly lessons not available'}</h2>
           {lowestCoursePrice !== null ? (
             <p>Courses from {formatMoney(lowestCoursePrice, tutor.currency)}.</p>
-          ) : (
+          ) : hasBookableHourlyRate ? (
             <p>Agree on the right lesson plan before confirming.</p>
+          ) : (
+            <p>This tutor has not published an hourly lesson rate yet.</p>
           )}
           <div className="tutor-booking-facts">
             <div>
@@ -665,6 +669,8 @@ export function TutorDetailPage() {
                 <InlineIcon name="calendar" /> Propose a custom schedule
               </Link>
             </>
+          ) : !hasBookableHourlyRate && hasBookingRole ? (
+            <p className="tutor-detail-role-note">Booking and custom schedules open after the tutor publishes an hourly rate.</p>
           ) : (
             <p className="tutor-detail-role-note">Booking requests are available to students and parents.</p>
           )}

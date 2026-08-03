@@ -262,8 +262,8 @@ function CounterDialog({ counter, setCounter, onClose, onSubmit, busy }) {
           <span>Hourly rate ({counter.currency})</span>
           <input
             type="number"
-            min="1"
-            step="1"
+            min="0.01"
+            step="any"
             value={counter.hourlyRate}
             onChange={(event) => setCounter((current) => ({ ...current, hourlyRate: event.target.value }))}
           />

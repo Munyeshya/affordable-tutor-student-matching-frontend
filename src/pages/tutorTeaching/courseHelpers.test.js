@@ -12,6 +12,7 @@ describe('course teaching helpers', () => {
       title: 'Algebra foundations',
       subject: 2,
       academic_level: 'Secondary lower',
+      price: 1234.56,
       description: 'A complete introduction to core algebra skills.',
       lessons: [{ id: 8 }],
       assessment_readiness: { is_ready: true },
@@ -35,11 +36,28 @@ describe('course teaching helpers', () => {
       title: 'Algebra foundations',
       subject: 2,
       academic_level: "O'Level",
+      price: 5000,
       description: '<h2>Short</h2><p>description</p>',
     })).toMatchObject({
       details: false,
       descriptionLength: 17,
       missingDetails: ['course description (17/20 visible characters)'],
+    })
+  })
+
+  it('keeps an unpriced course private even when its learning content is complete', () => {
+    expect(courseCompletion({
+      title: 'Algebra foundations',
+      subject: 2,
+      academic_level: "O'Level",
+      description: 'A complete introduction to core algebra skills.',
+      price: 0,
+      lessons: [{ id: 8 }],
+      assessment_readiness: { is_ready: true },
+    })).toMatchObject({
+      details: false,
+      missingDetails: ['positive course price'],
+      percent: 67,
     })
   })
 

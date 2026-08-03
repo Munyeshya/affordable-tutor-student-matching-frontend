@@ -397,7 +397,7 @@ export function AccountPage() {
               </SettingsSection> : null}
 
               {tutorSection === 'pricing' ? <SettingsSection icon="earnings" label="Lesson offer" title="Pricing and teaching format" description="Keep your rate and supported lesson formats accurate for affordability matching.">
-                <label className="account-field"><span>Hourly rate (RWF)</span><input type="number" min="1" step="100" value={toInputValue(form.hourly_rate)} onChange={(event) => updateField('hourly_rate', event.target.value)} /><small>Required before you can publish bookable availability.</small></label>
+                <label className="account-field"><span>Hourly rate (RWF)</span><input type="number" min="0.01" step="any" value={toInputValue(form.hourly_rate)} onChange={(event) => updateField('hourly_rate', event.target.value)} /><small>Enter any positive amount. This is required before you can publish bookable availability.</small></label>
                 <label className="account-field"><span>Currency</span><input type="text" value={toInputValue(form.currency)} onChange={(event) => updateField('currency', event.target.value)} /></label>
                 <div className="account-preference-grid account-field-wide">
                   <label className="account-check"><input type="checkbox" checked={form.teaches_online} onChange={() => toggleField('teaches_online')} /><span><strong>Teach online</strong><small>Accept remote lesson requests.</small></span></label>

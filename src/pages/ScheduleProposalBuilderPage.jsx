@@ -8,6 +8,7 @@ import { queryKeys } from '../api/queryKeys.js'
 import { createScheduleProposal } from '../api/services/bookings.js'
 import { listParentLinks } from '../api/services/parents.js'
 import { getTutor } from '../api/services/tutors.js'
+import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
 import { InlineIcon } from '../components/ui/InlineIcon.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useSubjectsQuery } from '../hooks/useCommonQueries.js'
@@ -285,6 +286,20 @@ export function ScheduleProposalBuilderPage() {
     )
   }
 
+  if (!(Number(tutor.hourly_rate) > 0)) {
+    return (
+      <section className="schedule-builder-page">
+        <article className="schedule-builder-state">
+          <DashboardIcon name="earnings" size={28} />
+          <p className="eyebrow">Pricing required</p>
+          <h1>Custom schedules are not available yet.</h1>
+          <p>This tutor must publish an hourly lesson rate before learners can propose dates or negotiate a schedule.</p>
+          <Link className="primary-button" to={`/tutors/${id}`}>Back to tutor profile</Link>
+        </article>
+      </section>
+    )
+  }
+
   return (
     <section className="schedule-builder-page">
       <header className="schedule-builder-hero">
@@ -341,8 +356,8 @@ export function ScheduleProposalBuilderPage() {
                 <span>Proposed hourly rate ({tutor.currency || 'RWF'})</span>
                 <input
                   type="number"
-                  min="1"
-                  step="1"
+                  min="0.01"
+                  step="any"
                   value={form.hourlyRate || tutor.hourly_rate || ''}
                   onChange={(event) => updateField('hourlyRate', event.target.value)}
                 />
