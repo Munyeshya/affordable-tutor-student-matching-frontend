@@ -13,10 +13,17 @@ import {
   uploadTutorDocument,
 } from '../api/services/tutors.js'
 import { DashboardIcon } from '../components/layout/DashboardIcon.jsx'
-import { DocumentActionSummary } from '../components/VerificationDocuments.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { queryKeys } from '../api/queryKeys'
 import './TutorDocumentsPage.css'
+
+const WORKSPACE_SECTIONS = [
+  { key: 'overview', label: 'Overview', helper: 'Requirements and progress', icon: 'verification' },
+  { key: 'identity', label: 'National ID', helper: 'Identity evidence', icon: 'account' },
+  { key: 'qualifications', label: 'Qualifications', helper: 'Teaching credentials', icon: 'documents' },
+  { key: 'agreement', label: 'Integrity agreement', helper: 'Download, sign, return', icon: 'audit' },
+  { key: 'history', label: 'Submission history', helper: 'Files and review feedback', icon: 'reports' },
+]
 
 function formatStatus(value) {
   return String(value || 'Pending').toLowerCase().replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase())
@@ -30,9 +37,117 @@ function formatDate(value) {
 }
 
 function getDocumentTone(status) {
-  if (status === 'APPROVED') return 'is-approved'
+  if (status === 'APPROVED' || status === 'SIGNED') return 'is-approved'
   if (status === 'REJECTED' || status === 'REPLACEMENT_REQUESTED') return 'is-action'
   return 'is-pending'
+}
+
+function getLatestDocument(documents, docType) {
+  return documents
+    .filter((item) => item.doc_type === docType)
+    .sort((left, right) => new Date(right.updated_at || right.created_at || 0) - new Date(left.updated_at || left.created_at || 0))[0]
+}
+
+function RequirementStatus({ status, label, emptyLabel = 'Not uploaded' }) {
+  return (
+    <span className={`tutor-document-status ${status ? getDocumentTone(status) : 'is-missing'}`}>
+      {status ? label || formatStatus(status) : emptyLabel}
+    </span>
+  )
+}
+
+function DocumentUploadPanel({
+  action,
+  currentDocument,
+  description,
+  documentForm,
+  documentType,
+  eyebrow,
+  onBack,
+  onContinue,
+  onFileChange,
+  onSubmit,
+  pending,
+  title,
+}) {
+  const hasReviewAction = currentDocument?.status === 'REJECTED' || currentDocument?.status === 'REPLACEMENT_REQUESTED'
+  const canUpload = !currentDocument || hasReviewAction || action?.action === 'UPLOAD' || action?.action === 'REPLACE'
+
+  return (
+    <article className="tutor-verification-panel" id="document-upload">
+      <header className="tutor-verification-panel-header">
+        <div>
+          <p>{eyebrow}</p>
+          <h2>{title}</h2>
+          <span>{description}</span>
+        </div>
+        <RequirementStatus status={currentDocument?.status} />
+      </header>
+
+      {action || hasReviewAction ? (
+        <div className="tutor-review-feedback" role="alert">
+          <DashboardIcon name="help" size={19} />
+          <div>
+            <strong>{action?.action === 'REPLACE' || hasReviewAction ? 'A new file is required' : 'Administrator feedback'}</strong>
+            <p>{action?.message || currentDocument?.review_message || 'Replace this document with a clear and complete copy.'}</p>
+            {action?.reason || currentDocument?.review_reason_display ? <small>Reason: {formatStatus(action?.reason || currentDocument.review_reason_display)}</small> : null}
+          </div>
+        </div>
+      ) : currentDocument ? (
+        <div className="tutor-current-file">
+          <DashboardIcon name="documents" size={18} />
+          <div>
+            <strong>Current submission</strong>
+            <span>Uploaded {formatDate(currentDocument.updated_at || currentDocument.created_at)}</span>
+          </div>
+          <a href={currentDocument.file} target="_blank" rel="noreferrer">View file</a>
+        </div>
+      ) : null}
+
+      {canUpload ? <form className="tutor-verification-form" onSubmit={onSubmit}>
+        <div className="tutor-upload-guidance">
+          <strong>Before you upload</strong>
+          <ul>
+            <li>Use a clear PDF, PNG, or JPEG.</li>
+            <li>Show the complete document with readable details.</li>
+            <li>Do not upload blank or password-protected files.</li>
+          </ul>
+        </div>
+
+        <label className="tutor-document-file">
+          <DashboardIcon name="documents" size={25} />
+          <span>{documentForm.file ? documentForm.file.name : `Choose ${documentType === 'ID' ? 'identity document' : 'qualification file'}`}</span>
+          <small>{documentForm.file ? 'File selected and ready' : 'PDF, PNG, or JPEG'}</small>
+          <input
+            key={`${documentType}-${documentForm.file?.name || 'empty'}`}
+            aria-label="Document file"
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg"
+            onChange={onFileChange}
+          />
+        </label>
+
+        <div className="tutor-verification-form-actions">
+          <button className="secondary-button" type="button" onClick={onBack}>Back to overview</button>
+          <button className="primary-button" type="submit" disabled={pending || !documentForm.file}>
+            {pending ? 'Uploading...' : currentDocument ? 'Upload new version' : 'Upload and continue'}
+          </button>
+        </div>
+      </form> : (
+        <div className="tutor-submission-locked">
+          <DashboardIcon name={currentDocument?.status === 'APPROVED' ? 'verification' : 'audit'} size={23} />
+          <div>
+            <strong>{currentDocument?.status === 'APPROVED' ? 'This requirement is accepted' : 'Administrator review is in progress'}</strong>
+            <p>{currentDocument?.status === 'APPROVED' ? 'You do not need to upload another copy.' : 'You can continue with the other requirements while this file is reviewed.'}</p>
+          </div>
+          <div className="tutor-submission-locked-actions">
+            <button className="secondary-button" type="button" onClick={onBack}>Back to overview</button>
+            <button className="primary-button" type="button" onClick={onContinue}>Continue</button>
+          </div>
+        </div>
+      )}
+    </article>
+  )
 }
 
 export function TutorDocumentsPage() {
@@ -40,34 +155,25 @@ export function TutorDocumentsPage() {
   const queryClient = useQueryClient()
   const [documentForm, setDocumentForm] = useState({ doc_type: 'ID', file: null })
   const [agreementForm, setAgreementForm] = useState({ signed_name: '', signed_file: null, agreed_to_terms: false })
-  const [activeAction, setActiveAction] = useState('documents')
+  const [activeSection, setActiveSection] = useState('overview')
   const [notice, setNotice] = useState('')
   const [downloadingAgreement, setDownloadingAgreement] = useState(false)
 
   const documentsQuery = useQuery({
     queryKey: queryKeys.tutors.documents,
-    queryFn: async () => {
-      const response = await getTutorDocuments()
-      return response.data
-    },
+    queryFn: async () => (await getTutorDocuments()).data,
     enabled: isAuthenticated && user?.role === 'TUTOR',
   })
 
   const checklistQuery = useQuery({
     queryKey: queryKeys.tutors.checklist,
-    queryFn: async () => {
-      const response = await getTutorChecklist()
-      return response.data
-    },
+    queryFn: async () => (await getTutorChecklist()).data,
     enabled: isAuthenticated && user?.role === 'TUTOR',
   })
 
   const agreementQuery = useQuery({
     queryKey: queryKeys.tutors.agreement,
-    queryFn: async () => {
-      const response = await getTutorAgreementDetails()
-      return response.data
-    },
+    queryFn: async () => (await getTutorAgreementDetails()).data,
     enabled: isAuthenticated && user?.role === 'TUTOR',
   })
 
@@ -76,20 +182,21 @@ export function TutorDocumentsPage() {
       const formData = new FormData()
       formData.append('doc_type', documentForm.doc_type)
       formData.append('file', documentForm.file)
-      const response = await uploadTutorDocument(formData)
-      return response.data
+      return (await uploadTutorDocument(formData)).data
     },
     onSuccess: async () => {
-      setNotice('Document uploaded successfully.')
+      const uploadedType = documentForm.doc_type
+      setNotice(`${uploadedType === 'ID' ? 'National ID' : uploadedType === 'CERTIFICATE' ? 'Qualification certificate' : 'Supporting document'} uploaded successfully.`)
       toast.success('Document uploaded successfully.')
       setDocumentForm({ doc_type: 'ID', file: null })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.documents })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.dashboard })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.checklist })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.tutors.documents }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.tutors.dashboard }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.tutors.checklist }),
+      ])
+      setActiveSection(uploadedType === 'ID' ? 'qualifications' : 'agreement')
     },
-    onError: (error) => {
-      toast.error(getApiErrorMessage(error))
-    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
   })
 
   const agreementMutation = useMutation({
@@ -98,20 +205,20 @@ export function TutorDocumentsPage() {
       formData.append('signed_name', agreementForm.signed_name)
       formData.append('signed_file', agreementForm.signed_file)
       formData.append('agreed_to_terms', agreementForm.agreed_to_terms ? 'true' : 'false')
-      const response = await uploadTutorAgreement(formData)
-      return response.data
+      return (await uploadTutorAgreement(formData)).data
     },
     onSuccess: async () => {
-      setNotice('Agreement uploaded successfully.')
+      setNotice('Signed integrity agreement uploaded successfully.')
       toast.success('Agreement uploaded successfully.')
       setAgreementForm({ signed_name: '', signed_file: null, agreed_to_terms: false })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.agreement })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.dashboard })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tutors.checklist })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.tutors.agreement }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.tutors.dashboard }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.tutors.checklist }),
+      ])
+      setActiveSection('overview')
     },
-    onError: (error) => {
-      toast.error(getApiErrorMessage(error))
-    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
   })
 
   if (!isAuthenticated) {
@@ -141,17 +248,22 @@ export function TutorDocumentsPage() {
   }
 
   const documents = Array.isArray(documentsQuery.data) ? documentsQuery.data : []
-  const documentSummary = checklistQuery.data?.document_summary
+  const checklist = checklistQuery.data || {}
+  const documentSummary = checklist.document_summary || {}
+  const requiredActions = Array.isArray(documentSummary.action_required) ? documentSummary.action_required : []
+  const idDocument = getLatestDocument(documents, 'ID')
+  const certificateDocument = getLatestDocument(documents, 'CERTIFICATE')
+  const agreement = agreementQuery.data || {}
+  const agreementStatus = agreement.signed_file ? agreement.status || 'SIGNED' : ''
+  const completion = checklist.completion_percentage || 0
+  const verificationApproved = checklist.verification_status === 'APPROVED'
 
-  function selectDocumentForUpload(docType) {
-    setDocumentForm({ doc_type: docType, file: null })
-    setActiveAction('documents')
-    window.setTimeout(() => {
-      document.getElementById('document-upload')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      })
-    }, 0)
+  const getAction = (docType) => requiredActions.find((item) => item.doc_type === docType)
+
+  function openSection(section, docType) {
+    if (docType) setDocumentForm({ doc_type: docType, file: null })
+    setActiveSection(verificationApproved && section !== 'overview' && section !== 'history' ? 'history' : section)
+    setNotice('')
   }
 
   function acceptNonEmptyFile(file, onAccept) {
@@ -189,144 +301,247 @@ export function TutorDocumentsPage() {
     }
   }
 
-  const checklist = checklistQuery.data || {}
-  const setupSteps = Array.isArray(checklist.steps) ? checklist.steps : []
-  const completion = checklist.completion_percentage || 0
-  const agreementStatus = agreementQuery.data?.status || 'PENDING'
-  const verificationApproved = checklist.verification_status === 'APPROVED'
+  function submitDocument(event) {
+    event.preventDefault()
+    if (!documentForm.file) {
+      toast.warn('Choose a file before continuing.')
+      return
+    }
+    documentMutation.mutate()
+  }
+
+  const requirementCards = [
+    {
+      key: 'identity',
+      number: '01',
+      title: 'National ID',
+      description: 'Confirms your legal identity and account ownership.',
+      status: idDocument?.status,
+      actionLabel: idDocument ? 'Review identity file' : 'Upload national ID',
+    },
+    {
+      key: 'qualifications',
+      number: '02',
+      title: 'Qualification certificate',
+      description: 'Supports the subjects and education levels you intend to teach.',
+      status: certificateDocument?.status,
+      actionLabel: certificateDocument ? 'Review qualification' : 'Upload qualification',
+    },
+    {
+      key: 'agreement',
+      number: '03',
+      title: 'Integrity agreement',
+      description: 'Records your commitment to professional and lawful tutoring.',
+      status: agreementStatus,
+      actionLabel: agreement.signed_file ? 'Review agreement' : 'Complete agreement',
+    },
+  ]
 
   return (
     <section className="tutor-documents-page">
       <header className="tutor-documents-header">
         <div>
           <p className="tutor-documents-eyebrow">Tutor verification</p>
-          <h1>Documents and agreement</h1>
-          <p>{verificationApproved ? 'Your approved verification record is read-only. You can review the files already accepted by YigaReach.' : 'Complete your identity, qualification, and integrity requirements before your profile can appear in tutor search.'}</p>
+          <h1>Verification centre</h1>
+          <p>Complete each requirement in order. Your files remain private and are only used by administrators to verify your tutor profile.</p>
         </div>
-        <div className="tutor-documents-header-actions">
-          {!verificationApproved ? <button className="secondary-button" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}>{downloadingAgreement ? 'Preparing...' : 'Download agreement'}</button> : null}
-          <Link className="primary-button" to="/tutor-dashboard">Back to dashboard</Link>
-        </div>
+        <Link className="secondary-button" to="/tutor-dashboard">Back to dashboard</Link>
       </header>
 
       {notice ? <div className="tutor-documents-notice" role="status" aria-live="polite"><DashboardIcon name="verification" size={18} /><span>{notice}</span></div> : null}
 
       <section className="tutor-verification-progress" aria-busy={checklistQuery.isLoading}>
-        <header>
-          <div><p>Approval progress</p><h2>{checklistQuery.isLoading ? 'Loading requirements...' : `${completion}% complete`}</h2></div>
-          <span className={`tutor-verification-state ${checklist.marketplace_ready ? 'is-ready' : ''}`}>{checklist.marketplace_ready ? 'Marketplace ready' : formatStatus(checklist.verification_status)}</span>
-        </header>
-        <div className="tutor-verification-progress-bar" role="progressbar" aria-label="Tutor setup completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow={completion}><span style={{ width: `${completion}%` }} /></div>
-        <div className="tutor-verification-steps">
-          {setupSteps.length ? setupSteps.map((step, index) => (
-            <article className={step.completed ? 'is-complete' : ''} key={step.key}>
-              <span>{step.completed ? <DashboardIcon name="verification" size={17} /> : index + 1}</span>
-              <div><strong>{step.label}</strong><small>{step.completed ? 'Complete' : 'Required'}</small></div>
-            </article>
-          )) : Array.from({ length: 4 }).map((_, index) => <article className="is-loading" key={index}><span>{index + 1}</span><div><strong>Loading step</strong><small>Please wait</small></div></article>)}
+        <div>
+          <span className="tutor-progress-value">{checklistQuery.isLoading ? '...' : `${completion}%`}</span>
+          <div><strong>Verification progress</strong><small>{verificationApproved ? 'Your tutor profile is approved.' : 'Finish the remaining requirements for administrator review.'}</small></div>
         </div>
+        <div className="tutor-verification-progress-bar" role="progressbar" aria-label="Tutor setup completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow={completion}><span style={{ width: `${completion}%` }} /></div>
+        <span className={`tutor-verification-state ${checklist.marketplace_ready ? 'is-ready' : ''}`}>{checklist.marketplace_ready ? 'Marketplace ready' : formatStatus(checklist.verification_status)}</span>
       </section>
 
-      <section className="tutor-documents-summary" aria-label="Verification summary">
-        <article><span><DashboardIcon name="documents" size={19} /></span><div><small>Uploaded files</small><strong>{documentsQuery.isLoading ? '...' : documents.length}</strong><p>Identity and qualification evidence</p></div></article>
-        <article><span><DashboardIcon name="verification" size={19} /></span><div><small>Required documents</small><strong>{documentSummary?.all_required_approved ? 'Approved' : documentSummary?.all_required_uploaded ? 'In review' : 'Incomplete'}</strong><p>National ID and certificate</p></div></article>
-        <article><span><DashboardIcon name="audit" size={19} /></span><div><small>Integrity agreement</small><strong>{agreementQuery.isLoading ? '...' : formatStatus(agreementStatus)}</strong><p>{agreementQuery.data?.signed_file ? 'Signed copy uploaded' : 'Signed copy required'}</p></div></article>
-      </section>
-
-      {verificationApproved ? (
-        <section className="tutor-documents-approved-lock" role="status">
-          <span><DashboardIcon name="verification" size={25} /></span>
-          <div>
-            <p>Verification approved</p>
-            <h2>No further uploads are required</h2>
-            <small>Your documents and signed agreement remain available below as a read-only submission history. If YigaReach needs an updated file, an administrator will reopen the relevant requirement and notify you.</small>
+      <div className="tutor-verification-workspace">
+        <aside className="tutor-verification-nav" aria-label="Verification sections">
+          <div className="tutor-verification-nav-heading">
+            <span>Verification steps</span>
+            <strong>{verificationApproved ? 'Approved' : `${requirementCards.filter((item) => item.status === 'APPROVED' || item.status === 'SIGNED').length} of 3 accepted`}</strong>
           </div>
-          <Link className="secondary-button" to="/tutor-teaching">Manage teaching</Link>
-        </section>
-      ) : (
-        <>
-          <DocumentActionSummary summary={documentSummary} onSelectDocument={selectDocumentForUpload} />
-
-          <nav className="tutor-document-action-nav" aria-label="Verification actions">
-            <button type="button" className={activeAction === 'documents' ? 'is-active' : ''} onClick={() => setActiveAction('documents')}>
-              <span>01</span><div><strong>Verification evidence</strong><small>Identity and qualifications</small></div>
-            </button>
-            <button type="button" className={activeAction === 'agreement' ? 'is-active' : ''} onClick={() => setActiveAction('agreement')}>
-              <span>02</span><div><strong>Integrity agreement</strong><small>Download, sign, and return</small></div>
-            </button>
-          </nav>
-
-          <section className="tutor-document-workflow">
-        {activeAction === 'documents' ? <article className="tutor-document-form-card" id="document-upload">
-          <header><span><DashboardIcon name="documents" size={21} /></span><div><p>Step 1</p><h2>Upload verification document</h2><small>Submit a readable PDF or image of your national ID or qualification certificate.</small></div></header>
-          <form onSubmit={(event) => {
-            event.preventDefault()
-            if (!documentForm.file) {
-              setNotice('Please choose a file first.')
-              toast.warn('Please choose a file first.')
-              return
-            }
-            documentMutation.mutate()
-          }}>
-            <label className="tutor-document-field"><span>Document type</span><select value={documentForm.doc_type} onChange={(event) => setDocumentForm((current) => ({ ...current, doc_type: event.target.value }))}><option value="ID">National ID</option><option value="CERTIFICATE">Qualification certificate</option><option value="OTHER">Other supporting document</option></select></label>
-            <label className="tutor-document-file">
-              <DashboardIcon name="documents" size={24} />
-              <span>{documentForm.file ? documentForm.file.name : 'Choose PDF, PNG, or JPEG'}</span>
-              <small>{documentForm.file ? 'Ready to upload' : 'Maximum file size is validated when submitted.'}</small>
-              <input aria-label="Document file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setDocumentForm((current) => ({ ...current, file })))} />
-            </label>
-            <button className="primary-button" type="submit" disabled={documentMutation.isPending || !documentForm.file}>{documentMutation.isPending ? 'Uploading...' : 'Upload document'}</button>
-          </form>
-        </article> : null}
-
-        {activeAction === 'agreement' ? <article className="tutor-document-form-card">
-          <header><span><DashboardIcon name="audit" size={21} /></span><div><p>Step 2</p><h2>Sign the integrity agreement</h2><small>Download the template, sign it, and upload the completed copy with your legal name.</small></div></header>
-          <button className="tutor-agreement-download" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}><DashboardIcon name="documents" size={17} /><span>{downloadingAgreement ? 'Preparing template...' : 'Download agreement template'}</span></button>
-          <form onSubmit={(event) => {
-            event.preventDefault()
-            if (!agreementForm.signed_name.trim() || !agreementForm.signed_file || !agreementForm.agreed_to_terms) {
-              setNotice('Enter your legal name, attach the signed agreement, and confirm the terms.')
-              toast.warn('Complete every agreement field before uploading.')
-              return
-            }
-            agreementMutation.mutate()
-          }}>
-            <label className="tutor-document-field"><span>Signed name</span><input type="text" value={agreementForm.signed_name} onChange={(event) => setAgreementForm((current) => ({ ...current, signed_name: event.target.value }))} placeholder="Enter your legal name" /></label>
-            <label className="tutor-document-file">
-              <DashboardIcon name="documents" size={24} />
-              <span>{agreementForm.signed_file ? agreementForm.signed_file.name : 'Choose signed agreement'}</span>
-              <small>{agreementForm.signed_file ? 'Ready to upload' : 'PDF, PNG, or JPEG'}</small>
-              <input aria-label="Signed agreement file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setAgreementForm((current) => ({ ...current, signed_file: file })))} />
-            </label>
-            <label className="tutor-agreement-check"><input type="checkbox" checked={agreementForm.agreed_to_terms} onChange={(event) => setAgreementForm((current) => ({ ...current, agreed_to_terms: event.target.checked }))} /><span><strong>Integrity confirmation</strong><small>I agree to the platform terms and understand that false information may lead to account or legal action.</small></span></label>
-            <button className="primary-button" type="submit" disabled={agreementMutation.isPending || !agreementForm.signed_name.trim() || !agreementForm.signed_file || !agreementForm.agreed_to_terms}>{agreementMutation.isPending ? 'Uploading...' : 'Upload signed agreement'}</button>
-          </form>
-        </article> : null}
-          </section>
-        </>
-      )}
-
-      <section className="tutor-uploaded-documents">
-        <header><div><p>Submission history</p><h2>Uploaded documents</h2></div><span>{documents.length} file{documents.length === 1 ? '' : 's'}</span></header>
-        {documentsQuery.isLoading ? (
-          <div className="tutor-documents-loading"><span /><span /><span /></div>
-        ) : documentsQuery.isError ? (
-          <div className="tutor-documents-empty"><DashboardIcon name="documents" size={28} /><h3>Documents could not be loaded</h3><p>{getApiErrorMessage(documentsQuery.error)}</p><button className="secondary-button" type="button" onClick={() => documentsQuery.refetch()}>Try again</button></div>
-        ) : documents.length === 0 ? (
-          <div className="tutor-documents-empty"><DashboardIcon name="documents" size={28} /><h3>No documents uploaded yet</h3><p>Start with your national ID and qualification certificate.</p><button className="secondary-button" type="button" onClick={() => selectDocumentForUpload('ID')}>Upload first document</button></div>
-        ) : (
-          <div className="tutor-document-list">
-            {documents.map((item) => (
-              <article key={item.id}>
-                <span className="tutor-document-list-icon"><DashboardIcon name="documents" size={20} /></span>
-                <div className="tutor-document-list-copy"><h3>{item.doc_type_display || formatStatus(item.doc_type)}</h3><p>{item.review_message || 'Your document is waiting for an administrator review.'}</p>{item.review_reason_display ? <small>Review reason: {item.review_reason_display}</small> : <small>Updated {formatDate(item.updated_at || item.created_at)}</small>}</div>
-                <span className={`tutor-document-status ${getDocumentTone(item.status)}`}>{item.status_display || formatStatus(item.status)}</span>
-                <a href={item.file} target="_blank" rel="noreferrer">Open file</a>
-              </article>
-            ))}
+          {WORKSPACE_SECTIONS.map((section) => {
+            const requirement = section.key === 'identity'
+              ? idDocument
+              : section.key === 'qualifications'
+                ? certificateDocument
+                : section.key === 'agreement'
+                  ? { status: agreementStatus }
+                  : null
+            return (
+              <button
+                type="button"
+                className={activeSection === section.key ? 'is-active' : ''}
+                onClick={() => openSection(section.key, section.key === 'identity' ? 'ID' : section.key === 'qualifications' ? 'CERTIFICATE' : undefined)}
+                aria-current={activeSection === section.key ? 'page' : undefined}
+                key={section.key}
+              >
+                <span><DashboardIcon name={section.icon} size={18} /></span>
+                <div><strong>{section.label}</strong><small>{section.helper}</small></div>
+                {requirement ? <i className={`tutor-nav-state ${getDocumentTone(requirement.status)}`} aria-label={requirement.status ? formatStatus(requirement.status) : 'Not uploaded'} /> : <DashboardIcon name="arrowRight" size={15} />}
+              </button>
+            )
+          })}
+          <div className="tutor-verification-privacy">
+            <DashboardIcon name="verification" size={19} />
+            <p><strong>Private and protected</strong><span>Only authorized administrators can review these files.</span></p>
           </div>
-        )}
-      </section>
+        </aside>
+
+        <main className="tutor-verification-content">
+          {activeSection === 'overview' ? (
+            <article className="tutor-verification-panel tutor-verification-overview">
+              <header className="tutor-verification-panel-header">
+                <div><p>Start here</p><h2>{verificationApproved ? 'Verification complete' : 'Complete your application'}</h2><span>{verificationApproved ? 'Your accepted files are available as a read-only record.' : 'Work through these requirements from top to bottom. Review starts automatically when all required items are submitted.'}</span></div>
+              </header>
+
+              {verificationApproved ? (
+                <div className="tutor-approved-message">
+                  <DashboardIcon name="verification" size={25} />
+                  <div><strong>Your tutor profile is verified</strong><p>No further uploads are required unless an administrator asks you to replace a document.</p></div>
+                  <button className="secondary-button" type="button" onClick={() => openSection('history')}>View submission record</button>
+                </div>
+              ) : null}
+
+              <div className="tutor-requirement-list">
+                {requirementCards.map((item) => (
+                  <button type="button" onClick={() => openSection(item.key, item.key === 'identity' ? 'ID' : item.key === 'qualifications' ? 'CERTIFICATE' : undefined)} key={item.key}>
+                    <span className="tutor-requirement-number">{item.status === 'APPROVED' || item.status === 'SIGNED' ? <DashboardIcon name="verification" size={17} /> : item.number}</span>
+                    <div><strong>{item.title}</strong><p>{item.description}</p></div>
+                    <RequirementStatus status={item.status} />
+                    <span className="tutor-requirement-action">{verificationApproved ? 'View record' : item.actionLabel}<DashboardIcon name="arrowRight" size={15} /></span>
+                  </button>
+                ))}
+              </div>
+
+              {!verificationApproved && requiredActions.length ? (
+                <div className="tutor-overview-attention" role="alert">
+                  <DashboardIcon name="help" size={20} />
+                  <div><strong>{requiredActions.length} item{requiredActions.length === 1 ? '' : 's'} need attention</strong><p>{requiredActions[0].message || 'Open the affected requirement to replace or correct your submission.'}</p></div>
+                </div>
+              ) : null}
+            </article>
+          ) : null}
+
+          {activeSection === 'identity' && !verificationApproved ? (
+            <DocumentUploadPanel
+              action={getAction('ID')}
+              currentDocument={idDocument}
+              description="Upload the front of your national ID or another administrator-approved identity document."
+              documentForm={documentForm}
+              documentType="ID"
+              eyebrow="Requirement 1 of 3"
+              onBack={() => openSection('overview')}
+              onContinue={() => openSection('qualifications', 'CERTIFICATE')}
+              onFileChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setDocumentForm({ doc_type: 'ID', file }))}
+              onSubmit={submitDocument}
+              pending={documentMutation.isPending}
+              title="Upload national ID"
+            />
+          ) : null}
+
+          {activeSection === 'qualifications' && !verificationApproved ? (
+            <div className="tutor-evidence-switch" aria-label="Qualification evidence type">
+              <button type="button" className={documentForm.doc_type === 'CERTIFICATE' ? 'is-active' : ''} onClick={() => setDocumentForm({ doc_type: 'CERTIFICATE', file: null })}><strong>Qualification certificate</strong><span>Required</span></button>
+              <button type="button" className={documentForm.doc_type === 'OTHER' ? 'is-active' : ''} onClick={() => setDocumentForm({ doc_type: 'OTHER', file: null })}><strong>Supporting evidence</strong><span>Optional</span></button>
+            </div>
+          ) : null}
+
+          {activeSection === 'qualifications' && !verificationApproved ? (
+            <DocumentUploadPanel
+              action={getAction(documentForm.doc_type)}
+              currentDocument={getLatestDocument(documents, documentForm.doc_type)}
+              description="Upload your main academic or professional teaching certificate. You may also add supporting evidence."
+              documentForm={documentForm}
+              documentType={documentForm.doc_type}
+              eyebrow="Requirement 2 of 3"
+              onBack={() => openSection('overview')}
+              onContinue={() => openSection('agreement')}
+              onFileChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setDocumentForm((current) => ({ ...current, file })))}
+              onSubmit={submitDocument}
+              pending={documentMutation.isPending}
+              title="Upload qualification evidence"
+            />
+          ) : null}
+
+          {activeSection === 'agreement' && !verificationApproved ? (
+            <article className="tutor-verification-panel">
+              <header className="tutor-verification-panel-header">
+                <div><p>Requirement 3 of 3</p><h2>Complete the integrity agreement</h2><span>Use your personalized YigaReach agreement. Download it, sign it, then return the completed copy.</span></div>
+                <RequirementStatus status={agreementStatus} />
+              </header>
+
+              {agreementStatus === 'SIGNED' ? (
+                <div className="tutor-submission-locked">
+                  <DashboardIcon name="verification" size={23} />
+                  <div><strong>Your signed agreement is submitted</strong><p>Continue with any remaining requirements while the administrator completes your verification.</p></div>
+                  <div className="tutor-submission-locked-actions"><button className="secondary-button" type="button" onClick={() => openSection('overview')}>Back to overview</button><button className="primary-button" type="button" onClick={() => openSection('history')}>View submission</button></div>
+                </div>
+              ) : <>
+              <div className="tutor-agreement-flow">
+                <div><span>1</span><strong>Download</strong><small>Get your personalized PDF</small></div>
+                <i><DashboardIcon name="arrowRight" size={16} /></i>
+                <div><span>2</span><strong>Sign</strong><small>Read and sign every page</small></div>
+                <i><DashboardIcon name="arrowRight" size={16} /></i>
+                <div><span>3</span><strong>Upload</strong><small>Return the completed copy</small></div>
+              </div>
+
+              <button className="tutor-agreement-download" type="button" onClick={handleAgreementDownload} disabled={downloadingAgreement}><DashboardIcon name="documents" size={18} /><span><strong>{downloadingAgreement ? 'Preparing your PDF...' : 'Download personalized agreement'}</strong><small>PDF document ready for printing and signing</small></span><DashboardIcon name="arrowRight" size={16} /></button>
+
+              <form className="tutor-verification-form" onSubmit={(event) => {
+                event.preventDefault()
+                if (!agreementForm.signed_name.trim() || !agreementForm.signed_file || !agreementForm.agreed_to_terms) {
+                  toast.warn('Enter your legal name, attach the signed agreement, and confirm the terms.')
+                  return
+                }
+                agreementMutation.mutate()
+              }}>
+                <label className="tutor-document-field"><span>Legal name used to sign</span><input type="text" value={agreementForm.signed_name} onChange={(event) => setAgreementForm((current) => ({ ...current, signed_name: event.target.value }))} placeholder="Enter your full legal name" /></label>
+                <label className="tutor-document-file">
+                  <DashboardIcon name="documents" size={25} />
+                  <span>{agreementForm.signed_file ? agreementForm.signed_file.name : 'Choose signed agreement'}</span>
+                  <small>{agreementForm.signed_file ? 'File selected and ready' : 'PDF, PNG, or JPEG'}</small>
+                  <input key={agreementForm.signed_file?.name || 'empty'} aria-label="Signed agreement file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={(event) => acceptNonEmptyFile(event.target.files?.[0], (file) => setAgreementForm((current) => ({ ...current, signed_file: file })))} />
+                </label>
+                <label className="tutor-agreement-check"><input type="checkbox" checked={agreementForm.agreed_to_terms} onChange={(event) => setAgreementForm((current) => ({ ...current, agreed_to_terms: event.target.checked }))} /><span><strong>I confirm this is my signed agreement</strong><small>I understand that false information may lead to account suspension or legal action.</small></span></label>
+                <div className="tutor-verification-form-actions"><button className="secondary-button" type="button" onClick={() => openSection('overview')}>Back to overview</button><button className="primary-button" type="submit" disabled={agreementMutation.isPending || !agreementForm.signed_name.trim() || !agreementForm.signed_file || !agreementForm.agreed_to_terms}>{agreementMutation.isPending ? 'Uploading...' : 'Upload signed agreement'}</button></div>
+              </form>
+              </>}
+            </article>
+          ) : null}
+
+          {(activeSection === 'history' || (verificationApproved && activeSection !== 'overview')) ? (
+            <article className="tutor-verification-panel tutor-submission-history">
+              <header className="tutor-verification-panel-header"><div><p>Submission record</p><h2>Files and review feedback</h2><span>Open a file or check the latest administrator status for each submission.</span></div><span className="tutor-history-count">{documents.length} file{documents.length === 1 ? '' : 's'}</span></header>
+              {documentsQuery.isLoading ? (
+                <div className="tutor-documents-loading"><span /><span /><span /></div>
+              ) : documentsQuery.isError ? (
+                <div className="tutor-documents-empty"><DashboardIcon name="documents" size={28} /><h3>Documents could not be loaded</h3><p>{getApiErrorMessage(documentsQuery.error)}</p><button className="secondary-button" type="button" onClick={() => documentsQuery.refetch()}>Try again</button></div>
+              ) : documents.length === 0 ? (
+                <div className="tutor-documents-empty"><DashboardIcon name="documents" size={28} /><h3>No documents uploaded yet</h3><p>Begin with your national ID.</p><button className="secondary-button" type="button" onClick={() => openSection('identity', 'ID')}>Upload first document</button></div>
+              ) : (
+                <div className="tutor-document-list">
+                  {documents.map((item) => (
+                    <article key={item.id}>
+                      <span className="tutor-document-list-icon"><DashboardIcon name="documents" size={20} /></span>
+                      <div className="tutor-document-list-copy"><h3>{item.doc_type_display || formatStatus(item.doc_type)}</h3><p>{item.review_message || 'Your document is waiting for administrator review.'}</p>{item.review_reason_display ? <small>Review reason: {item.review_reason_display}</small> : <small>Updated {formatDate(item.updated_at || item.created_at)}</small>}</div>
+                      <RequirementStatus status={item.status} label={item.status_display} />
+                      <a href={item.file} target="_blank" rel="noreferrer">Open file</a>
+                    </article>
+                  ))}
+                </div>
+              )}
+              {agreement.signed_file ? <div className="tutor-agreement-record"><span><DashboardIcon name="audit" size={20} /></span><div><strong>Signed integrity agreement</strong><small>Submitted under the legal name {agreement.signed_name || user?.full_name || user?.email}</small></div><RequirementStatus status={agreementStatus} /><a href={agreement.signed_file} target="_blank" rel="noreferrer">Open file</a></div> : null}
+            </article>
+          ) : null}
+
+        </main>
+      </div>
     </section>
   )
 }

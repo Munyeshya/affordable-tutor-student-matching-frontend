@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -61,7 +61,7 @@ describe('TutorDocumentsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useAuth.mockReturnValue({
-      user: { id: 8, role: 'TUTOR', email: 'tutor@isomo.test' },
+      user: { id: 8, role: 'TUTOR', email: 'tutor@yigareach.test' },
       isAuthenticated: true,
     })
     getTutorChecklist.mockResolvedValue({ data: checklist })
@@ -73,11 +73,13 @@ describe('TutorDocumentsPage', () => {
   })
 
   it('presents verification progress and uploaded document status', async () => {
+    const browserUser = userEvent.setup()
     renderWithProviders(<TutorDocumentsPage />)
 
-    expect(await screen.findByRole('heading', { name: '60% complete' })).toBeInTheDocument()
+    expect(await screen.findByText('60%')).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'Tutor setup completion' })).toHaveAttribute('aria-valuenow', '60')
-    expect(screen.getByText('Create tutor profile')).toBeInTheDocument()
+    const navigation = screen.getByRole('complementary', { name: 'Verification sections' })
+    await browserUser.click(within(navigation).getByRole('button', { name: /Submission history/i }))
     expect(screen.getByText('Pending Review')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Open file' })).toHaveAttribute('href', '/media/national-id.pdf')
   })
@@ -87,17 +89,19 @@ describe('TutorDocumentsPage', () => {
     const certificate = new File(['certificate'], 'certificate.pdf', { type: 'application/pdf' })
     renderWithProviders(<TutorDocumentsPage />)
 
-    await screen.findByRole('heading', { name: 'Upload verification document' })
-    await browserUser.selectOptions(screen.getByLabelText('Document type'), 'CERTIFICATE')
+    const navigation = await screen.findByRole('complementary', { name: 'Verification sections' })
+    await browserUser.click(within(navigation).getByRole('button', { name: /Qualifications/i }))
+    expect(screen.getByRole('heading', { name: 'Upload qualification evidence' })).toBeInTheDocument()
     await browserUser.upload(screen.getByLabelText('Document file'), certificate)
     expect(screen.getByText('certificate.pdf')).toBeInTheDocument()
-    await browserUser.click(screen.getByRole('button', { name: 'Upload document' }))
+    await browserUser.click(screen.getByRole('button', { name: 'Upload and continue' }))
 
     await waitFor(() => expect(uploadTutorDocument).toHaveBeenCalledWith(expect.any(FormData)))
     expect(toast.success).toHaveBeenCalledWith('Document uploaded successfully.')
   })
 
   it('hides all submission forms after tutor approval', async () => {
+    const browserUser = userEvent.setup()
     getTutorChecklist.mockResolvedValue({
       data: {
         ...checklist,
@@ -115,9 +119,11 @@ describe('TutorDocumentsPage', () => {
 
     renderWithProviders(<TutorDocumentsPage />)
 
-    expect(await screen.findByRole('heading', { name: 'No further uploads are required' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Upload verification document' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Sign the integrity agreement' })).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Uploaded documents' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Verification complete' })).toBeInTheDocument()
+    expect(screen.getByText('Your tutor profile is verified')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Upload national ID' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Complete the integrity agreement' })).not.toBeInTheDocument()
+    await browserUser.click(screen.getByRole('button', { name: 'View submission record' }))
+    expect(screen.getByRole('heading', { name: 'Files and review feedback' })).toBeInTheDocument()
   })
 })
