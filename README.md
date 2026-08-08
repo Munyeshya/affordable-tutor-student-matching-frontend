@@ -30,13 +30,14 @@ Students who need academic support often face high tutoring costs, difficulty fi
 
 ## Frontend Testing
 
-Run `npm test` for the automated frontend suite, `npm run test:coverage` for the HTML coverage report, and `npm run test:watch` during development. See `FRONTEND_TESTING.md` for the covered workflows, mock strategy, and contribution rules.
+Run `npm test` for the automated frontend suite, `npm run test:coverage` for the HTML coverage report, and `npm run test:watch` during development. Run `npm run lint` and `npm run build` before deployment.
 
 ## Production Build
 
-The frontend Dockerfile builds the Vite application and serves it with Nginx.
-Nginx proxies API, admin, static-file, and WebSocket traffic to the Django ASGI
-service so the browser uses one origin.
+Build the Vite application with `npm ci` and `npm run build`, then publish the
+generated `dist/` directory through the VPS Nginx virtual host. Nginx should
+proxy API, admin, static-file, and WebSocket traffic to the Django ASGI service
+so the browser uses one origin.
 
 Production build values:
 
