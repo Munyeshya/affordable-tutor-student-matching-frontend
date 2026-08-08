@@ -19,54 +19,77 @@ function HomePage() {
 
   return (
     <>
-      <section className="hero-section card">
-        <div className="hero-copy">
-          <p className="hero-greeting">Hi, there!</p>
-          <p className="eyebrow">Trusted learning marketplace</p>
+      <section className="home-hero">
+        <div className="home-hero-copy">
+          <p className="home-hero-kicker">
+            <span aria-hidden="true" /> Rwanda&apos;s learning marketplace
+          </p>
           <h1>
-            <span>YigaReach</span> is here to make tutor matching clear, premium, and affordable.
+            Find the right tutor for the lesson <em>and your budget.</em>
           </h1>
-          <p className="supporting-text">
-            Search by tutor name, lesson, or topic. Compare verified tutors, lesson-specific
-            pricing, and level-based expertise in one place.
+          <p className="home-hero-intro">
+            Compare verified tutors by subject, education level, availability, and price before
+            you make a request.
           </p>
 
-          <div className="hero-actions">
-            <Link className="primary-button" to="/tutors">
-              Search tutors
-            </Link>
-            <Link className="secondary-button" to="/join">
-              Become a tutor
-            </Link>
+          <form className="home-hero-search" action="/tutors" method="get" role="search">
+            <span className="home-hero-search-icon" aria-hidden="true">
+              <ShellIcon name="search" />
+            </span>
+            <input
+              aria-label="Search tutors by name, lesson, or topic"
+              name="q"
+              placeholder="Tutor name, lesson, or topic"
+              type="search"
+            />
+            <button className="home-hero-search-button" type="submit">
+              Find a tutor <ShellIcon name="arrow" />
+            </button>
+          </form>
+
+          <div className="home-hero-popular" aria-label="Popular tutor searches">
+            <span>Popular:</span>
+            <Link to="/tutors?q=Mathematics">Mathematics</Link>
+            <Link to="/tutors?q=English">English</Link>
+            <Link to="/tutors?q=Physics">Physics</Link>
+          </div>
+
+          <div className="home-hero-trust" aria-label="YigaReach marketplace benefits">
+            <span><ShellIcon name="shield" /> Document-checked tutors</span>
+            <span><ShellIcon name="book" /> Primary to university</span>
+            <span><ShellIcon name="star" /> Lesson-specific reviews</span>
           </div>
         </div>
 
-        <aside className="hero-visual" aria-label="Platform preview">
-          <div className="hero-image-wrap">
-            <img
-              className="hero-image"
-              src="/aking-notes.svg"
-              alt="Stylized tutor illustration for the YigaReach homepage hero"
-            />
+        <aside className="home-hero-preview" aria-label="How YigaReach tutor matching works">
+          <div className="home-hero-preview-rail" aria-hidden="true">
+            <strong>01</strong>
+            <span>Discover</span>
           </div>
 
-          <div className="hero-floating-card hero-floating-card-top">
-            <span className="hero-floating-figure">2K+</span>
-            <span className="hero-floating-label">Verified tutors</span>
-          </div>
-
-          <div className="hero-floating-card hero-floating-card-side">
-            <span className="hero-floating-figure">4.9</span>
-            <span className="hero-floating-label">Satisfaction</span>
-          </div>
-
-          <div className="hero-floating-card hero-floating-card-bottom">
-            <div className="icon-chip">
-              <ShellIcon name="users" />
+          <div className="home-hero-preview-main">
+            <div className="home-hero-preview-heading">
+              <span><ShellIcon name="shield" /> Verified profiles</span>
+              <small>Rates shown upfront</small>
             </div>
-            <div>
-              <strong>Productive matching</strong>
-              <span>By lesson, topic, or level</span>
+
+            <div className="home-hero-illustration">
+              <img
+                src="/aking-notes.svg"
+                alt="Student taking notes while learning with YigaReach"
+              />
+            </div>
+
+            <div className="home-hero-match-card">
+              <p>Your learning need</p>
+              <h2>Matched by subject, level, price, and time.</h2>
+              <div>
+                <span><ShellIcon name="book" /> Curriculum fit</span>
+                <span><ShellIcon name="users" /> Tutor choice</span>
+              </div>
+              <Link to="/how-it-works">
+                See how matching works <ShellIcon name="arrow" />
+              </Link>
             </div>
           </div>
         </aside>
