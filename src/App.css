@@ -4621,7 +4621,7 @@ a.tutor-calendar-slot:hover {
   margin-inline: auto;
   overflow: hidden;
   border: 7px solid #eeeae5;
-  border-radius: 24px;
+  border-radius: 0;
   background: #111111;
   color: #ffffff;
 }
@@ -4950,7 +4950,7 @@ a.tutor-calendar-slot:hover {
   .learning-hero {
     min-height: 650px;
     border-width: 5px;
-    border-radius: 18px;
+    border-radius: 0;
   }
 
   .learning-hero-content {
