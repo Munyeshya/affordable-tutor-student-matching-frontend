@@ -4721,7 +4721,7 @@ a.tutor-calendar-slot:hover {
   justify-content: center;
   gap: 9px;
   min-height: 44px;
-  border-radius: 999px;
+  border-radius: 0;
   padding: 0 21px;
   font-size: 0.78rem;
   font-weight: 800;
