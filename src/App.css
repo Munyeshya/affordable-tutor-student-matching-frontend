@@ -4611,3 +4611,425 @@ a.tutor-calendar-slot:hover {
     margin-top: 7px;
   }
 }
+
+/* Immersive homepage hero */
+.learning-hero {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 1240px);
+  min-height: clamp(620px, calc(100svh - 128px), 720px);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 7px solid #eeeae5;
+  border-radius: 24px;
+  background: #111111;
+  color: #ffffff;
+}
+
+.learning-hero-image {
+  position: absolute;
+  z-index: -3;
+  bottom: -50%;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  animation: learning-hero-image-arrive 800ms ease both;
+}
+
+.learning-hero-scrim {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% -12%, rgba(180, 83, 9, 0.3), transparent 42%),
+    radial-gradient(circle at 3% 72%, rgba(180, 83, 9, 0.14), transparent 25%),
+    linear-gradient(180deg, rgba(17, 17, 17, 0.08) 0%, rgba(17, 17, 17, 0.12) 55%, rgba(17, 17, 17, 0.02) 100%);
+  pointer-events: none;
+}
+
+.learning-hero-content {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: min(100%, 980px);
+  margin-inline: auto;
+  padding: clamp(62px, 7vw, 92px) clamp(24px, 6vw, 74px) 0;
+  text-align: center;
+  animation: learning-hero-content-arrive 620ms 80ms ease both;
+}
+
+.learning-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  color: #f1a45e;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.learning-hero-kicker > span {
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+}
+
+.learning-hero-content h1 {
+  max-width: 20ch;
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(2.45rem, 4.7vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.learning-hero-content h1 em {
+  color: #f3ad6d;
+  font-style: normal;
+}
+
+.learning-hero-intro {
+  max-width: 66ch;
+  margin: 24px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-wrap: balance;
+}
+
+.learning-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.learning-hero-primary,
+.learning-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  border-radius: 999px;
+  padding: 0 21px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.learning-hero-primary {
+  border: 1px solid #d96b00;
+  background: #d96b00;
+  color: #ffffff;
+}
+
+.learning-hero-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  background: rgba(17, 17, 17, 0.58);
+  color: #ffffff;
+}
+
+.learning-hero-secondary > span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(243, 173, 109, 0.68);
+  border-radius: 50%;
+  place-items: center;
+  color: #f3ad6d;
+}
+
+.learning-hero-primary:hover,
+.learning-hero-secondary:hover {
+  transform: translateY(-2px);
+}
+
+.learning-hero-primary:hover {
+  border-color: #f08a2c;
+  background: #f08a2c;
+}
+
+.learning-hero-secondary:hover {
+  border-color: #f3ad6d;
+  background: rgba(180, 83, 9, 0.18);
+}
+
+.learning-hero-primary svg,
+.learning-hero-secondary svg,
+.learning-hero-verified svg,
+.learning-hero-mark svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.learning-hero-proof {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  color: #ffffff;
+}
+
+.learning-hero-avatars {
+  display: flex;
+  padding-left: 8px;
+}
+
+.learning-hero-avatars > span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  margin-left: -8px;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  background: #f1a45e;
+  color: #111111;
+  font-size: 0.62rem;
+  font-weight: 800;
+  place-items: center;
+}
+
+.learning-hero-avatars > span:nth-child(2) {
+  background: #f5d5b6;
+}
+
+.learning-hero-avatars > span:nth-child(3) {
+  background: #d96b00;
+  color: #ffffff;
+}
+
+.learning-hero-avatars > span:nth-child(4) {
+  background: #ffffff;
+}
+
+.learning-hero-proof > p {
+  display: grid;
+  margin: 0;
+  text-align: left;
+}
+
+.learning-hero-proof strong {
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+
+.learning-hero-proof small {
+  color: rgba(255, 255, 255, 0.54);
+  font-size: 0.6rem;
+}
+
+.learning-hero-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  padding-left: 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f3ad6d;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.learning-hero-mark {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  color: rgba(243, 173, 109, 0.22);
+  place-items: center;
+  animation: learning-mark-float 7s ease-in-out infinite;
+}
+
+.learning-hero-mark svg {
+  width: 44px;
+  height: 44px;
+  stroke-width: 1.15;
+}
+
+.learning-hero-mark-book {
+  top: 28%;
+  left: 8%;
+  transform: rotate(-18deg);
+}
+
+.learning-hero-mark-star {
+  top: 20%;
+  right: 9%;
+  animation-delay: 1.2s;
+}
+
+.learning-hero-mark-shield {
+  top: 48%;
+  right: 6%;
+  transform: rotate(12deg);
+  animation-delay: 2.3s;
+}
+
+@keyframes learning-hero-content-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes learning-hero-image-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(1.01);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes learning-mark-float {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+
+  50% {
+    margin-top: -9px;
+  }
+}
+
+@media (max-width: 900px) {
+  .learning-hero {
+    min-height: 680px;
+  }
+
+  .learning-hero-image {
+    bottom: -40%;
+    left: -10%;
+    width: 120%;
+  }
+
+  .learning-hero-content {
+    padding-top: 56px;
+  }
+
+  .learning-hero-content h1 {
+    max-width: 18ch;
+    font-size: clamp(2.35rem, 7vw, 3.7rem);
+  }
+
+  .learning-hero-mark-book {
+    left: 4%;
+  }
+
+  .learning-hero-mark-star,
+  .learning-hero-mark-shield {
+    right: 4%;
+  }
+}
+
+@media (max-width: 620px) {
+  .learning-hero {
+    min-height: 650px;
+    border-width: 5px;
+    border-radius: 18px;
+  }
+
+  .learning-hero-content {
+    padding: 38px 18px 0;
+  }
+
+  .learning-hero-kicker {
+    margin-bottom: 13px;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+  }
+
+  .learning-hero-content h1 {
+    max-width: 15ch;
+    font-size: clamp(2rem, 10.5vw, 2.75rem);
+    line-height: 1.04;
+  }
+
+  .learning-hero-intro {
+    max-width: 42ch;
+    margin-top: 17px;
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .learning-hero-actions {
+    gap: 9px;
+    margin-top: 20px;
+  }
+
+  .learning-hero-primary,
+  .learning-hero-secondary {
+    min-height: 41px;
+    padding-inline: 16px;
+    font-size: 0.72rem;
+  }
+
+  .learning-hero-proof {
+    margin-top: 18px;
+  }
+
+  .learning-hero-verified,
+  .learning-hero-proof small {
+    display: none;
+  }
+
+  .learning-hero-image {
+    bottom: -12%;
+    left: -30%;
+    width: 160%;
+  }
+
+  .learning-hero-mark {
+    display: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .learning-hero {
+    min-height: 670px;
+  }
+
+  .learning-hero-content {
+    padding-inline: 14px;
+  }
+
+  .learning-hero-actions {
+    display: grid;
+    width: min(100%, 230px);
+  }
+
+  .learning-hero-primary,
+  .learning-hero-secondary {
+    width: 100%;
+  }
+
+  .learning-hero-image {
+    bottom: -15%;
+    left: -37%;
+    width: 174%;
+  }
+}
