@@ -4616,7 +4616,7 @@ a.tutor-calendar-slot:hover {
 .learning-hero {
   position: relative;
   isolation: isolate;
-  width: min(100%, 1240px);
+  width: min(100%, 1480px);
   min-height: clamp(620px, calc(100svh - 128px), 720px);
   margin-inline: auto;
   overflow: hidden;
